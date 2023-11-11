@@ -1,4 +1,3 @@
-import 'package:easy_refresh/easy_refresh.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -253,6 +252,38 @@ class ReaderCubit extends Cubit<ReaderState> {
     emit(state.copyWith(
         readChapter:
             ReadChapter.init(initIndex: index, chapters: state.chapters)));
+  }
+
+  Chapter? getChapterByIndex(int index) {
+    if (index < state.chapters.length) {
+      return state.chapters[index];
+    }
+    return null;
+  }
+
+  Future<Chapter> getContentByChapter(Chapter chapter) async {
+    _logger.log("getChapter");
+    if (chapter.contentComic != null ||
+        chapter.contentVideo != null ||
+        chapter.contentNovel != null) {
+      return chapter;
+    } else {
+      try {
+        final result = await _jsRuntime.getChapter(
+            url: "${chapter.host}${chapter.url}",
+            source: _extension!.getChapterScript);
+        chapter = chapter.addContentByExtensionType(
+            type: getExtensionType, value: result);
+        List<Chapter> chapters = state.chapters;
+        chapters.removeAt(chapter.index);
+        chapters.insert(chapter.index, chapter);
+        emit(state.copyWith(chapters: chapters));
+        return chapter;
+      } catch (error) {
+        _logger.log(error, name: "getChapterContent");
+      }
+    }
+    return chapter;
   }
 
   @override

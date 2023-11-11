@@ -5,7 +5,6 @@ import 'package:hyper_media/app/constants/gaps.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/app/route/routes_name.dart';
 import 'package:hyper_media/data/models/book.dart';
-import 'package:hyper_media/widgets/cache_network_image.dart';
 import 'package:hyper_media/widgets/widget.dart';
 
 import '../cubit/reader_cubit.dart';

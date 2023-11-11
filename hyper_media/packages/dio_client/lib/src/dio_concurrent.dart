@@ -1,9 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, unused_element
 import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:dio_client/index.dart';
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 class _Entry {

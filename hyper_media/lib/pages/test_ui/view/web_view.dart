@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
-  _MyAppState createState() => new _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -51,17 +53,17 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Official InAppWebView website")),
+        appBar: AppBar(title: const Text("Official InAppWebView website")),
         body: SafeArea(
             child: Column(children: <Widget>[
           TextField(
-            decoration: InputDecoration(prefixIcon: Icon(Icons.search)),
+            decoration: const InputDecoration(prefixIcon: Icon(Icons.search)),
             controller: urlController,
             keyboardType: TextInputType.url,
             onSubmitted: (value) {
               var url = WebUri(value);
               if (url.scheme.isEmpty) {
-                url = WebUri("https://www.google.com/search?q=" + value);
+                url = WebUri("https://www.google.com/search?q=$value");
               }
               webViewController?.loadUrl(urlRequest: URLRequest(url: url));
             },
@@ -93,7 +95,7 @@ class _MyAppState extends State<MyApp> {
                   onLoadResource: (controller, resource) {
                     // print(resource.url);
                   },
-                  
+
                   shouldInterceptFetchRequest:
                       (controller, fetchRequest) async {
                     print(fetchRequest.url);
@@ -140,7 +142,7 @@ class _MyAppState extends State<MyApp> {
                     }
                     setState(() {
                       this.progress = progress / 100;
-                      urlController.text = this.url;
+                      urlController.text = url;
                     });
                   },
                   onUpdateVisitedHistory: (controller, url, androidIsReload) {
@@ -154,11 +156,12 @@ class _MyAppState extends State<MyApp> {
                   },
                   shouldInterceptAjaxRequest: (controller, ajaxRequest) async {
                     final url = ajaxRequest.url;
+                    return null;
 
                     // print("shouldInterceptAjaxRequest: $url");
                   },
                   // onAjaxReadyStateChange: (controller, ajaxRequest) {
-                    
+
                   // },
                 ),
                 progress < 1.0
@@ -171,19 +174,19 @@ class _MyAppState extends State<MyApp> {
             alignment: MainAxisAlignment.center,
             children: <Widget>[
               ElevatedButton(
-                child: Icon(Icons.arrow_back),
+                child: const Icon(Icons.arrow_back),
                 onPressed: () {
                   webViewController?.goBack();
                 },
               ),
               ElevatedButton(
-                child: Icon(Icons.arrow_forward),
+                child: const Icon(Icons.arrow_forward),
                 onPressed: () {
                   webViewController?.goForward();
                 },
               ),
               ElevatedButton(
-                child: Icon(Icons.refresh),
+                child: const Icon(Icons.refresh),
                 onPressed: () {
                   webViewController?.reload();
                 },

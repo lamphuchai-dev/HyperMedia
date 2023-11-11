@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hyper_media/app/constants/index.dart';
 import 'package:hyper_media/data/models/models.dart';
-import 'package:hyper_media/widgets/loading_widget.dart';
 import 'package:hyper_media/widgets/widget.dart';
 
 typedef OnFetch = Future<List<Genre>> Function();
 
 class GenreWidget extends StatefulWidget {
-  const GenreWidget(
-      {super.key, required this.onFetch, required this.extension});
+  const GenreWidget({super.key, required this.onFetch});
   final OnFetch onFetch;
-  final Extension extension;
 
   @override
   State<GenreWidget> createState() => _GenreWidgetState();

@@ -4,6 +4,9 @@ import 'colors.dart';
 
 class Constants {
   const Constants._();
+
+  static const urlExtensions =
+      "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions.json";
   static const defaultLocal = Locale('vi', 'VN');
   static const supportedLocales = <Locale>[
     Locale('en', 'US'),

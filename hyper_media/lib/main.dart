@@ -6,7 +6,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'app.dart';
 import 'app/bloc/debug/bloc_observer.dart';
 import 'app/constants/constants.dart';
-import 'app/di/components/service_locator.dart';
+import 'di/components/service_locator.dart';
 
 FutureOr<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

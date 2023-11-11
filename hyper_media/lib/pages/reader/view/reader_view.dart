@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hyper_media/app/di/components/service_locator.dart';
+import 'package:hyper_media/di/components/service_locator.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:js_runtime/js_runtime.dart';

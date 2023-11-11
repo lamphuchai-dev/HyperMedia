@@ -111,10 +111,6 @@ class ExtensionReady extends StatelessWidget {
               onFetchListBook: (page) =>
                   exploreCubit.onGetListBook(tabHome.url, page),
               onTap: (book) {
-                // Navigator.pushNamed(context, RoutesName.detail,
-                //     arguments:
-                //         DetailBookArgs(book: book, extensionModel: extension));
-
                 Navigator.pushNamed(context, RoutesName.detail,
                     arguments: book.bookUrl);
               },
@@ -128,8 +124,7 @@ class ExtensionReady extends StatelessWidget {
       ));
       tabChildren.add(KeepAliveWidget(
           child: GenreWidget(
-        onFetch: () async => [],
-        extension: extension,
+        onFetch: () async => exploreCubit.onGetListGenre(),
       )));
     }
     return DefaultTabController(

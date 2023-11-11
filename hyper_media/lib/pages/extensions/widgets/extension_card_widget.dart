@@ -1,12 +1,9 @@
-import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hyper_media/app/constants/dimens.dart';
 import 'package:hyper_media/app/constants/gaps.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/data/models/models.dart';
-import 'package:hyper_media/widgets/cache_network_image.dart';
 import 'package:hyper_media/widgets/widget.dart';
 
 class ExtensionCardWidget extends StatefulWidget {

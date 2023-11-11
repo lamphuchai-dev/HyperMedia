@@ -1,8 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/types/app_type.dart';
-import 'package:hyper_media/data/models/book.dart';
-import 'package:hyper_media/data/models/extension.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/utils/logger.dart';
 import 'package:js_runtime/js_runtime.dart';

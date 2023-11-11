@@ -1,30 +1,30 @@
 [
-    {
-        "name": "Net Truyện",
-        "slug": "net_truyen",
-        "author": "uBook",
-        "version": 1,
-        "source": "https://www.nettruyenus.com",
-        "regexp": "(www.)?(nettruyenus).(com)",
-        "description": "Đọc truyện trên trang Net Truyện",
-        "locale": "vi_VN",
-        "language": "javascript",
-        "type": "comic",
-        "path": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/net_truyen/extension.zip",
-        "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/net_truyen/icon.png"
-    },
-    {
-        "name": "Mê Truyện Cv",
-        "slug": "metruyencv",
-        "author": "uBook",
-        "version": 1,
-        "source": "https://metruyencv.com",
-        "regexp": "(metruyencv).(com)",
-        "description": "Đọc truyện trên trang Mê Truyện Cv",
-        "locale": "vi_VN",
-        "language": "javascript",
-        "type": "novel",
-        "path": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/metruyencv/extension.zip",
-        "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/metruyencv/icon.png"
-    }
+  {
+    "name": "Net Truyện",
+    "slug": "net_truyen",
+    "author": "uBook",
+    "version": 1,
+    "source": "https://www.nettruyenus.com",
+    "regexp": "(www.)?(nettruyenus).(com)",
+    "description": "Đọc truyện trên trang Net Truyện",
+    "locale": "vi_VN",
+    "language": "javascript",
+    "type": "comic",
+    "path": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/net_truyen/extension.zip",
+    "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/net_truyen/icon.png"
+  },
+  {
+    "name": "Mê Truyện Cv",
+    "slug": "metruyencv",
+    "author": "uBook",
+    "version": 1,
+    "source": "https://metruyencv.com",
+    "regexp": "(metruyencv).(com)",
+    "description": "Đọc truyện trên trang Mê Truyện Cv",
+    "locale": "vi_VN",
+    "language": "javascript",
+    "type": "novel",
+    "path": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/metruyencv/extension.zip",
+    "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/metruyencv/icon.png"
+  }
 ]

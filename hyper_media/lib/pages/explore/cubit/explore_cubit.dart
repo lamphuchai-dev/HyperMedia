@@ -102,7 +102,7 @@ class ExploreCubit extends Cubit<ExploreState> {
     try {
       final result = await _jsRuntime.getGenre(
           url: state.extension.source, source: state.extension.getGenreScript!);
-      return [];
+      return result.map((e) => Genre.fromMap(e)).toList();
     } catch (error) {
       _logger.error(error, name: "onGetListGenre");
     }

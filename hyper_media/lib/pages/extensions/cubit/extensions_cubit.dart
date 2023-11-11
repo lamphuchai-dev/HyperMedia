@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dio_client/index.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hyper_media/app/constants/constants.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/utils/database_service.dart';
@@ -45,8 +46,7 @@ class ExtensionsCubit extends Cubit<ExtensionsState> {
       emit(state.copyWith(
           allExtension:
               const StateModel(data: [], status: StatusType.loading)));
-      final res = await _dioClient.get(
-          "https://raw.githubusercontent.com/lamphuchai-dev/ubook/main/new_ext/extensions.json");
+      final res = await _dioClient.get(Constants.urlExtensions);
       final data = jsonDecode(res);
       if (data is List) {
         List<Metadata> metadata =

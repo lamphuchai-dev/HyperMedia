@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/library_cubit.dart';
-import '../widgets/widgets.dart';
 
 class LibraryPage extends StatefulWidget {
   const LibraryPage({super.key});
@@ -22,7 +21,7 @@ class _LibraryPageState extends State<LibraryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text("Library")),
-      body: SizedBox(),
+      body: const SizedBox(),
     );
   }
 }

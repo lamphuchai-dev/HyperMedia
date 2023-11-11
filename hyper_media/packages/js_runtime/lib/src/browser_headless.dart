@@ -15,7 +15,7 @@ class BrowserHeadless {
   String? _userAgent;
   var uuid = const Uuid();
   // Map<String, HeadlessInAppWebView> mapBrowserHeadless = {};
-  Map<String, Tmp> _map = {};
+  final Map<String, Tmp> _map = {};
 
   // List<String> _urls = [];
 

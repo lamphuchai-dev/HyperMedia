@@ -4,7 +4,6 @@ import 'package:hyper_media/app/route/routes_name.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/widgets/widget.dart';
 import '../cubit/genre_cubit.dart';
-import '../widgets/widgets.dart';
 
 class GenrePage extends StatefulWidget {
   const GenrePage({super.key});

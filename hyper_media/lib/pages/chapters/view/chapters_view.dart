@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hyper_media/app/di/components/service_locator.dart';
+import 'package:hyper_media/di/components/service_locator.dart';
 
 import 'package:hyper_media/data/models/book.dart';
 import 'package:hyper_media/data/models/extension.dart';
