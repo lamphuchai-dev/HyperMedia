@@ -1,0 +1,16 @@
+{
+  "name": "ext-book",
+  "version": "1.0.0",
+  "description": "",
+  "main": "base_extensiton.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "adm-zip": "^0.5.10",
+    "crypto-js": "^4.2.0",
+    "glob": "^10.3.10"
+  }
+}

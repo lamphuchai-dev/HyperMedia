@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "name": "Mê Truyện Cv",
+    "slug": "metruyencv",
+    "author": "uBook",
+    "version": 1,
+    "source": "https://metruyencv.com",
+    "regexp": "(metruyencv).(com)",
+    "description": "Đọc truyện trên trang Mê Truyện Cv",
+    "locale": "vi_VN",
+    "language": "javascript",
+    "type": "novel"
+  },
+  "script": {
+    "tabs": "src/tabs.js",
+    "home": "src/home.js",
+    "detail": "src/detail.js",
+    "chapters": "src/chapters.js",
+    "chapter": "src/chapter.js",
+    "search": "src/search.js",
+    "genre": "src/genre.js"
+  }
+}

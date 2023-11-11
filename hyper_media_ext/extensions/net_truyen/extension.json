@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "name": "Net Truyện",
+    "slug": "net_truyen",
+    "author": "uBook",
+    "version": 1,
+    "source": "https://www.nettruyenus.com",
+    "regexp": "(www.)?(nettruyenus).(com)",
+    "description": "Đọc truyện trên trang Net Truyện",
+    "locale": "vi_VN",
+    "language": "javascript",
+    "type": "comic"
+  },
+  "script": {
+    "tabs": "src/tabs.js",
+    "home": "src/home.js",
+    "detail": "src/detail.js",
+    "chapters": "src/chapters.js",
+    "chapter": "src/chapter.js",
+    "search": "src/search.js",
+    "genre": "src/genre.js"
+  }
+}
