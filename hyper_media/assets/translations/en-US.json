@@ -1,0 +1,46 @@
+{
+  "common": {
+    "delete": "Delete",
+    "genre": "Genre"
+
+  },
+  "discovery": {
+    "title": "Discovery"
+  },
+  "search": {
+    "noSearchResults": "No results found for the keyword {}"
+  },
+  "bookmark": {
+    "title": "Bookmark",
+    "add_complete": "Added successfully",
+    "delete_complete": "Deleted successfully",
+    "add_failed": "Add failed"
+  },
+  "date": {
+    "now": "Now",
+    "minute": "minute ago",
+    "hour": "hour ago",
+    "yesterday": "Yesterday",
+    "monday": "monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
+  "book": {
+    "chapter": "Chapter",
+    "chapters": "Chapter List",
+    "readContinue": "Read Continuously",
+    "downloadBookChapters": "Download {} Chapters",
+    "downloadBook": "Download Book",
+    "export": "Export",
+    "menu_book": "Chapters",
+    "start_update_chapters": "Start Checking Chapters",
+    "update_no_new_chapters": "No New Chapters",
+    "update_new_chapters": "Update {} New Chapters",
+    "new_chapter": "New Chapter",
+    "last_chapter": "Last Chapter"
+  }
+}

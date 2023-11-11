@@ -1,0 +1,34 @@
+# docs https://pub.dev/packages/flutter_flavorizr
+# run init: flutter pub run flutter_flavorizr
+# run update: flutter pub run flutter_flavorizr -p ios:icons android:icons ....
+# android:androidManifest
+ide: "vscode"
+app:
+  android:
+    flavorDimensions: "hyper_type"
+flavors:
+  dev:
+    app:
+      name: "Hyper Media DEV"
+    android:
+      applicationId: "com.lph.hyper_media_dev"
+      icon: "assets/icons/app_icon.png"
+    ios:
+      bundleId: "com.lph.hyper_media_dev"
+      icon: "assets/icons/app_icon.png"
+    macos:
+      bundleId: "com.lph.hyper_media_dev"
+      icon: "assets/icons/app_icon.png"
+
+  product:
+    app:
+      name: "Hyper Media"
+    android:
+      applicationId: "com.lph.hyper_media"
+      icon: "assets/icons/app_icon.png"
+    ios:
+      bundleId: "com.lph.hyper_media"
+      icon: "assets/icons/app_icon.png"
+    macos:
+      bundleId: "com.lph.hyper_media"
+      icon: "assets/icons/app_icon.png"

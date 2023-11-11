@@ -1,0 +1,7 @@
+#include "../../Flutter/productProfile.xcconfig"
+#include "Warnings.xcconfig"
+
+FLUTTER_TARGET=lib/main_product.dart
+ASSET_PREFIX=product
+BUNDLE_NAME=Hyper Media
+BUNDLE_DISPLAY_NAME=Hyper Media

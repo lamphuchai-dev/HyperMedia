@@ -1,0 +1,55 @@
+{
+  "common": {
+    "delete": "Xóa",
+    "genre": "Thể loại"
+  },
+  "library": {
+    "title": "Thư viện"
+  },
+  "explore": {
+    "title": "Khám phá"
+  },
+  "extension": {},
+  "home": {
+    "title": "Trang chu"
+  },
+  "search": {
+    "noSearchResults": "Không tìm thấy kết quả với từ khóa {}"
+  },
+  "discovery": {
+    "title": "Khám phá"
+  },
+  "bookmark": {
+    "title": "Đánh dấu",
+    "add_complete": "Thêm vào thành công",
+    "delete_complete": "Xóa thành công",
+    "add_failed": "Thêm thất bại"
+  },
+  "date": {
+    "now": "Vừa xong",
+    "minute": "phút trước",
+    "hour": "giờ trước",
+    "yesterday": "Hôm qua",
+    "monday": "Thứ 2",
+    "tuesday": "Thứ 3",
+    "wednesday": "Thứ 4",
+    "thursday": "Thứ 5",
+    "friday": "Thứ 5",
+    "saturday": "Thứ 7",
+    "sunday": "Chủ nhật"
+  },
+  "book": {
+    "chapter": "chương",
+    "chapters": "Danh sách chương",
+    "readContinue": "Đọc tiếp",
+    "downloadBookChapters": "Tải truyện {} chương",
+    "downloadBook": "Tải truyện",
+    "export": "Xuất file",
+    "menu_book": "Mục lục",
+    "start_update_chapters": "Bắt đầu kiểm tra chương",
+    "update_no_new_chapters": "Không có chương nào mới",
+    "update_new_chapters": "Cập nhập {} chương nào mới",
+    "new_chapter": "Chương mới",
+    "last_chapter": "Chương củ"
+  }
+}
