@@ -3,7 +3,7 @@
         "name": "Net Truyện",
         "slug": "net_truyen",
         "author": "uBook",
-        "version": 1,
+        "version": 2,
         "source": "https://www.nettruyenus.com",
         "regexp": "(www.)?(nettruyenus).(com)",
         "description": "Đọc truyện trên trang Net Truyện",

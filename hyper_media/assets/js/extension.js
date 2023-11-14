@@ -181,11 +181,14 @@ class Browser {
       JSON.stringify([url, timeout])
     );
   }
-
+  // getHtml
   static async getHtml() {
     return await sendMessage("getHtml", JSON.stringify([]));
   }
 
+  static async loadUrl(url) {
+    return await sendMessage("loadUrl", JSON.stringify([url]));
+  }
   static async setUserAgent(userAgent) {
     return await sendMessage("setUserAgent", JSON.stringify([userAgent]));
   }

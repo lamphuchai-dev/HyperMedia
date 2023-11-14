@@ -1,5 +1,5 @@
 async function home(url, page) {
-  const res = await Extension.request(url + 3, {
+  const res = await Extension.request(url, {
     queryParameters: { page: page ?? 1 },
   });
   if (!res) return Response.error("Có lỗi khi tải nội dung");

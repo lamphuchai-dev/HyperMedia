@@ -64,9 +64,9 @@ class ExploreCubit extends Cubit<ExploreState> {
       emit(state.copyWith(status: StatusType.loading));
 
       final result = await _jsRuntime.getTabs(state.extension.getTabsScript);
-      if (result is SuccessJsRuntime) {
+      if (result is SuccessJsRuntime && result.data is List) {
         final tabs = result.data
-            .map(
+            .map<ItemTabExplore>(
               (e) => ItemTabExplore.fromMap(e),
             )
             .toList();
@@ -91,7 +91,7 @@ class ExploreCubit extends Cubit<ExploreState> {
         page: page,
         source: state.extension.getHomeScript,
       );
-      if (result is SuccessJsRuntime) {
+      if (result is SuccessJsRuntime && result.data is List) {
         return result.data.map((e) => Book.fromMap(e)).toList();
       }
       return [];
