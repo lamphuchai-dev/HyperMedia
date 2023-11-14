@@ -100,7 +100,7 @@ class Chapter {
           }
           throw "value is List<String>";
         case ExtensionType.movie:
-          if (value is List<Map<String, dynamic>>) {
+          if (value is List) {
             return copyWith(
                 contentVideo: List<Map<String, dynamic>>.from(value));
           }

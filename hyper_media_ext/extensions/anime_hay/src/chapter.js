@@ -21,15 +21,14 @@ async function chapter(url) {
     });
   }
 
-  data = res.match(/https:\/\/suckplayer\.xyz\/video\/[a-zA-Z0-9_-]+/g);
+  // data = res.match(/https:\/\/suckplayer\.xyz\/video\/[a-zA-Z0-9_-]+/g);
 
-  if (data) {
-    result.push({
-      data: data[0],
-      type: "iframe",
-    });
-  }
-  // https://rapovideo.xyz/playlist/65115c244332dffe3ca9a7d7/master.m3u8
+  // if (data) {
+  //   result.push({
+  //     data: data[0],
+  //     type: "iframe",
+  //   });
+  // }
 
   data = res.match(
     /https:\/\/rapovideo\.xyz\/playlist\/([^\/]+)\/master\.m3u8/
