@@ -91,8 +91,8 @@ class ExploreCubit extends Cubit<ExploreState> {
         page: page,
         source: state.extension.getHomeScript,
       );
-      if (result is SuccessJsRuntime && result.data is List) {
-        return result.data.map((e) => Book.fromMap(e)).toList();
+      if (result is SuccessJsRuntime) {
+        return result.data.map<Book>((e) => Book.fromMap(e)).toList();
       }
       return [];
     } catch (error) {
@@ -109,7 +109,7 @@ class ExploreCubit extends Cubit<ExploreState> {
       final result = await _jsRuntime.getGenre(
           url: state.extension.source, source: state.extension.getGenreScript!);
       if (result is SuccessJsRuntime) {
-        return result.data.map((e) => Genre.fromMap(e)).toList();
+        return result.data.map<Genre>((e) => Genre.fromMap(e)).toList();
       }
       return [];
     } catch (error) {

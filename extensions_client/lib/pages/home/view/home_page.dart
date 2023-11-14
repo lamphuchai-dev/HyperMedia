@@ -1,10 +1,10 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:code_text_field/code_text_field.dart';
-import 'package:extensions_client/home/widgets/log_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/home_cubit.dart';
+import '../widgets/log_widget.dart';
 import '../widgets/result_widget.dart';
 import 'package:highlight/languages/javascript.dart';
 import 'package:flutter_highlight/themes/atom-one-dark.dart';

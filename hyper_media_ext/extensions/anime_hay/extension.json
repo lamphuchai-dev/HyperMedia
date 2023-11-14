@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "name": "Anime Hay",
+    "author": "uBook",
+    "slug": "anime_hay",
+    "version": 1,
+    "source": "https://animehay.city",
+    "regexp": "(animehay).(city)",
+    "description": "Xem anime trang Animehay",
+    "locale": "vi_VN",
+    "language": "javascript",
+    "type": "movie",
+    "search": true,
+    "genre": true
+  },
+  "script": {
+    "home": "src/home.js",
+    "detail": "src/detail.js",
+    "chapters": "src/chapters.js",
+    "chapter": "src/chapter.js",
+    "search": "src/search.js",
+    "genre": "src/genre.js"
+  }
+}

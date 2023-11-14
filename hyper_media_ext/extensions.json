@@ -26,5 +26,21 @@
         "type": "novel",
         "path": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/metruyencv/extension.zip",
         "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/metruyencv/icon.png"
+    },
+    {
+        "name": "Anime Hay",
+        "author": "uBook",
+        "slug": "anime_hay",
+        "version": 1,
+        "source": "https://animehay.city",
+        "regexp": "(animehay).(city)",
+        "description": "Xem anime trang Animehay",
+        "locale": "vi_VN",
+        "language": "javascript",
+        "type": "movie",
+        "search": true,
+        "genre": true,
+        "path": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/anime_hay/extension.zip",
+        "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/anime_hay/icon.png"
     }
 ]

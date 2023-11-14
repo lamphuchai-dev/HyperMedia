@@ -1,9 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/data/models/models.dart';
+import 'package:hyper_media/utils/app_browser.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:hyper_media/utils/logger.dart';
 import 'package:js_runtime/js_runtime.dart';
@@ -28,6 +30,8 @@ class DetailCubit extends Cubit<DetailState> {
   final String _bookUrl;
 
   final FToast fToast = FToast();
+
+  AppBrowser? _appBrowser;
 
   void onInitFToat(BuildContext context) {
     fToast.init(context);
@@ -74,9 +78,7 @@ class DetailCubit extends Cubit<DetailState> {
         source: _extension!.getDetailScript,
       );
       if (result is SuccessJsRuntime) {
-        if (result is Map<String, dynamic>) {
-          return Book.fromMap(result.data);
-        }
+        return Book.fromMap(result.data);
       }
       return null;
     } catch (error) {
@@ -115,5 +117,13 @@ class DetailCubit extends Cubit<DetailState> {
     //     toastDuration: const Duration(seconds: 2),
     //   );
     // }
+  }
+
+  void openBrowser() {
+    _appBrowser ??= AppBrowser();
+    _appBrowser!.openUrlRequest(
+        urlRequest: URLRequest(url: WebUri(_bookUrl)),
+        settings: _appBrowser!.setting);
+    // _appBrowser.openData(data: data)
   }
 }

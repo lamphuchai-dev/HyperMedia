@@ -11,6 +11,8 @@ import 'flavors.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
+import 'pages/test_ui/test_ui.dart';
+
 class App extends StatelessWidget {
   const App({super.key});
 
@@ -40,8 +42,8 @@ class App extends StatelessWidget {
             theme: Themes.light,
             darkTheme: Themes.dark,
             debugShowCheckedModeBanner: false,
-            onGenerateRoute: Routes.onGenerateRoute,
-            initialRoute: Routes.initialRoute,
+            // onGenerateRoute: Routes.onGenerateRoute,
+            // initialRoute: Routes.initialRoute,
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,
@@ -49,7 +51,7 @@ class App extends StatelessWidget {
               child: child,
               show: kDebugMode,
             ),
-            // home: TestUiView(),
+            home: TestUiView(),
             // scrollBehavior: const ScrollBehavior().copyWith(overscroll: false),
           );
         },

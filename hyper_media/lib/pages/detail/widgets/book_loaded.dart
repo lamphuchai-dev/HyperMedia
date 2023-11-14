@@ -89,8 +89,9 @@ class _BookLoadedState extends State<BookLoaded> {
               actions: [
                 IconButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, RoutesName.webView,
-                          arguments: book.bookUrl);
+                      // Navigator.pushNamed(context, RoutesName.webView,
+                      //     arguments: book.bookUrl);
+                      _detailCubit.openBrowser();
                     },
                     icon: const Icon(Icons.public))
               ],

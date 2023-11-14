@@ -227,12 +227,16 @@ class ReaderCubit extends Cubit<ReaderState> {
       final result = await _jsRuntime.getChapter(
           url: "${watchChapter.chapter.host}${watchChapter.chapter.url}",
           source: _extension!.getChapterScript);
-      final chapter = watchChapter.chapter
-          .addContentByExtensionType(type: getExtensionType, value: result);
-      _chapters.removeAt(watchChapter.chapter.index);
-      _chapters.insert(watchChapter.chapter.index, watchChapter.chapter);
+      if (result is SuccessJsRuntime) {
+        final chapter = watchChapter.chapter.addContentByExtensionType(
+            type: getExtensionType, value: result.data);
+        _chapters.removeAt(watchChapter.chapter.index);
+        _chapters.insert(watchChapter.chapter.index, watchChapter.chapter);
 
-      return watchChapter.copyWith(chapter: chapter, status: StatusType.loaded);
+        return watchChapter.copyWith(
+            chapter: chapter, status: StatusType.loaded);
+      }
+      return watchChapter.copyWith(status: StatusType.error);
     } catch (error) {
       _logger.log(error, name: "getChapterContent");
       return watchChapter.copyWith(status: StatusType.error);

@@ -14,14 +14,16 @@ class _MyAppState extends State<MyApp> {
 
   InAppWebViewController? webViewController;
   InAppWebViewSettings settings = InAppWebViewSettings(
-      useShouldOverrideUrlLoading: true,
-      mediaPlaybackRequiresUserGesture: false,
-      useShouldInterceptAjaxRequest: true,
-      useShouldInterceptFetchRequest: true,
-      allowsInlineMediaPlayback: true,
-      iframeAllow: "camera; microphone",
-      useOnLoadResource: true,
-      iframeAllowFullscreen: true);
+      useShouldOverrideUrlLoading: true, supportZoom: false
+      // useShouldInterceptAjaxRequest: true,
+      // useShouldInterceptFetchRequest: true,
+      // allowsInlineMediaPlayback: true,
+      // iframeAllow: "camera; microphone",
+      // useOnLoadResource: true,
+      // javaScriptEnabled: true,
+      // userAgent:
+      //     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+      );
 
   PullToRefreshController? pullToRefreshController;
   String url = "";
@@ -54,145 +56,77 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text("Official InAppWebView website")),
-        body: SafeArea(
-            child: Column(children: <Widget>[
-          TextField(
-            decoration: const InputDecoration(prefixIcon: Icon(Icons.search)),
-            controller: urlController,
-            keyboardType: TextInputType.url,
-            onSubmitted: (value) {
-              var url = WebUri(value);
-              if (url.scheme.isEmpty) {
-                url = WebUri("https://www.google.com/search?q=$value");
-              }
-              webViewController?.loadUrl(urlRequest: URLRequest(url: url));
-            },
-          ),
-          Expanded(
-            child: Stack(
-              children: [
-                InAppWebView(
-                  key: webViewKey,
-                  initialUrlRequest: URLRequest(
-                      url: WebUri(
-                          "https://motchillzzz.tv/xem-phim-7-escape-tap-1-2d47")),
-                  initialSettings: settings,
-                  pullToRefreshController: pullToRefreshController,
-                  onWebViewCreated: (controller) {
-                    webViewController = controller;
-                  },
-                  onLoadStart: (controller, url) {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onPermissionRequest: (controller, request) async {
-                    return PermissionResponse(
-                        resources: request.resources,
-                        action: PermissionResponseAction.GRANT);
-                  },
-                  onLoadResource: (controller, resource) {
-                    // print(resource.url);
-                  },
+        body: Center(
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: InAppWebView(
+              key: webViewKey,
+              initialData: InAppWebViewInitialData(data: '''
+    <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script
+      type="text/javascript"
+      src="https://animehay.city/themes/js/jwplayer.js?v=1.0.8"
+    ></script>
+    <script type="text/javascript">
+      jwplayer.key = "ITWMv7t88JGzI0xPwW8I0+LveiXX9SWbfdmt0ArUSyc=";
+    </script>
+    <script
+      charset="utf-8"
+      src="https://ssl.p.jwpcdn.com/player/v/8.8.2/jwplayer.core.controls.js"
+    ></script>
+    <script
+      charset="utf-8"
+      src="https://ssl.p.jwpcdn.com/player/v/8.8.2/related.js"
+    ></script>
+    <script
+      charset="utf-8"
+      src="https://ssl.p.jwpcdn.com/player/v/8.8.2/provider.hlsjs.js"
+    ></script>
+  </head>
+  <body>
+    <div id="jwPlayerId"></div>
+    <script type="text/javascript">
+      jwplayer("jwPlayerId").setup({
+        playlist: [
+          {
+            sources: [
+              {
+                // default: false,
+                type: "hls",
+                file: "https://rapovideo.xyz/playlist/654a11ff1f8b50067bfbb7f9/master.m3u8",
+                label: "0",
+                preload: "metadata",
+              },
+            ],
+          },
+        ],
+        primary: "html5",
+        hlshtml: true,
+        aspectratio: "16:9",
+        width: "100%",
+        playbackRateControls: [0.75, 1, 1.25, 1.5, 2, 2.5],
+        autostart: false,
+        volume: 100,
+      });
+    </script>
+  </body>
+</html>
+  
 
-                  shouldInterceptFetchRequest:
-                      (controller, fetchRequest) async {
-                    print(fetchRequest.url);
-                    return fetchRequest;
-                  },
-                  shouldOverrideUrlLoading:
-                      (controller, navigationAction) async {
-                    var uri = navigationAction.request.url!;
 
-                    if (![
-                      "http",
-                      "https",
-                      "file",
-                      "chrome",
-                      "data",
-                      "javascript",
-                      "about"
-                    ].contains(uri.scheme)) {
-                      // if (await canLaunchUrl(uri)) {
-                      //   // Launch the App
-                      //   await launchUrl(
-                      //     uri,
-                      //   );
-                      //   // and cancel the request
-                      //   return NavigationActionPolicy.CANCEL;
-                      // }
-                    }
-
-                    return NavigationActionPolicy.ALLOW;
-                  },
-                  onLoadStop: (controller, url) async {
-                    pullToRefreshController?.endRefreshing();
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onReceivedError: (controller, request, error) {
-                    pullToRefreshController?.endRefreshing();
-                  },
-                  onProgressChanged: (controller, progress) {
-                    if (progress == 100) {
-                      pullToRefreshController?.endRefreshing();
-                    }
-                    setState(() {
-                      this.progress = progress / 100;
-                      urlController.text = url;
-                    });
-                  },
-                  onUpdateVisitedHistory: (controller, url, androidIsReload) {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onConsoleMessage: (controller, consoleMessage) {
-                    // print(consoleMessage);
-                  },
-                  shouldInterceptAjaxRequest: (controller, ajaxRequest) async {
-                    final url = ajaxRequest.url;
-                    return null;
-
-                    // print("shouldInterceptAjaxRequest: $url");
-                  },
-                  // onAjaxReadyStateChange: (controller, ajaxRequest) {
-
-                  // },
-                ),
-                progress < 1.0
-                    ? LinearProgressIndicator(value: progress)
-                    : Container(),
-              ],
+            
+            '''),
+              initialSettings: settings,
             ),
           ),
-          ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ElevatedButton(
-                child: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  webViewController?.goBack();
-                },
-              ),
-              ElevatedButton(
-                child: const Icon(Icons.arrow_forward),
-                onPressed: () {
-                  webViewController?.goForward();
-                },
-              ),
-              ElevatedButton(
-                child: const Icon(Icons.refresh),
-                onPressed: () {
-                  webViewController?.reload();
-                },
-              ),
-            ],
-          ),
-        ])));
+        ));
   }
 }

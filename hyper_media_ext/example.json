@@ -1,0 +1,40 @@
+{
+  "tabs": [
+    {
+      "title": "Tiêu đề",
+      "url": "/path_url"
+    }
+  ],
+  "home": [
+    {
+      "name": "name",
+      "link": "link book",
+      "description": "",
+      "cover": "",
+      "host": "host "
+    }
+  ],
+  "detail": {
+    "name": "name",
+    "cover": "cover",
+    "bookStatus": "bookStatus",
+    "author": "author",
+    "description": "description",
+    "totalChapters": "totalChapters",
+    "genres": "genres",
+    "link": "link",
+    "host": "host"
+  },
+  "chapters": [
+    {
+      "name": "name",
+      "url": "url",
+      "host": "host"
+    }
+  ],
+  "chapter": {
+    "novel": "String",
+    "comic": ["url image", "...."],
+    "movie": [{}]
+  }
+}

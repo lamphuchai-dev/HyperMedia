@@ -1,7 +1,7 @@
-import 'package:extensions_client/home/view/home_view.dart';
 import 'package:extensions_client/pages/browser/view/browser_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../home/home.dart';
 import '../cubit/tabs_cubit.dart';
 
 class TabsPage extends StatefulWidget {
@@ -22,32 +22,31 @@ class _TabsPageState extends State<TabsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(centerTitle: true, title: const Text("Tabs")),
         body: BlocSelector<TabsCubit, TabsState, int>(
-          selector: (state) {
-            return state.index;
-          },
-          builder: (context, index) {
-            return Row(
-              children: [
-                NavigationRail(
-                  selectedIndex: index,
-                  onDestinationSelected: _tabsCubit.onChangeIndex,
-                  destinations: const [
-                    NavigationRailDestination(
-                        icon: Icon(Icons.home_rounded), label: Text("HOME")),
-                    NavigationRailDestination(
-                        icon: Icon(Icons.browse_gallery), label: Text("Browse"))
-                  ],
-                ),
-                Expanded(
-                    child: IndexedStack(
-                  index: index,
-                  children: const [HomeView(), BrowserView()],
-                ))
+      selector: (state) {
+        return state.index;
+      },
+      builder: (context, index) {
+        return Row(
+          children: [
+            NavigationRail(
+              selectedIndex: index,
+              onDestinationSelected: _tabsCubit.onChangeIndex,
+              destinations: const [
+                NavigationRailDestination(
+                    icon: Icon(Icons.home_rounded), label: Text("HOME")),
+                NavigationRailDestination(
+                    icon: Icon(Icons.browse_gallery), label: Text("Browse"))
               ],
-            );
-          },
-        ));
+            ),
+            Expanded(
+                child: IndexedStack(
+              index: index,
+              children: const [HomeView(), BrowserView()],
+            ))
+          ],
+        );
+      },
+    ));
   }
 }
