@@ -3,6 +3,8 @@ async function search(url, kw, page) {
     queryParameters: { page: page, keyword: kw },
   });
 
+  if (!res) return Response.error("Có lỗi khi tải nội dung");
+
   const list = await Extension.querySelectorAll(res, "div.items div.item");
   const result = [];
   for (const item of list) {
@@ -20,5 +22,5 @@ async function search(url, kw, page) {
       host: "https://www.nettruyenus.com",
     });
   }
-  return result;
+  return Response.success(result);
 }

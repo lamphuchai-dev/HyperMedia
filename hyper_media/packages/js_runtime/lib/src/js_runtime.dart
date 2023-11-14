@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dio_client/index.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
+import 'package:js_runtime/js_runtime.dart';
 import 'package:xpath_selector_html_parser/xpath_selector_html_parser.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
@@ -28,7 +29,7 @@ class JsRuntime {
   Stream<dynamic> get log => _streamController.stream;
 
   Future<bool> initRuntime(
-      {required String pathSource, String? dirCookie}) async {
+      {String pathSource = "assets/js/extension.js", String? dirCookie}) async {
     final jsExtension = await rootBundle.loadString(pathSource);
     if (dirCookie != null) {
       _dioClient.enableCookie(dir: dirCookie);
@@ -36,20 +37,23 @@ class JsRuntime {
     _runtime = getJavascriptRuntime();
     _runtime.onMessage('request', (dynamic args) async {
       _logger.log("request args ::: $args");
+      try {
+        final dataResponse = await _dioClient.request<String>(
+          args[0],
+          data: args[1]['formData'] != null
+              ? FormData.fromMap(args[1]['formData'])
+              : args[1]['data'],
+          queryParameters: args[1]['queryParameters'] ?? {},
+          options: Options(
+            headers: args[1]['headers'] ?? {},
+            method: args[1]['method'] ?? 'get',
+          ),
+        );
 
-      final dataResponse = await _dioClient.request<String>(
-        args[0],
-        data: args[1]['formData'] != null
-            ? FormData.fromMap(args[1]['formData'])
-            : args[1]['data'],
-        queryParameters: args[1]['queryParameters'] ?? {},
-        options: Options(
-          headers: args[1]['headers'] ?? {},
-          method: args[1]['method'] ?? 'get',
-        ),
-      );
-
-      return dataResponse;
+        return dataResponse;
+      } catch (error) {
+        return null;
+      }
     });
 
     _runtime.onMessage('log', (dynamic args) {
@@ -225,9 +229,11 @@ class JsRuntime {
       return await _browserHeadless.waitUrlAjaxResponse(
           url: url, timeout: timeout ?? 20000);
     });
-
     _runtime.onMessage('getHtml', (args) async {
-      return await _browserHeadless.getHtml;
+      return await _browserHeadless.getHtml();
+    });
+    _runtime.onMessage('loadUrl', (args) async {
+      return await _browserHeadless.launch(url: args[0]);
     });
 
     _runtime.onMessage('setUserAgent', (args) {
@@ -257,14 +263,14 @@ class JsRuntime {
     }
   }
 
-  Future<dynamic> runJsCode({required String jsScript}) async {
+  Future<ResponseJsRuntime> runJsCode({required String jsScript}) async {
     return _runExtension(() async {
       final jsResult =
           await _runtime.handlePromise(await _evaluateAsyncJsScript(jsScript));
       try {
-        return jsResult.toJson;
+        return jsResult.toResponse;
       } catch (error) {
-        return jsResult.stringResult;
+        return jsResult.fromToError(error.toString());
       }
     });
   }
@@ -299,16 +305,16 @@ class JsRuntime {
     });
   }
 
-  Future<List<dynamic>> getTabs(String source) async {
+  Future<ResponseJsRuntime> getTabs(String source) async {
     return _runExtension(() async {
       _evaluateJsScript(source);
       final jsResult = await _runtime
           .handlePromise(await _evaluateAsyncJsScript('stringify(()=>tabs())'));
-      return jsResult.toJson;
+      return jsResult.toResponse;
     });
   }
 
-  Future<List<dynamic>> getList(
+  Future<ResponseJsRuntime> getList(
       {required String url,
       required String source,
       int page = 1,
@@ -318,41 +324,41 @@ class JsRuntime {
       final jsResult = await _runtime.handlePromise(
           await _evaluateAsyncJsScript(
               'stringify(()=>home("$url",$page,$arg))'));
-      return jsResult.toJson;
+      return jsResult.toResponse;
     });
   }
 
-  Future<dynamic> getDetail(
+  Future<ResponseJsRuntime> getDetail(
       {required String url, required String source}) async {
     return _runExtension(() async {
       _evaluateJsScript(source);
       final jsResult = await _runtime.handlePromise(
           await _evaluateAsyncJsScript('stringify(()=>detail("$url"))'));
-      return jsResult.toJson;
+      return jsResult.toResponse;
     });
   }
 
-  Future<List<dynamic>> getChapters(
+  Future<ResponseJsRuntime> getChapters(
       {required String url, required String source, int? page = 1}) async {
     return _runExtension(() async {
       _evaluateJsScript(source);
       final jsResult = await _runtime.handlePromise(
           await _evaluateAsyncJsScript('stringify(()=>chapters("$url"))'));
-      return jsResult.toJson;
+      return jsResult.toResponse;
     });
   }
 
-  Future<dynamic> getChapter(
+  Future<ResponseJsRuntime> getChapter(
       {required String url, required String source}) async {
     return _runExtension(() async {
       _evaluateJsScript(source);
       final jsResult = await _runtime.handlePromise(
           await _evaluateAsyncJsScript('stringify(()=>chapter("$url"))'));
-      return jsResult.toJson;
+      return jsResult.toResponse;
     });
   }
 
-  Future<List<dynamic>> getSearch(
+  Future<ResponseJsRuntime> getSearch(
       {required String url,
       required String keyWord,
       int? page = 1,
@@ -362,17 +368,17 @@ class JsRuntime {
       final jsResult = await _runtime.handlePromise(
           await _evaluateAsyncJsScript(
               'stringify(()=>search("$url","$keyWord",$page))'));
-      return jsResult.toJson;
+      return jsResult.toResponse;
     });
   }
 
-  Future<List<dynamic>> getGenre(
+  Future<ResponseJsRuntime> getGenre(
       {required String url, required String source}) async {
     return _runExtension(() async {
       _evaluateJsScript(source);
       final jsResult = await _runtime.handlePromise(
           await _evaluateAsyncJsScript('stringify(()=>genre("$url"))'));
-      return jsResult.toJson;
+      return jsResult.toResponse;
     });
   }
 }
@@ -388,6 +394,19 @@ extension Json on JsEvalResult {
     } catch (error) {
       return stringResult;
     }
+  }
+
+  ResponseJsRuntime get toResponse {
+    final map = toJson;
+    if (map is! Map) return ErrorJsRuntime(error: "Extension error");
+    if (map["type"] == "success") {
+      return SuccessJsRuntime(data: map["data"]);
+    }
+    return ErrorJsRuntime(error: map["data"] ?? "Error");
+  }
+
+  ResponseJsRuntime fromToError(String error) {
+    return ErrorJsRuntime(error: error);
   }
 }
 

@@ -1,17 +1,18 @@
 async function chapters(url) {
   const htmlPage = await Browser.launch(url, 10000);
-  if (htmlPage == null) return null;
+  if (!htmlPage) return Response.error("Có lỗi khi lấy danh sách chương");
 
   Browser.callJs(
     "for(const a of document.querySelectorAll('a')){if(a.textContent.includes('Danh sách chương')){a.click()}}",
-    500
+    200
   );
 
   const data = await Browser.waitUrlAjaxResponse(
     ".*?api.truyen.onl/v2/chapters*?",
-    10000
+    5000
   );
   Browser.close();
+  if (!data) return Response.error("Có lỗi khi lấy danh sách chương");
   const chapters = [];
   data.response._data.chapters.forEach((chapter) => {
     chapters.push({
@@ -21,7 +22,7 @@ async function chapters(url) {
       host: "https://metruyencv.com",
     });
   });
-  return chapters;
+  return Response.success(chapters);
 }
 
 // runFn(() =>

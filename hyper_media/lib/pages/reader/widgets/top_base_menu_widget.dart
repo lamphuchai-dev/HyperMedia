@@ -33,7 +33,7 @@ class TopBaseMenuWidget extends StatelessWidget {
                   // if (!readerCubit.isHideAction)
                   IconButton(
                       onPressed: () {
-                        // ReaderCubit.onEnableAutoScroll();
+                        readerCubit.onEnableAutoScroll();
                       },
                       icon: const Icon(
                         Icons.swipe_down_alt_rounded,

@@ -13,7 +13,7 @@ import 'package:js_runtime/js_runtime.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(const HomeState(result: "", log: []));
+  HomeCubit() : super(const HomeState(result: null, log: []));
   final _logger = Logger("HomeCubit");
 
   final _jsRuntime = JsRuntime();
@@ -23,8 +23,7 @@ class HomeCubit extends Cubit<HomeState> {
       TextEditingController();
 
   void onInit() async {
-    final init =
-        await _jsRuntime.initRuntime(pathSource: "assets/js/extension.js");
+    final init = await _jsRuntime.initRuntime();
     _logger.log("jsRuntime init : $init ");
     _jsRuntime.log.listen((event) {
       if (event is List) {
@@ -39,11 +38,11 @@ class HomeCubit extends Cubit<HomeState> {
 
   void onGo(BuildContext context) async {
     try {
-      emit(state.copyWith(result: ""));
+      emit(state.copyWith(result: null));
       final result = await _jsRuntime.runJsCode(
           jsScript: jsCodeTextEditingController.text);
 
-      emit(state.copyWith(result: jsonEncode(result)));
+      emit(state.copyWith(result: result));
     } on RuntimeException catch (error) {
       Flushbar(
         title: "ERROR ${error.type}",

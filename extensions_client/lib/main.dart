@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:desktop_window/desktop_window.dart';
+import 'package:extensions_client/pages/tabs/view/tabs_view.dart';
 import 'package:flutter/material.dart';
-
-import 'home/view/home_view.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,7 +11,7 @@ void main() async {
     await DesktopWindow.setWindowSize(const Size(1000, 1000));
     await DesktopWindow.setMinWindowSize(const Size(1000, 800));
   }
- 
+  WebView.debugLoggingSettings.enabled = false;
 
   runApp(const MyApp());
 }
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomeView(),
+      home: const TabsView(),
     );
   }
 }

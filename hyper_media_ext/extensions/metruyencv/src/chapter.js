@@ -1,8 +1,11 @@
 async function chapter(url) {
   const res = await Extension.request(url);
+  if (!res) return Response.error("Có lỗi khi tải nội dung");
   var text = await Extension.querySelector(res, "#article").text;
   if (text.length < 2000) {
-    throw new Error("Chương bị mã hoá chống leak, chưa thể lấy được nội dung.");
+    return Response.error(
+      "Chương bị mã hoá chống leak, chưa thể lấy được nội dung."
+    );
   }
   var contentEl = await Extension.querySelector(res, "#article").removeSelector(
     "script"
@@ -23,7 +26,7 @@ async function chapter(url) {
   }
   html = html.replace(/<br>/g, "\n");
   var text = await Extension.querySelector(html, "#article").text;
-  return text;
+  return Response.success(text);
 }
 
 // runFn(() =>

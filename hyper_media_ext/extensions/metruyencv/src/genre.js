@@ -1,5 +1,6 @@
 async function genre(url) {
   const res = await Extension.request(url + "/tim-truyen");
+  if (!res) return Response.error("Có lỗi khi tải nội dung");
   const listEl = await Extension.querySelectorAll(
     res,
     'select[class="form-control changed-redirect"] option'

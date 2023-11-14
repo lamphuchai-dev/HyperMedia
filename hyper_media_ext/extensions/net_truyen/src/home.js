@@ -1,7 +1,8 @@
 async function home(url, page) {
-  const res = await Extension.request(url, {
+  const res = await Extension.request(url + 3, {
     queryParameters: { page: page ?? 1 },
   });
+  if (!res) return Response.error("Có lỗi khi tải nội dung");
   const list = await Extension.querySelectorAll(res, "div.items div.item");
   const result = [];
 
@@ -23,5 +24,6 @@ async function home(url, page) {
       host: "https://www.nettruyenus.com",
     });
   }
-  return result;
+  return Response.success(result);
 }
+// runFn(() => home("https://www.nettruyenus.com/tim-truyen"));

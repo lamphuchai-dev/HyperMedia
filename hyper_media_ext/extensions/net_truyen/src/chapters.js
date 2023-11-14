@@ -1,5 +1,6 @@
 async function chapters(bookUrl) {
   const res = await Extension.request(bookUrl);
+  if (!res) return Response.error("Có lỗi khi lấy danh sách chương");
   const listEl = await Extension.querySelectorAll(res, "div.list-chapter ul a");
   const chapters = [];
   const host = "https://www.nettruyenus.com";
@@ -13,7 +14,7 @@ async function chapters(bookUrl) {
       host,
     });
   }
-  return chapters.reverse();
+  return Response.success(chapters.reverse());
 }
 
 // runFn(() =>

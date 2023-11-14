@@ -1,5 +1,5 @@
 async function tabs() {
-  return [
+  return Response.success([
     {
       title: "Mới cập nhật",
       url: "/truyen/?sort_by=new_chap_at&status=-1&props=-1&page={}",
@@ -32,5 +32,5 @@ async function tabs() {
       title: "Thảo luận",
       url: "/bang-xep-hang/tuan/thao-luan/{}",
     },
-  ];
+  ]);
 }

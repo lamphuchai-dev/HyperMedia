@@ -24,35 +24,36 @@ class AutoScrollMenu extends StatelessWidget {
                 color: colorScheme.background,
                 borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(20), bottom: Radius.circular(20))),
-            // child: RotatedBox(
-            //     quarterTurns: 1,
-            //     child: ValueListenableBuilder(
-            //       valueListenable: ReaderCubit.timeAutoScroll,
-            //       builder: (context, value, child) => Slider(
-            //         min: 0.2,
-            //         max: 30,
-            //         onChanged: (value) {
-            //           ReaderCubit.onChangeTimerAutoScroll(value);
-            //         },
-            //         value: value,
-            //       ),
-            //     )),
+            child: RotatedBox(
+                quarterTurns: 1,
+                child: ValueListenableBuilder(
+                  valueListenable: readerCubit.getAutoScrollController.timeAuto,
+                  builder: (context, value, child) => Slider(
+                    min: readerCubit.getAutoScrollController.minTime,
+                    max: readerCubit.getAutoScrollController.maxTime,
+                    onChanged: (value) {
+                      readerCubit.getAutoScrollController
+                          .onChangeTimerAuto(value);
+                    },
+                    value: value,
+                  ),
+                )),
           )),
           const SizedBox(
             height: 16,
           ),
           BlocBuilder<ReaderCubit, ReaderState>(
             buildWhen: (previous, current) {
-              return true;
+              return previous.controlStatus != current.controlStatus;
             },
             builder: (context, state) {
               return GestureDetector(
                 onTap: () {
-                  // if (state.controlStatus == ControlStatus.pause) {
-                  //   ReaderCubit.onUnpauseAutoScroll();
-                  // } else {
-                  //   ReaderCubit.onPauseAutoScroll();
-                  // }
+                  if (state.controlStatus == ControlStatus.pause) {
+                    readerCubit.onUnpauseAutoScroll();
+                  } else {
+                    readerCubit.onPauseAutoScroll();
+                  }
                 },
                 child: Container(
                   height: 30,
@@ -60,9 +61,9 @@ class AutoScrollMenu extends StatelessWidget {
                       color: colorScheme.background,
                       borderRadius: BorderRadius.circular(4)),
                   alignment: Alignment.center,
-                  // child: Icon(state.controlStatus == ControlStatus.pause
-                  //     ? Icons.play_arrow
-                  //     : Icons.pause),
+                  child: Icon(state.controlStatus == ControlStatus.pause
+                      ? Icons.play_arrow
+                      : Icons.pause),
                 ),
               );
             },
@@ -72,7 +73,7 @@ class AutoScrollMenu extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              // ReaderCubit.onCloseAutoScroll();
+              readerCubit.onCloseAutoScroll();
             },
             child: Container(
               height: 30,

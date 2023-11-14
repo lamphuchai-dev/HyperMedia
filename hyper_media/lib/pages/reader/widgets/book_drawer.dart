@@ -39,21 +39,15 @@ class _BookDrawerState extends State<BookDrawer> {
       child: Column(children: [
         _headerDrawer(),
         Expanded(
-          child: BlocBuilder<ReaderCubit, ReaderState>(
-            buildWhen: (previous, current) =>
-                previous.chapters != current.chapters,
-            builder: (context, state) {
-              return ListChaptersWidget(
-                indexSelect: _readerCubit.state.readChapter!.chapter.index,
-                chapters: _readerCubit.state.chapters,
+          child: ListChaptersWidget(
+                indexSelect: _readerCubit.state.watchChapter!.chapter.index,
+                chapters: _readerCubit.getChapters,
                 usePage: UsePage.readChapter,
                 onTapChapter: (chapter) {
                   _readerCubit.onChangeReadChapter(chapter.index);
                   Scaffold.of(context).openEndDrawer();
                 },
-              );
-            },
-          ),
+              ),
         ),
         // if (_book.type != BookType.video)
         ColoredBox(
@@ -75,7 +69,7 @@ class _BookDrawerState extends State<BookDrawer> {
                   Gaps.wGap8,
                   Text(
                     "book.downloadBookChapters".tr(
-                        args: [_readerCubit.state.chapters.length.toString()]),
+                        args: [_readerCubit.getChapters.length.toString()]),
                     style: textTheme.titleMedium,
                   ),
                   const Expanded(child: SizedBox()),

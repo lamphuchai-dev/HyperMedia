@@ -1,3 +1,4 @@
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +11,7 @@ import 'package:hyper_media/utils/system_utils.dart';
 import 'package:js_runtime/js_runtime.dart';
 import 'package:js_runtime/utils/logger.dart';
 
-import 'reader_type.dart';
+import '../controller/auto_scroll_controller.dart';
 
 part 'reader_state.dart';
 
@@ -23,8 +24,8 @@ class ReaderCubit extends Cubit<ReaderState> {
         _jsRuntime = jsRuntime,
         super(ReaderState(
             extensionStatus: ExtensionStatus.init,
-            readerType: ReaderBase(),
-            chapters: const [],
+            menuType: MenuType.base,
+            controlStatus: ControlStatus.init,
             book: book));
 
   final _logger = Logger("ReaderCubit");
@@ -43,39 +44,73 @@ class ReaderCubit extends Cubit<ReaderState> {
   late final AnimationController _menuAnimationController;
 
   final FToast fToast = FToast();
-  final ScrollController scrollController = ScrollController();
+
+  EasyRefreshController easyRefreshController = EasyRefreshController(
+      controlFinishLoad: true, controlFinishRefresh: true);
+
+  final AutoScrollController _autoScrollController = AutoScrollController();
+
+  List<Chapter> _chapters = [];
+
+  List<Chapter> get getChapters => _chapters;
+
+  double _heightScreen = 0;
+
+  void setHeight(double height) {
+    _heightScreen = height;
+    _autoScrollController.setHeight = _heightScreen;
+  }
+
+  AutoScrollController get getAutoScrollController => _autoScrollController;
 
   void onInitFToat(BuildContext context) {
     fToast.init(context);
   }
 
-  @override
-  void onChange(Change<ReaderState> change) {
-    super.onChange(change);
-
-    // if (change.currentState.menuType != MenuType.autoScroll &&
-    //     change.nextState.menuType == MenuType.autoScroll) {
-    //   DeviceUtils.enableWakelock();
-    // } else if (change.currentState.menuType == MenuType.autoScroll &&
-    //     change.nextState.menuType != MenuType.autoScroll) {
-    //   DeviceUtils.disableWakelock();
-    // }
-
-    // if (change.currentState.readChapter != null &&
-    //     change.nextState.readChapter != null &&
-    //     change.currentState.readChapter?.chapter !=
-    //         change.nextState.readChapter?.chapter) {
-    //   // update read book
-    //   if (book.bookmark) {
-    //     final chapter = change.nextState.readChapter!.chapter;
-    //     final readBook = ReadBook(
-    //         index: chapter.index,
-    //         titleChapter: chapter.title,
-    //         nameExtension: _extension!.metadata.name);
-    //     _databaseService.updateBook(book.copyWith(readBook: readBook));
-    //   }
-    // }
+  void setScrollController(ScrollController controller) {
+    _autoScrollController.init(controller);
+    _autoScrollController.addListener(() async {
+      final controlStatus = _autoScrollController.status;
+      _logger.log(controlStatus, name: "controlStatus");
+      switch (controlStatus) {
+        case ControlStatus.complete:
+          if (state.menuType != MenuType.autoScroll) {
+            emit(state.copyWith(menuType: MenuType.autoScroll));
+          }
+          if (state.watchChapter!.chapter.index == _chapters.length - 1) {
+            await onHideCurrentMenu();
+            emit(state.copyWith(
+                menuType: MenuType.base, controlStatus: ControlStatus.init));
+            break;
+          }
+          onNextChapter();
+          break;
+        case ControlStatus.init:
+          emit(state.copyWith(
+              menuType: MenuType.base, controlStatus: controlStatus));
+          break;
+        case ControlStatus.start:
+          if (state.menuType != MenuType.autoScroll) {
+            emit(state.copyWith(
+                menuType: MenuType.autoScroll, controlStatus: controlStatus));
+            break;
+          }
+          emit(state.copyWith(controlStatus: controlStatus));
+          break;
+        case ControlStatus.pause:
+          emit(state.copyWith(controlStatus: controlStatus));
+          break;
+        default:
+          break;
+      }
+    });
   }
+
+  void onCheckAutoScroll() {
+    _autoScrollController.checkAutoNextChapter();
+  }
+
+  ValueNotifier<double> timeAutoScroll = ValueNotifier(10);
 
   void onInit(
       {required List<Chapter> chapters, required int initReadChapter}) async {
@@ -120,21 +155,23 @@ class ReaderCubit extends Cubit<ReaderState> {
         return;
       }
 
-      ReadChapter readChapter =
-          ReadChapter.init(initIndex: initReadChapter, chapters: chapters);
       emit(state.copyWith(
           extensionStatus: ExtensionStatus.ready,
-          readChapter: readChapter,
+          watchChapter: WatchChapter(
+              chapter: chapters[initReadChapter], status: StatusType.init),
           chapters: chapters));
-      getContentsChapter();
+
+      _chapters = chapters;
+
+      onInitWatchChapter();
 
       if (book.id != null) {
         _database.updateBook(book.copyWith(
             updateAt: DateTime.now(),
             readBook: ReadBook(
-                index: readChapter.chapter.index,
+                index: chapters[initReadChapter].index,
                 offsetLast: 0.0,
-                titleChapter: readChapter.chapter.name,
+                titleChapter: chapters[initReadChapter].name,
                 nameExtension: _extension!.metadata.name)));
       }
     } catch (error) {
@@ -178,121 +215,124 @@ class ReaderCubit extends Cubit<ReaderState> {
     }
   }
 
-  Future<void> getContentsChapter() async {
+  Future<WatchChapter> getContentsChapter(WatchChapter watchChapter) async {
     _logger.log("getContentsChapter");
-    ReadChapter readChapter =
-        state.readChapter!.copyWith(status: StatusType.loading);
+    if (watchChapter.chapter.contentComic != null ||
+        watchChapter.chapter.contentVideo != null ||
+        watchChapter.chapter.contentNovel != null) {
+      return watchChapter;
+    }
     try {
+      watchChapter = watchChapter.copyWith(status: StatusType.loading);
       final result = await _jsRuntime.getChapter(
-          url: "${readChapter.chapter.host}${readChapter.chapter.url}",
+          url: "${watchChapter.chapter.host}${watchChapter.chapter.url}",
           source: _extension!.getChapterScript);
-      final chapter = readChapter.chapter
+      final chapter = watchChapter.chapter
           .addContentByExtensionType(type: getExtensionType, value: result);
-      List<Chapter> chapters = state.chapters;
-      chapters.removeAt(readChapter.chapter.index);
-      chapters.insert(readChapter.chapter.index, readChapter.chapter);
+      _chapters.removeAt(watchChapter.chapter.index);
+      _chapters.insert(watchChapter.chapter.index, watchChapter.chapter);
 
-      readChapter =
-          readChapter.copyWith(chapter: chapter, status: StatusType.loaded);
-      emit(state.copyWith(readChapter: readChapter));
+      return watchChapter.copyWith(chapter: chapter, status: StatusType.loaded);
     } catch (error) {
       _logger.log(error, name: "getChapterContent");
-      emit(state.copyWith(
-          readChapter: readChapter.copyWith(status: StatusType.error)));
+      return watchChapter.copyWith(status: StatusType.error);
     }
   }
 
-  Future<ReadChapter> getChapter(ReadChapter readChapter) async {
-    _logger.log("getChapter");
-    if (readChapter.chapter.contentComic != null ||
-        readChapter.chapter.contentVideo != null ||
-        readChapter.chapter.contentNovel != null) {
-      return readChapter;
-    } else {
-      try {
-        final result = await _jsRuntime.getChapter(
-            url: "${readChapter.chapter.host}${readChapter.chapter.url}",
-            source: _extension!.getChapterScript);
-        final chapter = readChapter.chapter
-            .addContentByExtensionType(type: getExtensionType, value: result);
-        List<Chapter> chapters = state.chapters;
-        chapters.removeAt(readChapter.chapter.index);
-        chapters.insert(readChapter.chapter.index, readChapter.chapter);
-        emit(state.copyWith(chapters: chapters));
-        readChapter =
-            readChapter.copyWith(chapter: chapter, status: StatusType.loaded);
-      } catch (error) {
-        _logger.log(error, name: "getChapterContent");
-        readChapter = readChapter.copyWith(status: StatusType.error);
+  Future<bool> onPreviousChapter({bool menu = true}) async {
+    if (state.watchChapter != null && state.watchChapter!.chapter.index != 0) {
+      final chapter = _chapters[state.watchChapter!.chapter.index - 1];
+
+      if (menu) {
+        emit(state.copyWith(
+            watchChapter:
+                WatchChapter(chapter: chapter, status: StatusType.init)));
+        return true;
       }
+      final watch = await getContentsChapter(
+          WatchChapter(chapter: chapter, status: StatusType.init));
+      Future.delayed(const Duration(milliseconds: 300)).then(
+        (value) {
+          emit(state.copyWith(watchChapter: watch));
+        },
+      );
     }
-    return readChapter;
-  }
 
-  Future<bool> onPreviousChapter() async {
-    ReadChapter readChapter =
-        state.readChapter!.previous(chapters: state.chapters);
-    if (state.readChapter!.chapter.index != readChapter.chapter.index) {
-      readChapter = await getChapter(readChapter);
-    }
-    emit(state.copyWith(readChapter: readChapter));
+    easyRefreshController.finishRefresh();
     return true;
   }
 
-  Future<bool> onNextChapter() async {
-    ReadChapter readChapter = state.readChapter!.next(chapters: state.chapters);
-    if (state.readChapter!.chapter.index != readChapter.chapter.index) {
-      readChapter = await getChapter(readChapter);
+  Future<bool> onNextChapter({bool menu = true}) async {
+    if (state.watchChapter != null &&
+        state.watchChapter!.chapter.index + 1 < _chapters.length) {
+      final chapter = _chapters[state.watchChapter!.chapter.index + 1];
+      // if (menu) {
+      //   emit(state.copyWith(
+      //       watchChapter:
+      //           WatchChapter(chapter: chapter, status: StatusType.init)));
+      //   return true;
+      // }
+      // final watch = await getContentsChapter(
+      //     WatchChapter(chapter: chapter, status: StatusType.init));
+      Future.delayed(const Duration(milliseconds: 300)).then(
+        (value) {
+          // emit(state.copyWith(watchChapter: watch));
+          emit(state.copyWith(
+              watchChapter:
+                  WatchChapter(chapter: chapter, status: StatusType.init)));
+        },
+      );
     }
-    emit(state.copyWith(readChapter: readChapter));
+    easyRefreshController.finishLoad();
     return true;
   }
 
   void onChangeReadChapter(int index) {
     emit(state.copyWith(
-        readChapter:
-            ReadChapter.init(initIndex: index, chapters: state.chapters)));
+        watchChapter:
+            WatchChapter(chapter: _chapters[index], status: StatusType.init)));
+    onInitWatchChapter();
   }
 
-  Chapter? getChapterByIndex(int index) {
-    if (index < state.chapters.length) {
-      return state.chapters[index];
-    }
-    return null;
+  void onInitWatchChapter() async {
+    WatchChapter watch = state.watchChapter!;
+    emit(state.copyWith(
+        watchChapter: watch.copyWith(status: StatusType.loading)));
+    watch = await getContentsChapter(state.watchChapter!);
+    emit(state.copyWith(
+        watchChapter: watch.copyWith(status: StatusType.loaded)));
   }
 
-  Future<Chapter> getContentByChapter(Chapter chapter) async {
-    _logger.log("getChapter");
-    if (chapter.contentComic != null ||
-        chapter.contentVideo != null ||
-        chapter.contentNovel != null) {
-      return chapter;
-    } else {
-      try {
-        final result = await _jsRuntime.getChapter(
-            url: "${chapter.host}${chapter.url}",
-            source: _extension!.getChapterScript);
-        chapter = chapter.addContentByExtensionType(
-            type: getExtensionType, value: result);
-        List<Chapter> chapters = state.chapters;
-        chapters.removeAt(chapter.index);
-        chapters.insert(chapter.index, chapter);
-        emit(state.copyWith(chapters: chapters));
-        return chapter;
-      } catch (error) {
-        _logger.log(error, name: "getChapterContent");
-      }
+  void onEnableAutoScroll() async {
+    await onHideCurrentMenu();
+    _autoScrollController.enable();
+  }
+
+  void onCloseAutoScroll() async {
+    await onHideCurrentMenu();
+    _autoScrollController.closeAutoScroll();
+  }
+
+  void onUnpauseAutoScroll() async {
+    _autoScrollController.start();
+  }
+
+  void onPauseAutoScroll() async {
+    _autoScrollController.pause();
+  }
+
+  ScrollPhysics? get getPhysicsScroll {
+    if (state.menuType != MenuType.autoScroll) {
+      return null;
     }
-    return chapter;
+    return const NeverScrollableScrollPhysics();
   }
 
   @override
   Future<void> close() {
     SystemUtils.setEnabledSystemUIModeDefault();
     SystemUtils.setPreferredOrientations();
-    // timeAutoScroll.dispose();
-    // sliderTimeAutoScroll?.cancel();
-    // chaptersSliderTime?.cancel();
+    _autoScrollController.dispose();
     _menuAnimationController.dispose();
     DeviceUtils.disableWakelock();
     return super.close();

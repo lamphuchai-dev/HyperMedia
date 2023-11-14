@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:html/parser.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:uuid/uuid.dart';
 
@@ -143,9 +143,9 @@ class BrowserHeadless {
         }
       },
       onReceivedError: (controller, request, error) {
-        if (!completer.isCompleted) {
-          completer.complete(null);
-        }
+        // if (!completer.isCompleted) {
+        //   completer.complete(null);
+        // }
       },
     );
     await _browserHeadless?.run();
@@ -274,7 +274,11 @@ class BrowserHeadless {
     return _webController?.loadUrl(urlRequest: URLRequest(url: WebUri(url)));
   }
 
-  Future<String?> get getHtml async => _webController?.getHtml();
+  Future<String?> getHtml() async {
+    final content = await _webController?.getHtml();
+    final doc = parse(content);
+    return doc.outerHtml;
+  }
 
   Future<void> dispose() async {
     _logger.log("dispose browser", name: "dispose");

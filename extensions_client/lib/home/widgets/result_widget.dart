@@ -1,7 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:js_runtime/js_runtime.dart';
 import 'package:json_view/json_view.dart';
 
 import '../cubit/home_cubit.dart';
@@ -26,37 +26,59 @@ class _ResultWidgetState extends State<ResultWidget> {
     return BlocBuilder<HomeCubit, HomeState>(
       buildWhen: (previous, current) => previous.result != current.result,
       builder: (context, state) {
-        if (state.result == "") return const SizedBox();
-        try {
-          dynamic json = jsonDecode(state.result);
-          if (json.runtimeType.toString() == "String") {
-            return SingleChildScrollView(
-              child: Text(json),
-            );
-          } else if (json is List && json.isEmpty) {
-            return const Text("[]");
-          }
-          return JsonConfig(
-            data: JsonConfigData(
-              animation: true,
-              animationDuration: const Duration(milliseconds: 300),
-              animationCurve: Curves.ease,
-              itemPadding: const EdgeInsets.only(left: 8),
-              color: const JsonColorScheme(
-                  // stringColor: Colors.grey,
-                  ),
-              style: const JsonStyleScheme(
-                arrow: Icon(Icons.arrow_right),
+        if (state.result == null) return const SizedBox();
+        ResponseJsRuntime result = state.result!;
+        return switch (result) {
+          SuccessJsRuntime() => Success(successJsRuntime: result),
+          ErrorJsRuntime(error: var error) => SingleChildScrollView(
+              child: Text(
+                error,
+                style: const TextStyle(color: Colors.red),
               ),
             ),
-            child: JsonView(json: json),
-          );
-        } catch (error) {
-          return SingleChildScrollView(
-            child: Text(state.result),
-          );
-        }
+        };
       },
+    );
+  }
+}
+
+class Success extends StatelessWidget {
+  const Success({super.key, required this.successJsRuntime});
+  final SuccessJsRuntime successJsRuntime;
+
+  @override
+  Widget build(BuildContext context) {
+    if (successJsRuntime.data is String) {
+      return Column(
+        children: [
+          ElevatedButton(
+              onPressed: () async {
+                await Clipboard.setData(
+                    ClipboardData(text: successJsRuntime.data));
+              },
+              child: const Text("Copy")),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Text(successJsRuntime.data),
+            ),
+          ),
+        ],
+      );
+    }
+    return JsonConfig(
+      data: JsonConfigData(
+        animation: true,
+        animationDuration: const Duration(milliseconds: 300),
+        animationCurve: Curves.ease,
+        itemPadding: const EdgeInsets.only(left: 8),
+        color: const JsonColorScheme(
+            // stringColor: Colors.grey,
+            ),
+        style: const JsonStyleScheme(
+          arrow: Icon(Icons.arrow_right),
+        ),
+      ),
+      child: JsonView(json: successJsRuntime.data),
     );
   }
 }

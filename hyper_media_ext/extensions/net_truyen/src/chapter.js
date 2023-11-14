@@ -1,5 +1,6 @@
 async function chapter(url) {
   const res = await Extension.request(url);
+  if (!res) return Response.error("Có lỗi khi tải nội dung");
   const listEl = await Extension.querySelectorAll(res, "div.page-chapter img");
   let result = [];
   for (const element of listEl) {
@@ -16,5 +17,5 @@ async function chapter(url) {
     }
     result.push(image);
   }
-  return result;
+  return Response.success(result);
 }

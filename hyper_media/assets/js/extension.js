@@ -194,6 +194,21 @@ class Browser {
   }
 }
 
+class Response {
+  static success(data) {
+    return {
+      type: "success",
+      data: data,
+    };
+  }
+  static error(data) {
+    return {
+      type: "error",
+      data: data,
+    };
+  }
+}
+
 console.log = function (message) {
   if (typeof message === "object") {
     message = JSON.stringify(message);

@@ -1,5 +1,6 @@
 async function detail(url) {
   const res = await Extension.request(url);
+  if (!res) return Response.error("Có lỗi khi tải nội dung");
 
   const detailEl = await Extension.querySelector(res, "article.item-detail");
   const name = await Extension.querySelector(
@@ -62,7 +63,7 @@ async function detail(url) {
     }
   }
 
-  return {
+  return Response.success({
     name,
     cover,
     bookStatus,
@@ -72,7 +73,7 @@ async function detail(url) {
     genres,
     link: url.replace("https://www.nettruyenus.com", ""),
     host: "https://www.nettruyenus.com",
-  };
+  });
 }
 
 // runFn(() =>

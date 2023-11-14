@@ -1,5 +1,5 @@
 async function tabs() {
-  return [
+  return Response.success([
     {
       title: "Mới cập nhật",
       url: "/tim-truyen",
@@ -33,5 +33,5 @@ async function tabs() {
       title: "Truyện con gái",
       url: "/truyen-con-gai",
     },
-  ];
+  ]);
 }

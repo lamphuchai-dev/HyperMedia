@@ -3,118 +3,60 @@ part of 'reader_cubit.dart';
 
 enum ExtensionStatus { init, ready, unknown, error }
 
-enum ControlStatus { none, init, start, pause, complete, stop, error }
+enum ControlStatus { init, start, pause, complete, stop, error }
 
 enum MenuType { base, audio, autoScroll }
 
 class ReaderState extends Equatable {
   const ReaderState(
       {required this.extensionStatus,
-      required this.readerType,
-      required this.chapters,
       required this.book,
-      this.readChapter});
+      required this.menuType,
+      required this.controlStatus,
+      this.watchChapter});
   final ExtensionStatus extensionStatus;
-  final ReaderType readerType;
-  final ReadChapter? readChapter;
-  final List<Chapter> chapters;
+  final MenuType menuType;
+  final ControlStatus controlStatus;
   final Book book;
+  final WatchChapter? watchChapter;
   @override
   List<Object?> get props =>
-      [extensionStatus, readChapter, readerType, chapters, book];
+      [extensionStatus, watchChapter, menuType, book, controlStatus];
 
-  ReaderState copyWith({
-    ExtensionStatus? extensionStatus,
-    ReaderType? readerType,
-    ReadChapter? readChapter,
-    List<Chapter>? chapters,
-    Book? book,
-  }) {
+  ReaderState copyWith(
+      {ExtensionStatus? extensionStatus,
+      List<Chapter>? chapters,
+      MenuType? menuType,
+      Book? book,
+      ControlStatus? controlStatus,
+      WatchChapter? watchChapter}) {
     return ReaderState(
         extensionStatus: extensionStatus ?? this.extensionStatus,
-        readerType: readerType ?? this.readerType,
-        readChapter: readChapter ?? this.readChapter,
-        chapters: chapters ?? this.chapters,
-        book: book ?? this.book);
+        menuType: menuType ?? this.menuType,
+        book: book ?? this.book,
+        controlStatus: controlStatus ?? this.controlStatus,
+        watchChapter: watchChapter ?? this.watchChapter);
   }
 }
 
-class ReadChapter extends Equatable {
+class WatchChapter extends Equatable {
   final Chapter chapter;
   final StatusType status;
-  final Chapter? previousChapter;
-  final Chapter? nextChapter;
-  const ReadChapter(
-      {required this.chapter,
-      required this.status,
-      this.nextChapter,
-      this.previousChapter});
+  const WatchChapter({
+    required this.chapter,
+    required this.status,
+  });
 
-  factory ReadChapter.init(
-      {required int initIndex, required List<Chapter> chapters}) {
-    Chapter? previousChapter;
-    Chapter? nextChapter;
-
-    if (initIndex > 0) {
-      previousChapter = chapters[initIndex - 1];
-    }
-
-    if (initIndex + 1 < chapters.length) {
-      nextChapter = chapters[initIndex + 1];
-    }
-
-    return ReadChapter(
-        previousChapter: previousChapter,
-        nextChapter: nextChapter,
-        chapter: chapters[initIndex],
-        status: StatusType.init);
-  }
-
-  ReadChapter copyWith({
+  WatchChapter copyWith({
     Chapter? chapter,
     StatusType? status,
-    Chapter? previousChapter,
-    Chapter? nextChapter,
   }) {
-    return ReadChapter(
-        chapter: chapter ?? this.chapter,
-        status: status ?? this.status,
-        previousChapter: previousChapter ?? this.previousChapter,
-        nextChapter: nextChapter ?? this.nextChapter);
-  }
-
-  ReadChapter next({required List<Chapter> chapters}) {
-    if (nextChapter == null) return this;
-    if (nextChapter!.index + 1 >= chapters.length) {
-      return ReadChapter(
-          previousChapter: chapter,
-          chapter: nextChapter!,
-          nextChapter: null,
-          status: StatusType.init);
-    }
-    return ReadChapter(
-        previousChapter: chapter,
-        chapter: nextChapter!,
-        nextChapter: chapters[nextChapter!.index + 1],
-        status: StatusType.init);
-  }
-
-  ReadChapter previous({required List<Chapter> chapters}) {
-    if (previousChapter == null) return this;
-    if (previousChapter!.index <= 0) {
-      return ReadChapter(
-          previousChapter: null,
-          chapter: previousChapter!,
-          nextChapter: chapter,
-          status: StatusType.init);
-    }
-    return ReadChapter(
-        previousChapter: chapters[previousChapter!.index - 1],
-        chapter: previousChapter!,
-        nextChapter: chapter,
-        status: StatusType.init);
+    return WatchChapter(
+      chapter: chapter ?? this.chapter,
+      status: status ?? this.status,
+    );
   }
 
   @override
-  List<Object?> get props => [chapter, status, previousChapter, nextChapter];
+  List<Object?> get props => [chapter, status];
 }

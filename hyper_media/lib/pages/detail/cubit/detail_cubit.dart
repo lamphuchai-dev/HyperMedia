@@ -73,8 +73,10 @@ class DetailCubit extends Cubit<DetailState> {
         url: _bookUrl,
         source: _extension!.getDetailScript,
       );
-      if (result is Map<String, dynamic>) {
-        return Book.fromMap(result);
+      if (result is SuccessJsRuntime) {
+        if (result is Map<String, dynamic>) {
+          return Book.fromMap(result.data);
+        }
       }
       return null;
     } catch (error) {

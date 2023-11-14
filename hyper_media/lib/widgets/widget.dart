@@ -10,3 +10,4 @@ export './item_book.dart';
 export './list_chapter_widget.dart';
 export './tag_extension.dart';
 export './empty_list_data_widget.dart';
+export './image_file.dart';

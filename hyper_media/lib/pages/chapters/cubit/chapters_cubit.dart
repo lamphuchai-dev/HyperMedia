@@ -28,26 +28,26 @@ class ChaptersCubit extends Cubit<ChaptersState> {
     try {
       final result = await _jsRuntime.getChapters(
           url: book.bookUrl, source: extensionModel.getChaptersScript);
-      // final chapters = result.asMap().map<int, Map>(
-      //       (key, value) => Chapter.fromMap(value),
-      //     );
-
-      List<Chapter> chapters = [];
-      for (var i = 0; i < result.length; i++) {
-        final map = result[i];
-        if (map is Map<String, dynamic>) {
-          if (book.id != null) {
-            chapters
-                .add(Chapter.fromMap({...map, "index": i, "bookId": book.id}));
-          } else {
-            chapters.add(Chapter.fromMap({...map, "index": i}));
+      if (result is SuccessJsRuntime) {
+        List<Chapter> chapters = [];
+        for (var i = 0; i < result.data.length; i++) {
+          final map = result.data[i];
+          if (map is Map<String, dynamic>) {
+            if (book.id != null) {
+              chapters.add(
+                  Chapter.fromMap({...map, "index": i, "bookId": book.id}));
+            } else {
+              chapters.add(Chapter.fromMap({...map, "index": i}));
+            }
           }
         }
+        emit(state.copyWith(
+            chapters: chapters,
+            sortType: SortChapterType.lastChapter,
+            statusType: StatusType.loaded));
+      } else {
+        emit(state.copyWith(statusType: StatusType.error));
       }
-      emit(state.copyWith(
-          chapters: chapters,
-          sortType: SortChapterType.lastChapter,
-          statusType: StatusType.loaded));
     } catch (error) {
       if (isClosed) return;
       emit(state.copyWith(statusType: StatusType.error));

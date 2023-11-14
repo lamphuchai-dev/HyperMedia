@@ -21,7 +21,7 @@ class ReaderView extends StatelessWidget {
           book: readerArgs.book)
         ..onInit(
             chapters: readerArgs.chapters,
-            initReadChapter: readerArgs.readChapter),
+            initReadChapter: readerArgs.readChapter,),
       child: const ReaderPage(),
     );
   }

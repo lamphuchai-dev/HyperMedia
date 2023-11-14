@@ -6,7 +6,7 @@ async function home(url, page) {
     ".*?api.truyen.onl/v2/books*?",
     10000
   );
-  if (api == null) throw new Error("load error");
+  if (!api) return Response.error("Có lỗi khi tải nội dung");
 
   const data = await Extension.request(api, {
     headers: {
@@ -15,7 +15,8 @@ async function home(url, page) {
         "Mozilla/5.0 (Linux; Android 13; Pixel 7 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36",
     },
   });
-  if (data == null) throw new Error("load error");
+  if (!data) return Response.error("Có lỗi khi tải nội dung");
+
   const books = [];
 
   data._data.forEach((book) => {
@@ -27,7 +28,7 @@ async function home(url, page) {
       host: "https://metruyencv.com",
     });
   });
-  return books;
+  return Response.success(books);
 }
 
 // runFn(() => home("https://metruyencv.com/bang-xep-hang/tuan/thao-luan/{}"));

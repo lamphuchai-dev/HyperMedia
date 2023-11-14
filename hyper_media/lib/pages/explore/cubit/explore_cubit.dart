@@ -64,13 +64,17 @@ class ExploreCubit extends Cubit<ExploreState> {
       emit(state.copyWith(status: StatusType.loading));
 
       final result = await _jsRuntime.getTabs(state.extension.getTabsScript);
-      final tabs = result
-          .map(
-            (e) => ItemTabExplore.fromMap(e),
-          )
-          .toList();
+      if (result is SuccessJsRuntime) {
+        final tabs = result.data
+            .map(
+              (e) => ItemTabExplore.fromMap(e),
+            )
+            .toList();
 
-      emit(state.copyWith(status: StatusType.loaded, tabs: tabs));
+        emit(state.copyWith(status: StatusType.loaded, tabs: tabs));
+      } else {
+        emit(state.copyWith(status: StatusType.error));
+      }
     } catch (error) {
       emit(state.copyWith(status: StatusType.error));
     }
@@ -87,8 +91,10 @@ class ExploreCubit extends Cubit<ExploreState> {
         page: page,
         source: state.extension.getHomeScript,
       );
-
-      return result.map((e) => Book.fromMap(e)).toList();
+      if (result is SuccessJsRuntime) {
+        return result.data.map((e) => Book.fromMap(e)).toList();
+      }
+      return [];
     } catch (error) {
       _logger.error(error, name: "onGetListBook");
     }
@@ -102,7 +108,10 @@ class ExploreCubit extends Cubit<ExploreState> {
     try {
       final result = await _jsRuntime.getGenre(
           url: state.extension.source, source: state.extension.getGenreScript!);
-      return result.map((e) => Genre.fromMap(e)).toList();
+      if (result is SuccessJsRuntime) {
+        return result.data.map((e) => Genre.fromMap(e)).toList();
+      }
+      return [];
     } catch (error) {
       _logger.error(error, name: "onGetListGenre");
     }
@@ -110,7 +119,6 @@ class ExploreCubit extends Cubit<ExploreState> {
   }
 
   onChangeExtension(Extension extension) async {
-    // _jsRuntime.clearBrowser();
     emit(ExploreExtensionLoaded(
         extension: extension, tabs: const [], status: StatusType.loading));
     await Future.delayed(const Duration(milliseconds: 50));

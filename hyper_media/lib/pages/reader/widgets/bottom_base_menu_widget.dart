@@ -21,9 +21,9 @@ class BottomBaseMenuWidget extends StatelessWidget {
           border: Border(top: BorderSide(color: colorScheme.background))),
       child: BlocBuilder<ReaderCubit, ReaderState>(
         buildWhen: (previous, current) =>
-            previous.readChapter != current.readChapter,
+            previous.watchChapter != current.watchChapter,
         builder: (context, state) {
-          final chapter = state.readChapter!.chapter;
+          final chapter = state.watchChapter!.chapter;
           double valueSlider = chapter.index.toDouble();
 
           return Column(
@@ -41,7 +41,7 @@ class BottomBaseMenuWidget extends StatelessWidget {
                         // Text("3/33"),
                         Expanded(
                             child: Text(
-                          state.chapters[valueSlider.toInt()].name,
+                          state.watchChapter!.chapter.name,
                           textAlign: TextAlign.center,
                         )),
                       ],
@@ -56,6 +56,8 @@ class BottomBaseMenuWidget extends StatelessWidget {
                         ),
                         IconButton(
                             onPressed: () {
+                              readerCubit.onHideCurrentMenu();
+
                               readerCubit.onPreviousChapter();
                             },
                             icon: const Icon(Icons.skip_previous)),
@@ -64,7 +66,8 @@ class BottomBaseMenuWidget extends StatelessWidget {
                             min: 0,
                             value: valueSlider,
                             label: "3",
-                            max: (state.chapters.length - 1).toDouble(),
+                            max:
+                                (readerCubit.getChapters.length - 1).toDouble(),
                             onChanged: (value) {
                               setState(() {
                                 valueSlider = value;
@@ -76,6 +79,7 @@ class BottomBaseMenuWidget extends StatelessWidget {
                         ),
                         IconButton(
                             onPressed: () {
+                              readerCubit.onHideCurrentMenu();
                               readerCubit.onNextChapter();
                             },
                             icon: const Icon(Icons.skip_next)),
