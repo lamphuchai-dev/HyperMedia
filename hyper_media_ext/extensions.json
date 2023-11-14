@@ -31,7 +31,7 @@
         "name": "Anime Hay",
         "author": "uBook",
         "slug": "anime_hay",
-        "version": 1,
+        "version": 2,
         "source": "https://animehay.city",
         "regexp": "(animehay).(city)",
         "description": "Xem anime trang Animehay",

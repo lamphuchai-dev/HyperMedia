@@ -14,7 +14,7 @@ async function chapters(bookUrl) {
     const title = await Extension.querySelector(el, "a").text;
     chapters.push({
       name: "Tập " + title.trim(),
-      url: url,
+      url: url.replace(host, ""),
       host,
     });
   }

@@ -10,47 +10,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final GlobalKey webViewKey = GlobalKey();
+  final GlobalKey _webViewKey = GlobalKey();
 
-  InAppWebViewController? webViewController;
+  InAppWebViewController? _webViewController;
   InAppWebViewSettings settings = InAppWebViewSettings(
-      useShouldOverrideUrlLoading: true, supportZoom: false
-      // useShouldInterceptAjaxRequest: true,
-      // useShouldInterceptFetchRequest: true,
-      // allowsInlineMediaPlayback: true,
-      // iframeAllow: "camera; microphone",
-      // useOnLoadResource: true,
-      // javaScriptEnabled: true,
-      // userAgent:
-      //     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-      );
-
-  PullToRefreshController? pullToRefreshController;
-  String url = "";
-  double progress = 0;
-  final urlController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-
-    pullToRefreshController = kIsWeb
-        ? null
-        : PullToRefreshController(
-            settings: PullToRefreshSettings(
-              color: Colors.blue,
-            ),
-            onRefresh: () async {
-              if (defaultTargetPlatform == TargetPlatform.android) {
-                webViewController?.reload();
-              } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-                webViewController?.loadUrl(
-                    urlRequest:
-                        URLRequest(url: await webViewController?.getUrl()));
-              }
-            },
-          );
-  }
+      useShouldOverrideUrlLoading: true, supportZoom: false);
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +24,7 @@ class _MyAppState extends State<MyApp> {
           child: AspectRatio(
             aspectRatio: 16 / 9,
             child: InAppWebView(
-              key: webViewKey,
+              key: _webViewKey,
               initialData: InAppWebViewInitialData(data: '''
     <!DOCTYPE html>
 <html lang="en">
@@ -125,8 +89,18 @@ class _MyAppState extends State<MyApp> {
             
             '''),
               initialSettings: settings,
+              onWebViewCreated: (controller) {
+                _webViewController = controller;
+              },
             ),
           ),
         ));
   }
+
+  @override
+  void dispose() {
+    _webViewController?.dispose();
+    super.dispose();
+  }
 }
+

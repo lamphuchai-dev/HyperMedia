@@ -6,8 +6,9 @@ import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/pages/reader/cubit/reader_cubit.dart';
 import 'package:hyper_media/widgets/widget.dart';
 
-import 'reader_type/reader_comic.dart';
-import 'reader_type/reader_novel.dart';
+import 'watch/watch_comic.dart';
+import 'watch/watch_movie.dart';
+import 'watch/watch_novel.dart';
 
 class WatchChapterWidget extends StatelessWidget {
   const WatchChapterWidget({super.key, required this.readerCubit});
@@ -41,7 +42,9 @@ class WatchChapterWidget extends StatelessWidget {
               ExtensionType.novel => WatchNovel(
                   chapter: state.watchChapter!.chapter,
                 ),
-              _ => const SizedBox(),
+              ExtensionType.movie => WatchMovie(
+                  chapter: state.watchChapter!.chapter,
+                ),
             },
           _ => const SizedBox()
         };

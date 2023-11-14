@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:hyper_media/app/extensions/index.dart';
+import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/pages/reader/widgets/reader_chapter.dart';
 
 import '../cubit/reader_cubit.dart';
@@ -66,12 +67,12 @@ class _ReaderPageState extends State<ReaderPage>
                             buildWhen: (previous, current) =>
                                 previous.watchChapter != current.watchChapter,
                             builder: (context, state) {
-                              // if (_readerCubit.getExtensionType ==
-                              //     ExtensionType.movie) {
-                              //   return ReaderPageChapter(
-                              //     index: state.currentReader!.index,
-                              //   );
-                              // }
+                              if (_readerCubit.getExtensionType ==
+                                  ExtensionType.movie) {
+                                return WatchChapterWidget(
+                                  readerCubit: _readerCubit,
+                                );
+                              }
                               return EasyRefresh(
                                 controller: _readerCubit.easyRefreshController,
                                 onRefresh: () async {
