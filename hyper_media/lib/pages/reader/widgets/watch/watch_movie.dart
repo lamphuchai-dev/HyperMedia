@@ -6,6 +6,8 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 
 import 'package:hyper_media/data/models/models.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 class WatchMovie extends StatefulWidget {
   const WatchMovie({
@@ -28,29 +30,54 @@ class _WatchMovieState extends State<WatchMovie> {
           .map<MovieModel>((e) => MovieModel.fromMap(e))
           .toList();
     }
-    print(_listMovie);
+    print(_listMovie.length);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final tmp = _listMovie[2];
+    if (_listMovie.isEmpty) {
+      return Container(
+        alignment: Alignment.center,
+        color: Colors.transparent,
+        child: Text("Lỗi load nội dung"),
+      );
+    }
+    final tmp = _listMovie[1];
+
+    // return SafeArea(
+    //   child: Stack(
+    //     children: [
+    //       const Positioned.fill(
+    //           child: ColoredBox(
+    //         color: Colors.transparent,
+    //       )),
+    //       Align(
+    //           alignment: Alignment.center,
+    //           child: switch (tmp.type) {
+    //             "html" => WatchMovieByHtml(
+    //                 html: tmp.data,
+    //               ),
+    //             "iframe" => WatchMovieByIframe(movieModel: tmp),
+    //             "video" => WatchMovieByVideo(movieModel: tmp),
+    //             _ => const SizedBox()
+    //           }),
+    //     ],
+    //   ),
+    // );
     return SafeArea(
-      child: Stack(
+      child: Column(
         children: [
-          const Positioned.fill(
-              child: ColoredBox(
-            color: Colors.transparent,
-          )),
-          Align(
-              alignment: Alignment.center,
-              child: switch (tmp.type) {
-                "html" => WatchMovieByHtml(
-                    html: tmp.data,
-                  ),
-                "iframe" => WatchMovieByIframe(movieModel: tmp),
-                _ => SizedBox()
-              }),
+          Expanded(child: SizedBox()),
+          switch (tmp.type) {
+            "html" => WatchMovieByHtml(
+                html: tmp.data,
+              ),
+            "iframe" => WatchMovieByIframe(movieModel: tmp),
+            "video" => WatchMovieByVideo(movieModel: tmp),
+            _ => const SizedBox()
+          },
+          Expanded(child: SizedBox()),
         ],
       ),
     );
@@ -140,6 +167,57 @@ class _WatchMovieByIframeState extends State<WatchMovieByIframe> {
   @override
   void dispose() {
     _webViewController?.dispose();
+    super.dispose();
+  }
+}
+
+class WatchMovieByVideo extends StatefulWidget {
+  const WatchMovieByVideo({super.key, required this.movieModel});
+  final MovieModel movieModel;
+
+  @override
+  State<WatchMovieByVideo> createState() => _WatchMovieByVideoState();
+}
+
+class _WatchMovieByVideoState extends State<WatchMovieByVideo> {
+  Player? _player;
+  VideoController? _videoController;
+  @override
+  void initState() {
+    _player = Player();
+    _videoController = VideoController(_player!);
+    _player!.open(Media(Uri.parse(widget.movieModel.data).toString()));
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: AspectRatio(
+        aspectRatio: 16 / 9.3,
+        child: MaterialVideoControlsTheme(
+          normal: const MaterialVideoControlsThemeData(
+            volumeGesture: true,
+            brightnessGesture: true,
+            buttonBarButtonSize: 24.0,
+            buttonBarButtonColor: Colors.white,
+            topButtonBarMargin: EdgeInsets.only(top: 30),
+          ),
+          fullscreen: const MaterialVideoControlsThemeData(
+            seekBarMargin: EdgeInsets.only(bottom: 60, left: 16, right: 16),
+          ),
+          child: Video(
+            aspectRatio: 16 / 9,
+            controller: _videoController!,
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose();
     super.dispose();
   }
 }

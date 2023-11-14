@@ -12,7 +12,7 @@ async function chapter(url) {
     });
   }
 
-  data = res.match(/\"https:\/\/scontent\.cdninstagram\.com\/[^\s]+\"/g);
+  data = res.match(/\https:\/\/scontent\.cdninstagram\.com\/[^\s]+/g);
 
   if (data) {
     result.push({
