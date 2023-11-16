@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="Referer" content="https://motchillzzz.tv" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script
+      type="text/javascript"
+      charset="utf-8"
+      async=""
+      src="https://motchillzzz.tv/jwplayer/8.26.0/jwpsrv.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://motchillzzz.tv/jwplayer/8.26.0/jwplayer.js"
+    ></script>
+    <!-- <script src="https://cdn.jwplayer.com/libraries/ByfLo5yG.js"></script> -->
+    <script type="text/javascript">
+      jwplayer.key = "ITWMv7t88JGzI0xPwW8I0+LveiXX9SWbfdmt0ArUSyc=";
+    </script>
+    <script
+      charset="utf-8"
+      src="https://motchillzzz.tv/jwplayer/8.26.0/jwplayer.core.controls.js"
+    ></script>
+    <script
+      charset="utf-8"
+      src="https://motchillzzz.tv/jwplayer/8.26.0/provider.hlsjs.js"
+    ></script>
+    <script>
+      (function () {
+        var open = XMLHttpRequest.prototype.open;
+        var send = XMLHttpRequest.prototype.send;
+
+        function openReplacement(method, url, async, user, password) {
+          // Đoạn mã sau đây được thực hiện mỗi khi một cuộc gọi XMLHttpRequest được mở
+          console.log("XHR opened:", {
+            method: method,
+            url: url,
+            async: async,
+            user: user,
+            password: password,
+          });
+          this.setRequestHeader("Referer", "https://motchillzzz.tv/");
+
+          // Gọi lại hàm mở gốc
+          return open.apply(this, arguments);
+        }
+
+        function sendReplacement(data) {
+          // Đoạn mã sau đây được thực hiện mỗi khi một cuộc gọi XMLHttpRequest được gửi
+          //   console.log("XHR sent:", {
+          //     data: data,
+          //   });
+
+          // Gọi lại hàm gửi gốc
+          return send.apply(this, arguments);
+        }
+
+        // Ghi đè hàm mở và hàm gửi của XMLHttpRequest
+        XMLHttpRequest.prototype.open = openReplacement;
+        XMLHttpRequest.prototype.send = sendReplacement;
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="jwPlayerId"></div>
+    <script type="text/javascript">
+      jwplayer("jwPlayerId").setup({
+        playlist: [
+          {
+            sources: [
+              {
+                default: false,
+                type: "hls",
+                file: "https://cdn.stream-cloud.stream/hv/play/52d40cee-099f-4951-a420-77353da7b1a5.m3u8",
+                label: "0",
+              },
+            ],
+          },
+        ],
+        primary: "html5",
+        hlshtml: true,
+        aspectratio: "16:9",
+        width: "100%",
+        playbackRateControls: [0.75, 1, 1.25, 1.5, 2, 2.5],
+        autostart: false,
+        volume: 100,
+      });
+    </script>
+  </body>
+</html>

@@ -5,13 +5,14 @@ import 'package:hyper_media/app/bloc/app_cubit/app_cubit_cubit.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/data/sharedpref/shared_preference_helper.dart';
 import 'package:hyper_media/di/components/service_locator.dart';
+import 'package:hyper_media/widgets/platform_widget.dart';
+import 'package:macos_ui/macos_ui.dart';
 import 'app/route/routes.dart';
 import 'app/theme/themes.dart';
 import 'flavors.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-import 'pages/test_ui/test_ui.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -36,24 +37,40 @@ class App extends StatelessWidget {
         buildWhen: (previous, current) =>
             previous.themeMode != current.themeMode,
         builder: (context, state) {
-          return MaterialApp(
-            title: FlavorApp.name,
-            themeMode: state.themeMode,
-            theme: Themes.light,
-            darkTheme: Themes.dark,
-            debugShowCheckedModeBanner: false,
-            onGenerateRoute: Routes.onGenerateRoute,
-            initialRoute: Routes.initialRoute,
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-            builder: (context, child) => _flavorBanner(
-              child: child,
-              show: kDebugMode,
-            ),
-            // home: TestUiView(),
-            // scrollBehavior: const ScrollBehavior().copyWith(overscroll: false),
-          );
+          return PlatformWidget(
+              mobileWidget: MaterialApp(
+                title: FlavorApp.name,
+                themeMode: state.themeMode,
+                theme: Themes.light,
+                darkTheme: Themes.dark,
+                debugShowCheckedModeBanner: false,
+                onGenerateRoute: Routes.onGenerateRoute,
+                initialRoute: Routes.initialRoute,
+                localizationsDelegates: context.localizationDelegates,
+                supportedLocales: context.supportedLocales,
+                locale: context.locale,
+                builder: (context, child) => _flavorBanner(
+                  child: child,
+                  show: kDebugMode,
+                ),
+                // home: const TestUiView(),
+              ),
+              macosWidget: MacosApp(
+                title: FlavorApp.name,
+                theme: MacosThemeData.light(),
+                darkTheme: MacosThemeData.dark(),
+                themeMode: state.themeMode,
+                debugShowCheckedModeBanner: false,
+                onGenerateRoute: Routes.onGenerateRoute,
+                initialRoute: Routes.initialRoute,
+                localizationsDelegates: context.localizationDelegates,
+                supportedLocales: context.supportedLocales,
+                locale: context.locale,
+                builder: (context, child) => _flavorBanner(
+                  child: child,
+                  show: kDebugMode,
+                ),
+              ));
         },
       ),
     );

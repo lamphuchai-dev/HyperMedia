@@ -31,7 +31,9 @@ dependencies:
   archive: ^3.4.8
   cached_network_image: ^3.3.0
   carousel_slider: ^4.2.1
+  collection: ^1.17.2
   cupertino_icons: ^1.0.2
+  desktop_window: ^0.4.0
   dio_client:
     path: ./packages/dio_client
   easy_localization: ^3.0.3
@@ -53,9 +55,10 @@ dependencies:
   js_runtime:
     path: ./packages/js_runtime
   json_annotation: ^4.8.1
+  macos_ui: ^2.0.2
   media_kit: ^1.1.10+1
-  media_kit_video: ^1.2.4
   media_kit_libs_video: ^1.0.4
+  media_kit_video: ^1.2.4
   page_transition: ^2.1.0
   path_provider: ^2.1.1
   permission_handler: ^11.0.1

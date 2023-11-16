@@ -14,7 +14,15 @@ class _MyAppState extends State<MyApp> {
 
   InAppWebViewController? _webViewController;
   InAppWebViewSettings settings = InAppWebViewSettings(
-      useShouldOverrideUrlLoading: true, supportZoom: false);
+    useShouldOverrideUrlLoading: false,
+    supportZoom: false,
+    useHybridComposition: true,
+    mediaPlaybackRequiresUserGesture: false,
+    allowsInlineMediaPlayback: true,
+    useOnLoadResource: true,
+    iframeAllow: "camera; microphone",
+    iframeAllowFullscreen: true,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -26,71 +34,101 @@ class _MyAppState extends State<MyApp> {
             child: InAppWebView(
               key: _webViewKey,
               initialData: InAppWebViewInitialData(data: '''
-    <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
+<head>
+  <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet" />
+  <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+  <script>
+    // Lấy origin của trang web
+    var currentOrigin = window.location.origin;
+
+    // Hiển thị origin trong console
+    console.log("Current Origin:", currentOrigin);
+  </script>
+  <script>
+    (function () {
+      var open = XMLHttpRequest.prototype.open;
+      var send = XMLHttpRequest.prototype.send;
+
+      function openReplacement(method, url, async, user, password) {
+        // Đoạn mã sau đây được thực hiện mỗi khi một cuộc gọi XMLHttpRequest được mở
+        console.log("XHR opened:", {
+          method: method,
+          url: url,
+          async: async,
+          user: user,
+          password: password,
+        });
+
+        // window.history.replaceState(null, "", "https://motchillzzz.tv");
+        // console.log(window.history);
+        // Gọi lại hàm mở gốc
+        return open.apply(this, arguments);
       }
-    </style>
-    <script
-      type="text/javascript"
-      src="https://animehay.city/themes/js/jwplayer.js?v=1.0.8"
-    ></script>
-    <script type="text/javascript">
-      jwplayer.key = "ITWMv7t88JGzI0xPwW8I0+LveiXX9SWbfdmt0ArUSyc=";
-    </script>
-    <script
-      charset="utf-8"
-      src="https://ssl.p.jwpcdn.com/player/v/8.8.2/jwplayer.core.controls.js"
-    ></script>
-    <script
-      charset="utf-8"
-      src="https://ssl.p.jwpcdn.com/player/v/8.8.2/related.js"
-    ></script>
-    <script
-      charset="utf-8"
-      src="https://ssl.p.jwpcdn.com/player/v/8.8.2/provider.hlsjs.js"
-    ></script>
-  </head>
-  <body>
-    <div id="jwPlayerId"></div>
-    <script type="text/javascript">
-      jwplayer("jwPlayerId").setup({
-        playlist: [
-          {
-            sources: [
-              {
-                // default: false,
-                type: "hls",
-                file: "https://rapovideo.xyz/playlist/654a11ff1f8b50067bfbb7f9/master.m3u8",
-                label: "0",
-                preload: "metadata",
-              },
-            ],
-          },
-        ],
-        primary: "html5",
-        hlshtml: true,
-        aspectratio: "16:9",
-        width: "100%",
-        playbackRateControls: [0.75, 1, 1.25, 1.5, 2, 2.5],
-        autostart: false,
-        volume: 100,
-      });
-    </script>
-  </body>
-</html>
-  
 
+      function sendReplacement(data) {
+        // Đoạn mã sau đây được thực hiện mỗi khi một cuộc gọi XMLHttpRequest được gửi
+        console.log("XHR sent:", {
+          data: data,
+        });
+        this.setRequestHeader("Referer", "https://motchillzzz.tv");
+        this.setRequestHeader("Access-Control-Allow-Origin", "*");
+        // window.history.replaceState(null, "", "https://motchillzzz.tv");
+        // Gọi lại hàm gửi gốc
 
+        return send.apply(this, arguments);
+      }
+
+      // Ghi đè hàm mở và hàm gửi của XMLHttpRequest
+      XMLHttpRequest.prototype.open = openReplacement;
+      XMLHttpRequest.prototype.send = sendReplacement;
+      var savedPath = window.location.pathname;
+      var savedSearch = window.location.search;
+
+    })();
+  </script>
+  <script>
+    videojs.Hls.xhr.beforeRequest = function (options) {
+      options.headers = { test: "header" };
+      console.log("fef");
+      return options;
+    };
+  </script>
+</head>
+
+<body>
+  <video
+    id="my-video"
+    class="video-js"
+    controls
+    preload="auto"
+    width="640"
+    height="264"
+    data-setup="{}"
+  >
+    <source
+      src="https://rapovideo.xyz/playlist/654b2d6b1f8b50067bfbb800/master.m3u8"
+      type="application/x-mpegURL"
+    />
+  </video>
+</body>
             
             '''),
               initialSettings: settings,
               onWebViewCreated: (controller) {
                 _webViewController = controller;
+              },
+              onConsoleMessage: (controller, consoleMessage) {
+                print(consoleMessage);
+              },
+              shouldOverrideUrlLoading: (controller, navigationAction) async {
+                print("object");
+                return NavigationActionPolicy.ALLOW;
+              },
+              onLoadResource: (controller, resource) {
+                print(resource);
+              },
+              onReceivedError: (controller, request, error) {
+                print(error);
               },
             ),
           ),
@@ -103,4 +141,3 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 }
-

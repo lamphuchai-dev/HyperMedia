@@ -7,6 +7,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/data/models/chapter.dart';
+import 'package:hyper_media/pages/reader/controller/watch_progress.dart';
 import 'package:hyper_media/pages/reader/cubit/reader_cubit.dart';
 import 'package:hyper_media/widgets/animated_fade.dart';
 import 'package:hyper_media/widgets/widget.dart';
@@ -30,10 +31,13 @@ class _ReaderComicState extends State<ReaderComic> {
   late ValueNotifier<WatchComicProgress> _watchProgress;
   double? _heightScreen;
   Timer? _showProgressTimer;
+  late ProgressWatchValue _progressWatchValue;
   @override
   void initState() {
     _readerCubit = widget.readerCubit;
     _scrollController = ScrollController();
+    _progressWatchValue = ProgressWatchValue();
+
     _watchProgress =
         ValueNotifier(const WatchComicProgress(show: false, progress: ""));
     _scrollController.addListener(() {
@@ -44,6 +48,10 @@ class _ReaderComicState extends State<ReaderComic> {
         _watchProgress.value = _watchProgress.value.copyWith(show: false);
       });
       _handlerProgress();
+      _progressWatchValue.addListenerProgress(
+          maxScrollExtent: _scrollController.position.maxScrollExtent,
+          offsetCurrent: _scrollController.offset,
+          height: _heightScreen ??= context.height);
     });
     _readerCubit.setScrollController(_scrollController);
 
@@ -59,18 +67,18 @@ class _ReaderComicState extends State<ReaderComic> {
   }
 
   void _handlerProgress() {
-    final maxScrollExtent = _scrollController.position.maxScrollExtent;
-    final currentOffset = _scrollController.offset;
-    _heightScreen ??= context.height;
-    final totalPages = maxScrollExtent ~/ _heightScreen! == 0
-        ? 1
-        : maxScrollExtent ~/ _heightScreen!;
-    final currentPage = currentOffset ~/ _heightScreen! == 0
-        ? 1
-        : currentOffset ~/ _heightScreen!;
+    // final maxScrollExtent = _scrollController.position.maxScrollExtent;
+    // final currentOffset = _scrollController.offset;
+    // _heightScreen ??= context.height;
+    // final totalPages = maxScrollExtent ~/ _heightScreen! == 0
+    //     ? 1
+    //     : maxScrollExtent ~/ _heightScreen!;
+    // final currentPage = currentOffset ~/ _heightScreen! == 0
+    //     ? 1
+    //     : currentOffset ~/ _heightScreen!;
 
-    _watchProgress.value = _watchProgress.value
-        .copyWith(progress: "$currentPage/$totalPages", show: true);
+    // _watchProgress.value = _watchProgress.value
+    //     .copyWith(progress: "$currentPage/$totalPages", show: true);
   }
 
   @override
@@ -121,10 +129,12 @@ class _ReaderComicState extends State<ReaderComic> {
             child: SafeArea(
               child: ValueListenableBuilder(
                   key: UniqueKey(),
-                  valueListenable: _watchProgress,
+                  valueListenable: _progressWatchValue,
                   builder: (context, value, child) {
+                    if (value == null) return SizedBox();
                     return AnimatedFade(
-                      status: value.show,
+                      // status: value.show,
+                      status: true,
                       child: Container(
                         alignment: Alignment.center,
                         padding: const EdgeInsets.symmetric(
@@ -133,7 +143,7 @@ class _ReaderComicState extends State<ReaderComic> {
                             color: colorScheme.surface,
                             borderRadius: BorderRadius.circular(3)),
                         child: Text(
-                          value.progress,
+                          value!.getPercent,
                           style: textTheme.labelSmall?.copyWith(fontSize: 11),
                         ),
                       ),

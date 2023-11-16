@@ -665,6 +665,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 4QL5KK8TA7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -818,7 +819,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A57BFB72F2DE383A3539218C /* Pods-Runner.profile-dev.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 4QL5KK8TA7;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.lph.hyper-media-dev";
 				PRODUCT_NAME = Runner;
 			};
 			name = "Profile-dev";
@@ -827,7 +830,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ADD62CE4950C386041A46DE7 /* Pods-Runner.release-dev.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 4QL5KK8TA7;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.lph.hyper-media-dev";
 				PRODUCT_NAME = Runner;
 			};
 			name = "Release-dev";
@@ -836,7 +841,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3485021581DE36A98A79B606 /* Pods-Runner.debug-product.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 4QL5KK8TA7;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.lph.hyper-media-dev";
 				PRODUCT_NAME = Runner;
 			};
 			name = "Debug-product";
@@ -845,7 +852,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6E6E56C2BEBB63C7E5472D40 /* Pods-Runner.profile-product.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 4QL5KK8TA7;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.lph.hyper-media-dev";
 				PRODUCT_NAME = Runner;
 			};
 			name = "Profile-product";
@@ -1161,6 +1170,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 4QL5KK8TA7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -1184,6 +1194,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 4QL5KK8TA7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;

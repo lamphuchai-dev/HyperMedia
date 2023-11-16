@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hyper_media/app/extensions/index.dart';
@@ -22,6 +23,7 @@ class WatchMovie extends StatefulWidget {
 
 class _WatchMovieState extends State<WatchMovie> {
   List<MovieModel> _listMovie = [];
+  MovieModel? _movieModel;
   @override
   void initState() {
     if (widget.chapter.contentVideo != null &&
@@ -29,56 +31,90 @@ class _WatchMovieState extends State<WatchMovie> {
       _listMovie = widget.chapter.contentVideo!
           .map<MovieModel>((e) => MovieModel.fromMap(e))
           .toList();
+      _movieModel = _listMovie.first;
     }
-    print(_listMovie.length);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_listMovie.isEmpty) {
+    if (_movieModel == null) {
       return Container(
         alignment: Alignment.center,
         color: Colors.transparent,
-        child: Text("Lỗi load nội dung"),
+        child: const Text("Lỗi load nội dung"),
       );
     }
-    final tmp = _listMovie[1];
 
-    // return SafeArea(
-    //   child: Stack(
-    //     children: [
-    //       const Positioned.fill(
-    //           child: ColoredBox(
-    //         color: Colors.transparent,
-    //       )),
-    //       Align(
-    //           alignment: Alignment.center,
-    //           child: switch (tmp.type) {
-    //             "html" => WatchMovieByHtml(
-    //                 html: tmp.data,
-    //               ),
-    //             "iframe" => WatchMovieByIframe(movieModel: tmp),
-    //             "video" => WatchMovieByVideo(movieModel: tmp),
-    //             _ => const SizedBox()
-    //           }),
-    //     ],
-    //   ),
-    // );
-    return SafeArea(
-      child: Column(
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        title: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _listMovie
+                  .mapIndexed((index, element) => MovieCard(
+                        index: index,
+                        model: element,
+                        isSelected: _movieModel!.data == element.data,
+                        onTap: () {
+                          setState(() {
+                            _movieModel = element;
+                          });
+                        },
+                      ))
+                  .toList(),
+            )),
+      ),
+      body: Stack(
         children: [
-          Expanded(child: SizedBox()),
-          switch (tmp.type) {
-            "html" => WatchMovieByHtml(
-                html: tmp.data,
-              ),
-            "iframe" => WatchMovieByIframe(movieModel: tmp),
-            "video" => WatchMovieByVideo(movieModel: tmp),
-            _ => const SizedBox()
-          },
-          Expanded(child: SizedBox()),
+          const Positioned.fill(
+              child: ColoredBox(
+            color: Colors.transparent,
+          )),
+          Align(
+              alignment: Alignment.center,
+              child: switch (_movieModel!.type) {
+                "html" => WatchMovieByHtml(
+                    html: _movieModel!.data,
+                  ),
+                "iframe" => WatchMovieByIframe(movieModel: _movieModel!),
+                "video" => WatchMovieByVideo(movieModel: _movieModel!),
+                _ => const SizedBox()
+              }),
         ],
+      ),
+    );
+  }
+}
+
+class MovieCard extends StatelessWidget {
+  const MovieCard(
+      {super.key,
+      required this.model,
+      required this.onTap,
+      required this.index,
+      this.isSelected = false});
+  final MovieModel model;
+  final int index;
+  final VoidCallback onTap;
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.all(4),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+            color: isSelected ? colorScheme.primary : colorScheme.surface,
+            borderRadius: BorderRadius.circular(4)),
+        child: Text("SV $index"),
       ),
     );
   }
@@ -186,8 +222,16 @@ class _WatchMovieByVideoState extends State<WatchMovieByVideo> {
   void initState() {
     _player = Player();
     _videoController = VideoController(_player!);
-    _player!.open(Media(Uri.parse(widget.movieModel.data).toString()));
+    open();
     super.initState();
+  }
+
+  void open() async {
+    try {
+      await _player!.open(Media(widget.movieModel.data));
+    } catch (error) {
+      _player?.dispose();
+    }
   }
 
   @override
