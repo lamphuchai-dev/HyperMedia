@@ -52,6 +52,7 @@ class App extends StatelessWidget {
               show: kDebugMode,
             ),
             // home: TestUiView(),
+            // home: WatchComicView(),
             // scrollBehavior: const ScrollBehavior().copyWith(overscroll: false),
           );
         },

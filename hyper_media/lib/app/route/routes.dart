@@ -3,10 +3,12 @@ import 'package:hyper_media/pages/bottom_nav/bottom_nav.dart';
 import 'package:hyper_media/pages/chapters/chapters.dart';
 import 'package:hyper_media/pages/detail/detail.dart';
 import 'package:hyper_media/pages/genre/genre.dart';
-import 'package:hyper_media/pages/reader/reader.dart';
 import 'package:hyper_media/pages/web_view/view/web_view_view.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:hyper_media/pages/extensions/extensions.dart';
+// import 'package:hyper_media/pages/reader_book/reader_book.dart';
+import 'package:hyper_media/pages/reader/reader/reader.dart';
+
 
 import 'routes_name.dart';
 

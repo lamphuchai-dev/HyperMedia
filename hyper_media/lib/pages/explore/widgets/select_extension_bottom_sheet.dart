@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:hyper_media/app/route/routes_name.dart';
 import 'package:hyper_media/data/models/extension.dart';
@@ -31,85 +30,100 @@ class SelectExtensionBottomSheet extends StatelessWidget {
         child: GestureDetector(
           onTap: () {},
           child: DraggableScrollableSheet(
-            initialChildSize: 0.2,
-            maxChildSize: 1,
-            minChildSize: 0.15,
+            initialChildSize: 0.3,
+            maxChildSize: 0.7,
+            minChildSize: 0.2,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
+                clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(
                     color: colorScheme.background,
                     borderRadius:
                         const BorderRadius.vertical(top: Radius.circular(12))),
-                child: CustomScrollView(
+                child: NestedScrollView(
                   controller: scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Column(children: [
-                          GestureDetector(
-                            onTap: () => Navigator.pop(context),
-                            child: Container(
-                              width: 40,
-                              padding: const EdgeInsets.only(top: 8),
+                  headerSliverBuilder: (context, innerBoxIsScrolled) {
+                    return [
+                      SliverAppBar(
+                        automaticallyImplyLeading: true,
+                        leading: const SizedBox(),
+                        pinned: true,
+                        title: Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Column(children: [
+                            GestureDetector(
+                              onTap: () => Navigator.pop(context),
                               child: Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.grey,
-                                    borderRadius: BorderRadius.circular(8)),
-                                height: 6,
+                                width: 40,
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.circular(8)),
+                                  height: 6,
+                                ),
                               ),
                             ),
-                          ),
-                          Row(
-                            children: [
-                              const Expanded(child: SizedBox()),
-                              Text("Tiện ích sẵn có",
-                                  style: textTheme.titleMedium),
-                              Expanded(
-                                  child: Align(
-                                alignment: Alignment.centerRight,
-                                child: IconButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      Navigator.pushNamed(
-                                          context, RoutesName.extensions);
-                                    },
-                                    icon: const Icon(Icons.more_vert)),
-                              ))
-                            ],
-                          ),
-                        ]),
+                            Gaps.hGap4,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("Tiện ích sẵn có",
+                                    style: textTheme.titleMedium),
+                              ],
+                            ),
+                          ]),
+                        ),
+                        actions: [
+                          IconButton(
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, RoutesName.extensions);
+                              },
+                              icon: const Icon(Icons.more_vert))
+                        ],
+                      )
+                    ];
+                  },
+                  body: MediaQuery.removePadding(
+                    removeTop: true,
+                    context: context,
+                    child: RawScrollbar(
+                      controller: scrollController,
+                      radius: const Radius.circular(8),
+                      thumbColor: colorScheme.surface,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: Dimens.horizontalPadding),
+                        child: GridView.builder(
+                          itemCount: extensions.length,
+                          controller: scrollController,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 8,
+                                  mainAxisExtent: 60,
+                                  mainAxisSpacing: 8),
+                          itemBuilder: (context, index) {
+                            final ext = extensions[index];
+                            return ExtensionCard(
+                              extension: ext,
+                              isPrimary: exceptionPrimary.metadata.source ==
+                                  ext.metadata.source,
+                              onTap: () {
+                                if (exceptionPrimary.metadata.source !=
+                                    ext.metadata.source) {
+                                  onSelected.call(ext);
+                                }
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        ),
                       ),
                     ),
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      sliver: SliverGrid.builder(
-                        itemCount: extensions.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 8,
-                                mainAxisExtent: 60,
-                                mainAxisSpacing: 8),
-                        itemBuilder: (context, index) {
-                          final ext = extensions[index];
-                          return ExtensionCard(
-                            extension: ext,
-                            isPrimary: exceptionPrimary.metadata.source ==
-                                ext.metadata.source,
-                            onTap: () {
-                              if (exceptionPrimary.metadata.source !=
-                                  ext.metadata.source) {
-                                onSelected.call(ext);
-                              }
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      ),
-                    )
-                  ],
+                  ),
                 ),
               );
             },
