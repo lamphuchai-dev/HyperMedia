@@ -35,69 +35,9 @@ async function chapter(url) {
   );
 
   if (data) {
-    var html = `
-    
-    <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-      }
-    </style>
-    <script
-      type="text/javascript"
-      src="https://animehay.city/themes/js/jwplayer.js?v=1.0.8"
-    ></script>
-    <script type="text/javascript">
-      jwplayer.key = "ITWMv7t88JGzI0xPwW8I0+LveiXX9SWbfdmt0ArUSyc=";
-    </script>
-    <script
-      charset="utf-8"
-      src="https://ssl.p.jwpcdn.com/player/v/8.8.2/jwplayer.core.controls.js"
-    ></script>
-    <script
-      charset="utf-8"
-      src="https://ssl.p.jwpcdn.com/player/v/8.8.2/related.js"
-    ></script>
-    <script
-      charset="utf-8"
-      src="https://ssl.p.jwpcdn.com/player/v/8.8.2/provider.hlsjs.js"
-    ></script>
-  </head>
-  <body>
-    <div id="jwPlayerId"></div>
-    <script type="text/javascript">
-      jwplayer("jwPlayerId").setup({
-        playlist: [
-          {
-            sources: [
-              {
-                default: false,
-                type: "hls",
-                file: "${data[0]}",
-                label: "0",
-                preload: "metadata",
-              },
-            ],
-          },
-        ],
-        primary: "html5",
-        hlshtml: true,
-        aspectratio: "16:9",
-        width: "100%",
-        playbackRateControls: [0.75, 1, 1.25, 1.5, 2, 2.5],
-        autostart: false,
-        volume: 100,
-      });
-    </script>
-  </body>
-</html>
-    `;
     result.push({
-      data: html,
-      type: "html",
+      data: data[0],
+      type: m3u8,
     });
   }
   if (result.length == 0) {

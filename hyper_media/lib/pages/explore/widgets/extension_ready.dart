@@ -106,6 +106,7 @@ class ExtensionReady extends StatelessWidget {
                         context: context,
                         backgroundColor: Colors.transparent,
                         clipBehavior: Clip.hardEdge,
+                        enableDrag: false,
                         isScrollControlled: true,
                         builder: (context) => SelectExtensionBottomSheet(
                           extensions: extensions,

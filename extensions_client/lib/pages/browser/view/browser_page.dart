@@ -213,8 +213,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   var settings = InAppBrowserClassSettings(
-      browserSettings: InAppBrowserSettings(hideUrlBar: false),
-      webViewSettings: InAppWebViewSettings(javaScriptEnabled: true));
+      browserSettings: InAppBrowserSettings(hideUrlBar: true),
+      webViewSettings:
+          InAppWebViewSettings(javaScriptEnabled: true, supportZoom: false));
 
   @override
   Widget build(BuildContext context) {
@@ -226,8 +227,9 @@ class _MyAppState extends State<MyApp> {
         child: ElevatedButton(
             onPressed: () {
               widget.browser.openUrlRequest(
-                  urlRequest:
-                      URLRequest(url: WebUri("https://metruyencv.com/")),
+                  urlRequest: URLRequest(
+                      url: WebUri(
+                          "https://lamphuchai-dev.github.io/?video=https://1080.opstream4.com/20231007/48183_d75f5a34/index.m3u8")),
                   settings: settings);
             },
             child: Text("Open InAppBrowser")),

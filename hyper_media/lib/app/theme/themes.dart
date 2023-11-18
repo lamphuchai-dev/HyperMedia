@@ -30,7 +30,13 @@ class Themes {
       popupMenuTheme: PopupMenuThemeData(
           color: AppColors.light.cardBackground,
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))));
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+      sliderTheme: const SliderThemeData(
+        trackHeight: 2.0,
+        thumbShape: RoundSliderThumbShape(
+          enabledThumbRadius: 8.0,
+        ),
+      ));
   static final dark = ThemeData(
       useMaterial3: true,
       primaryColor: AppColors.primary,
@@ -51,5 +57,11 @@ class Themes {
       popupMenuTheme: PopupMenuThemeData(
           color: AppColors.dark.cardBackground,
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))));
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+              sliderTheme: const SliderThemeData(
+                        trackHeight: 2.0,
+                        thumbShape: RoundSliderThumbShape(
+                          enabledThumbRadius: 8.0,
+                        ),
+                      ));
 }

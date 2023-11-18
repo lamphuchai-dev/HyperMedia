@@ -37,6 +37,7 @@ class App extends StatelessWidget {
         buildWhen: (previous, current) =>
             previous.themeMode != current.themeMode,
         builder: (context, state) {
+<<<<<<< HEAD
           return PlatformWidget(
               mobileWidget: MaterialApp(
                 title: FlavorApp.name,
@@ -71,6 +72,27 @@ class App extends StatelessWidget {
                   show: kDebugMode,
                 ),
               ));
+=======
+          return MaterialApp(
+            title: FlavorApp.name,
+            themeMode: state.themeMode,
+            theme: Themes.light,
+            darkTheme: Themes.dark,
+            debugShowCheckedModeBanner: false,
+            onGenerateRoute: Routes.onGenerateRoute,
+            initialRoute: Routes.initialRoute,
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+            builder: (context, child) => _flavorBanner(
+              child: child,
+              show: kDebugMode,
+            ),
+            // home: TestUiView(),
+            // home: WatchComicView(),
+            // scrollBehavior: const ScrollBehavior().copyWith(overscroll: false),
+          );
+>>>>>>> ca28996 (up)
         },
       ),
     );

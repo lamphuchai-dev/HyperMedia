@@ -2,8 +2,9 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:hyper_media/app/types/app_type.dart';
 import 'package:isar/isar.dart';
+
+import 'package:hyper_media/app/types/app_type.dart';
 
 part 'chapter.g.dart';
 

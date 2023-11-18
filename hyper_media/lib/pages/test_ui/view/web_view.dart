@@ -14,6 +14,7 @@ class _MyAppState extends State<MyApp> {
 
   InAppWebViewController? _webViewController;
   InAppWebViewSettings settings = InAppWebViewSettings(
+<<<<<<< HEAD
     useShouldOverrideUrlLoading: false,
     supportZoom: false,
     useHybridComposition: true,
@@ -23,12 +24,16 @@ class _MyAppState extends State<MyApp> {
     iframeAllow: "camera; microphone",
     iframeAllowFullscreen: true,
   );
+=======
+      useShouldOverrideUrlLoading: false, supportZoom: false);
+>>>>>>> ca28996 (up)
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text("Official InAppWebView website")),
         body: Center(
+<<<<<<< HEAD
           child: AspectRatio(
             aspectRatio: 16 / 9,
             child: InAppWebView(
@@ -131,6 +136,16 @@ class _MyAppState extends State<MyApp> {
                 print(error);
               },
             ),
+=======
+          child: InAppWebView(
+            key: _webViewKey,
+            initialUrlRequest:
+                URLRequest(url: WebUri("https://lamphuchai-dev.github.io/")),
+            initialSettings: settings,
+            onWebViewCreated: (controller) {
+              _webViewController = controller;
+            },
+>>>>>>> ca28996 (up)
           ),
         ));
   }

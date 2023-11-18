@@ -6,8 +6,8 @@ import 'package:hyper_media/app/extensions/context_extension.dart';
 import 'package:hyper_media/app/route/routes_name.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/book.dart';
-import 'package:hyper_media/pages/reader/reader.dart';
 import 'package:hyper_media/widgets/widget.dart';
+import '../../reader/reader/reader.dart';
 import '../cubit/chapters_cubit.dart';
 
 class ChaptersPage extends StatefulWidget {
