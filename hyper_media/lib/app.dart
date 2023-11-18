@@ -13,89 +13,64 @@ import 'flavors.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          AppCubitCubit(sharedPreferenceHelper: getIt<SharedPreferenceHelper>())
-            ..onInit(),
-      child: BlocConsumer<AppCubitCubit, AppCubitState>(
-        listenWhen: (previous, current) =>
-            previous.themeMode != current.themeMode,
-        listener: (context, state) {
-          final backgroundColor = context.colorScheme.background;
-          SystemChrome.setSystemUIOverlayStyle(
-            SystemUiOverlayStyle(
-              systemNavigationBarColor: backgroundColor,
-            ),
-          );
-        },
-        buildWhen: (previous, current) =>
-            previous.themeMode != current.themeMode,
-        builder: (context, state) {
-<<<<<<< HEAD
-          return PlatformWidget(
-              mobileWidget: MaterialApp(
-                title: FlavorApp.name,
-                themeMode: state.themeMode,
-                theme: Themes.light,
-                darkTheme: Themes.dark,
-                debugShowCheckedModeBanner: false,
-                onGenerateRoute: Routes.onGenerateRoute,
-                initialRoute: Routes.initialRoute,
-                localizationsDelegates: context.localizationDelegates,
-                supportedLocales: context.supportedLocales,
-                locale: context.locale,
-                builder: (context, child) => _flavorBanner(
-                  child: child,
-                  show: kDebugMode,
+        create: (context) => AppCubitCubit(
+            sharedPreferenceHelper: getIt<SharedPreferenceHelper>())
+          ..onInit(),
+        child: BlocConsumer<AppCubitCubit, AppCubitState>(
+            listenWhen: (previous, current) =>
+                previous.themeMode != current.themeMode,
+            listener: (context, state) {
+              final backgroundColor = context.colorScheme.background;
+              SystemChrome.setSystemUIOverlayStyle(
+                SystemUiOverlayStyle(
+                  systemNavigationBarColor: backgroundColor,
                 ),
-                // home: const TestUiView(),
-              ),
-              macosWidget: MacosApp(
-                title: FlavorApp.name,
-                theme: MacosThemeData.light(),
-                darkTheme: MacosThemeData.dark(),
-                themeMode: state.themeMode,
-                debugShowCheckedModeBanner: false,
-                onGenerateRoute: Routes.onGenerateRoute,
-                initialRoute: Routes.initialRoute,
-                localizationsDelegates: context.localizationDelegates,
-                supportedLocales: context.supportedLocales,
-                locale: context.locale,
-                builder: (context, child) => _flavorBanner(
-                  child: child,
-                  show: kDebugMode,
-                ),
-              ));
-=======
-          return MaterialApp(
-            title: FlavorApp.name,
-            themeMode: state.themeMode,
-            theme: Themes.light,
-            darkTheme: Themes.dark,
-            debugShowCheckedModeBanner: false,
-            onGenerateRoute: Routes.onGenerateRoute,
-            initialRoute: Routes.initialRoute,
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-            builder: (context, child) => _flavorBanner(
-              child: child,
-              show: kDebugMode,
-            ),
-            // home: TestUiView(),
-            // home: WatchComicView(),
-            // scrollBehavior: const ScrollBehavior().copyWith(overscroll: false),
-          );
->>>>>>> ca28996 (up)
-        },
-      ),
-    );
+              );
+            },
+            buildWhen: (previous, current) =>
+                previous.themeMode != current.themeMode,
+            builder: (context, state) {
+              return PlatformWidget(
+                  mobileWidget: MaterialApp(
+                    title: FlavorApp.name,
+                    themeMode: state.themeMode,
+                    theme: Themes.light,
+                    darkTheme: Themes.dark,
+                    debugShowCheckedModeBanner: false,
+                    onGenerateRoute: Routes.onGenerateRoute,
+                    initialRoute: Routes.initialRoute,
+                    localizationsDelegates: context.localizationDelegates,
+                    supportedLocales: context.supportedLocales,
+                    locale: context.locale,
+                    builder: (context, child) => _flavorBanner(
+                      child: child,
+                      show: kDebugMode,
+                    ),
+                    // home: const TestUiView(),
+                  ),
+                  macosWidget: MacosApp(
+                    title: FlavorApp.name,
+                    theme: MacosThemeData.light(),
+                    darkTheme: MacosThemeData.dark(),
+                    themeMode: state.themeMode,
+                    debugShowCheckedModeBanner: false,
+                    onGenerateRoute: Routes.onGenerateRoute,
+                    initialRoute: Routes.initialRoute,
+                    localizationsDelegates: context.localizationDelegates,
+                    supportedLocales: context.supportedLocales,
+                    locale: context.locale,
+                    builder: (context, child) => _flavorBanner(
+                      child: child,
+                      show: kDebugMode,
+                    ),
+                  ));
+            }));
   }
 
   Widget _flavorBanner({
