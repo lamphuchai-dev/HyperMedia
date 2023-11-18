@@ -14,7 +14,7 @@ async function chapters(bookUrl) {
       host,
     });
   }
-  return Response.success(chapters);
+  return Response.success(chapters.reverse());
 }
 
 // runFn(() => chapters("https://manga18fx.com/manga/troublesome-sister"));

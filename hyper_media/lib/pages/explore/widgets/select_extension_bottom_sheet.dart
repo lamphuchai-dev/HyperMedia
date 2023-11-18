@@ -78,6 +78,7 @@ class SelectExtensionBottomSheet extends StatelessWidget {
                         actions: [
                           IconButton(
                               onPressed: () {
+                                Navigator.pop(context);
                                 Navigator.pushNamed(
                                     context, RoutesName.extensions);
                               },

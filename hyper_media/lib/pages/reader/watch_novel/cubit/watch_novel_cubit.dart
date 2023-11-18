@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/types/app_type.dart';
-import 'package:hyper_media/data/models/chapter.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/utils/auto_scroll_notifier.dart';
 import 'package:hyper_media/utils/progress_watch_notifier.dart';
