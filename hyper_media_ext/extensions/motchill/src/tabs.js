@@ -14,7 +14,7 @@ async function tabs() {
     },
     {
       title: "Phim Chiếu Rạp",
-      url: "/phim-chieu-ra",
+      url: "/phim-chieu-rap",
     },
     {
       title: "TV Show",
