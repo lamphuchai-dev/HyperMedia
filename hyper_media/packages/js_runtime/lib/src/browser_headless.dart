@@ -49,8 +49,8 @@ class BrowserHeadless {
           tmp.timer.cancel();
         }
       }
-      print(tmp.headlessInAppWebView.id);
-      print(tmp.headlessInAppWebView.isRunning());
+      // print(tmp.headlessInAppWebView.id);
+      // print(tmp.headlessInAppWebView.isRunning());
 
       _map.remove(key);
       _logger.log("closeByKey", name: "dispose");

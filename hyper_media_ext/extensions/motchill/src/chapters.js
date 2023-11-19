@@ -1,44 +1,38 @@
-function extractNumberFromUrl(url) {
-  const regex = /(\d+)$/;
-  const match = url.match(regex);
-
-  if (match) {
-    return parseInt(match[1], 10);
-  }
-
-  return null;
-}
-
 async function chapters(url) {
   const host = "https://motchillzzz.tv";
   const res = await Extension.request(url);
   if (!res) return Response.error("Lỗi tải nội dung");
 
-  const listEl = await Extension.querySelectorAll(
+  var linkWatch = await Extension.getAttributeText(
     res,
-    "main.container div a.transition.rounded"
+    'main.container div[class="text-center"] a',
+    "href"
   );
+
+  if (!linkWatch) return Response.error("Lỗi tải nội dung");
+
+  const html = await Extension.request(host + linkWatch);
+
+  if (!html) return Response.error("Lỗi tải nội dung");
+
+  const lstEl = await Extension.querySelectorAll(
+    html,
+    "section div a.text-center"
+  );
+
   const chapters = [];
-  if (listEl.length != 0) {
-    const linkEp = await Extension.getAttributeText(
-      listEl[0].content,
-      "a",
-      "href"
-    );
-    const totalEsp = extractNumberFromUrl(linkEp);
-    if (totalEsp) {
-      const urlTmp = linkEp.replace(totalEsp, "");
-      for (var index = 1; index <= totalEsp; index++) {
-        chapters.push({
-          name: "Tập " + index,
-          url: urlTmp + index,
-          host,
-        });
-      }
-      return Response.success(chapters);
-    }
+
+  for (var index = 0; index < lstEl.length; index++) {
+    const el = lstEl[index].content;
+    var link = await Extension.getAttributeText(el, "a", "href");
+    var name = await Extension.querySelector(el, "a").text;
+    chapters.push({
+      name: name,
+      url: link,
+      host,
+    });
   }
-  return Response.success([]);
+  return Response.success(chapters);
 }
 
-// runFn(() => chapters("https://motchillzzz.tv/gia-dinh-diep-vien-phan-2ef9"));
+// runFn(() => chapters("https://motchillzzz.tv/hen-nhau-tren-sao-kim"));

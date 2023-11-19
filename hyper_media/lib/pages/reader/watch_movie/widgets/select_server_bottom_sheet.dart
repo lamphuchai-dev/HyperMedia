@@ -32,7 +32,7 @@ class SelectServerBottomSheet extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: servers
                 .map((e) => ListTile(
-                      tileColor: e.name == current.name
+                      tileColor: e.data == current.data
                           ? context.colorScheme.primary
                           : null,
                       title: Text(e.name),

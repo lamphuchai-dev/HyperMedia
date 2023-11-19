@@ -1,22 +1,14 @@
 async function search(url, kw, page) {
-  if (page != null) {
-    if (page == 0) {
-      page = 1;
-    }
-    url = url + `/tim-kiem/${kw}/trang-${page}.html`;
-  } else {
-    url = url + `/tim-kiem/${kw}.html`;
-  }
-  const res = await Extension.request(url, {
+  const res = await Extension.request(url + "/search", {
     queryParameters: {
-      q: kw,
+      searchText: kw,
+      page: page,
     },
   });
   if (!res) return Response.error("Lỗi tải nội dung");
-
-  const lstEl = await Extension.querySelectorAll(res, "div.movie-item");
+  const lstEl = await Extension.querySelectorAll(res, "div article");
   const result = [];
-  var host = "https://animehay.city";
+  var host = "https://motchillzzz.tv";
 
   for (const item of lstEl) {
     const html = item.content;
@@ -24,10 +16,8 @@ async function search(url, kw, page) {
     result.push({
       name: await Extension.getAttributeText(html, "a", "title"),
       link: link.replace(host, ""),
-      description: await await Extension.querySelector(
-        html,
-        "div.episode-latest span"
-      ).text,
+      description: await await Extension.querySelector(html, "article span")
+        .text,
       cover: await Extension.getAttributeText(html, "img", "src"),
       host,
     });
@@ -35,4 +25,4 @@ async function search(url, kw, page) {
   return Response.success(result);
 }
 
-// runFn(() => search("https://animehay.city", "tu tien"));
+// runFn(() => search("https://motchillzzz.tv", "tu tien", 2));
