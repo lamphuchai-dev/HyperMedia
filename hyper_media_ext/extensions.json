@@ -2,7 +2,7 @@
     {
         "name": "Net Truyện",
         "slug": "net_truyen",
-        "author": "uBook",
+        "author": "HyperMedia",
         "version": 2,
         "source": "https://www.nettruyenus.com",
         "regexp": "(www.)?(nettruyenus).(com)",
@@ -14,9 +14,25 @@
         "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/net_truyen/icon.png"
     },
     {
+        "name": "Mot Chill",
+        "author": "HyperMedia",
+        "slug": "motchill",
+        "version": 1,
+        "source": "https://motchillzzz.tv",
+        "regexp": "(motchillzzz).(tv)",
+        "description": "Xem phim trên trang Motchill",
+        "locale": "vi_VN",
+        "language": "javascript",
+        "type": "movie",
+        "search": true,
+        "genre": true,
+        "path": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/motchill/extension.zip",
+        "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/motchill/icon.png"
+    },
+    {
         "name": "Mê Truyện Cv",
         "slug": "metruyencv",
-        "author": "uBook",
+        "author": "HyperMedia",
         "version": 1,
         "source": "https://metruyencv.com",
         "regexp": "(metruyencv).(com)",
@@ -29,7 +45,7 @@
     },
     {
         "name": "Manga18fx",
-        "author": "uBook",
+        "author": "HyperMedia",
         "slug": "manga18fx",
         "version": 1,
         "source": "https://manga18fx.com",
@@ -45,7 +61,7 @@
     },
     {
         "name": "Anime Hay",
-        "author": "uBook",
+        "author": "HyperMedia",
         "slug": "anime_hay",
         "version": 2,
         "source": "https://animehay.city",

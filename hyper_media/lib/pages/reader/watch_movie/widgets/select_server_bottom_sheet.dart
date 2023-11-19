@@ -19,7 +19,7 @@ class SelectServerBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: context.height * 0.3,
+      height: context.height * 0.6,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

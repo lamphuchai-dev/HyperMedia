@@ -1,20 +1,20 @@
 {
   "metadata": {
-    "name": "Manga18fx",
+    "name": "Mot Chill",
     "author": "HyperMedia",
-    "slug": "manga18fx",
+    "slug": "motchill",
     "version": 1,
-    "source": "https://manga18fx.com",
-    "regexp": "(manga18fx).(com)",
-    "description": "Đọc truyện trên trang Manga18fx",
+    "source": "https://motchillzzz.tv",
+    "regexp": "(motchillzzz).(tv)",
+    "description": "Xem phim trên trang Motchill",
     "locale": "vi_VN",
     "language": "javascript",
-    "type": "comic",
-    "search": "true",
-    "genre": "true"
+    "type": "movie",
+    "search": true,
+    "genre": true
   },
   "script": {
-    "tabs": "./src/tabs.js",
+    "tabs": "src/tabs.js",
     "home": "src/home.js",
     "detail": "src/detail.js",
     "chapters": "src/chapters.js",
