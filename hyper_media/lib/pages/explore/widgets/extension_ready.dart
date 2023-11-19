@@ -198,6 +198,7 @@ class ExtensionReady extends StatelessWidget {
       tabChildren.add(KeepAliveWidget(
           child: GenreWidget(
         onFetch: () async => exploreCubit.onGetListGenre(),
+        extension: extension,
       )));
     }
     return DefaultTabController(

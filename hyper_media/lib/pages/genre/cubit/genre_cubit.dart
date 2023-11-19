@@ -24,7 +24,7 @@ class GenreCubit extends Cubit<GenreState> {
       final result = await _jsRuntime.getList(
           url: _genre.url!, page: page, source: _extension.getHomeScript);
       if (result is SuccessJsRuntime) {
-        return result.data.map((e) => Book.fromMap(e)).toList();
+        return result.data.map<Book>((e) => Book.fromMap(e)).toList();
       }
       return [];
     } catch (error) {

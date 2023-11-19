@@ -21,7 +21,7 @@ async function tabs() {
       url: "/tv-show",
     },
     {
-      title: "Phim Thuết Minh",
+      title: "Phim Thuyết Minh",
       url: "/phim-thuyet-minh",
     },
   ]);
