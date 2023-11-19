@@ -24,21 +24,16 @@ async function detail(url) {
     author = await Extension.querySelector(authorRow[1].content, "p").text;
   }
 
-  const statusRow = await Extension.querySelectorAll(
+  var bookStatus = await Extension.querySelector(
     detailEl.content,
-    "li.status p"
-  );
-
-  var bookStatus = "";
-  if (statusRow.length == 2) {
-    bookStatus = await Extension.querySelector(statusRow[1].content, "p").text;
-  }
+    "div.status div:nth-child(3)"
+  ).text;
 
   let genres = [];
 
   const description = await Extension.querySelector(
     detailEl.content,
-    "div.detail-content p"
+    'div[class="desc ah-frame-bg"] div:nth-child(3)'
   ).text;
 
   const totalChapters = (
@@ -65,9 +60,9 @@ async function detail(url) {
     name,
     cover,
     link: url.replace(host, ""),
-    bookStatus,
+    bookStatus: bookStatus ? bookStatus.trim() : "",
     author,
-    description,
+    description: description ? description.trim() : "",
     genres,
     totalChapters,
     host,
@@ -75,5 +70,7 @@ async function detail(url) {
 }
 
 // runFn(() =>
-//   detail("https://animehay.city/thong-tin-phim/tien-nghich-3879.html")
+//   detail(
+//     "https://animehay.city/thong-tin-phim/tokyo-revengers-tenjiku-hen-3902.html"
+//   )
 // );

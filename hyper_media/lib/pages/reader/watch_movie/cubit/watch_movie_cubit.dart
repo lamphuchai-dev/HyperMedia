@@ -14,11 +14,11 @@ class WatchMovieCubit extends Cubit<WatchMovieState> {
   WatchMovieCubit({required ReaderCubit readerBookCubit})
       : _readerCubit = readerBookCubit,
         super(WatchMovieState(
-            servers: [],
             watchChapter:
                 readerBookCubit.chapters[readerBookCubit.watchInitial],
             status: StatusType.init));
   final ReaderCubit _readerCubit;
+  List<MovieServer> servers = [];
 
   void onInit() {
     getDetailChapter(state.watchChapter);
@@ -26,30 +26,38 @@ class WatchMovieCubit extends Cubit<WatchMovieState> {
 
   void getDetailChapter(Chapter chapter) async {
     try {
-      if (chapter.contentComic != null && chapter.contentComic!.isNotEmpty) {
-        emit(state.copyWith(watchChapter: chapter, status: StatusType.loaded));
-      } else {
-        emit(state.copyWith(watchChapter: chapter, status: StatusType.loading));
-        chapter = await _readerCubit.getContentsChapter(chapter);
-        List<MovieServer> servers = [];
-
-        if (chapter.contentVideo != null) {
-          for (int i = 0; i < chapter.contentVideo!.length; i++) {
-            Map<String, dynamic> item = chapter.contentVideo![i];
-            if (item["name"] == null) {
-              item["name"] = "SV ${i + 1}";
-            }
-            servers.add(MovieServer.fromMap(item));
+      emit(WatchMovieState(watchChapter: chapter, status: StatusType.loading));
+      servers.clear();
+      if (chapter.contentVideo != null) {
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+      chapter = await _readerCubit.getContentsChapter(chapter);
+      if (chapter.contentVideo != null) {
+        for (int i = 0; i < chapter.contentVideo!.length; i++) {
+          Map<String, dynamic> item = chapter.contentVideo![i];
+          if (item["name"] == null) {
+            item["name"] = "SV ${i + 1}";
           }
+          servers.add(MovieServer.fromMap(item));
         }
         emit(state.copyWith(
             watchChapter: chapter,
-            servers: servers,
-            status: StatusType.loaded));
+            status: StatusType.loaded,
+            server: servers.first));
+      } else {
+        emit(state.copyWith(watchChapter: chapter, status: StatusType.error));
       }
     } catch (error) {
       emit(state.copyWith(watchChapter: chapter, status: StatusType.error));
     }
+  }
+
+  void onChangeServer(MovieServer server) {
+    emit(state.copyWith(server: server));
+  }
+
+  void onChangeChapter(Chapter chapter) {
+    getDetailChapter(chapter);
   }
 }
 

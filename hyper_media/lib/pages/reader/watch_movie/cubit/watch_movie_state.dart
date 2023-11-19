@@ -3,22 +3,18 @@ part of 'watch_movie_cubit.dart';
 
 class WatchMovieState extends Equatable {
   const WatchMovieState(
-      {required this.servers, required this.watchChapter, required this.status});
-  final List<MovieServer> servers;
+      {required this.watchChapter, required this.status, this.server});
   final Chapter watchChapter;
   final StatusType status;
+  final MovieServer? server;
   @override
-  List<Object> get props => [servers, watchChapter, status];
+  List<Object?> get props => [watchChapter, status, server];
 
-  WatchMovieState copyWith({
-    List<MovieServer>? servers,
-    Chapter? watchChapter,
-    StatusType? status,
-  }) {
+  WatchMovieState copyWith(
+      {Chapter? watchChapter, StatusType? status, MovieServer? server}) {
     return WatchMovieState(
-      servers: servers ?? this.servers,
-      watchChapter: watchChapter ?? this.watchChapter,
-      status: status ?? this.status,
-    );
+        watchChapter: watchChapter ?? this.watchChapter,
+        status: status ?? this.status,
+        server: server ?? this.server);
   }
 }
