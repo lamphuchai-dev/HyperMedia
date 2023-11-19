@@ -1,15 +1,13 @@
 async function chapter(url) {
-  const api = await Browser.launchFetchBlock(url, ".*?/api/play/get*?", 10000);
+  var api = await Browser.launchFetchBlock(url, ".*?/api/play/get*?", 10000);
 
   if (!api) return Response.error("Có lỗi khi tải nội dung");
 
-  console.log(api);
-
+  api = api.replace("server=0", "server=3");
   const data = await Extension.request(api, {
     headers: {
       Referer: url,
     },
-    queryParameters: { server: 3 },
   });
   if (!data) return Response.error("Có lỗi khi tải nội dung");
   var result = [];
@@ -17,6 +15,7 @@ async function chapter(url) {
   data.forEach((el) => {
     if (el.Link) {
       result.push({
+        name: el.ServerName,
         data: el.Link,
         type: el.IsFrame ? "iframe" : "m3u8",
       });
@@ -25,4 +24,6 @@ async function chapter(url) {
   return Response.success(result);
 }
 
-// runFn(() => chapter("https://motchillzzz.tv/xem-phim-ninh-an-nhu-mong-tap-26"));
+// runFn(() =>
+//   chapter("https://motchillzzz.tv/xem-phim-ninh-an-nhu-mong-tap-1_103d")
+// );

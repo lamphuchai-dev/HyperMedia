@@ -3,7 +3,7 @@
     "name": "Mot Chill",
     "author": "HyperMedia",
     "slug": "motchill",
-    "version": 1,
+    "version": 2,
     "source": "https://motchillzzz.tv",
     "regexp": "(motchillzzz).(tv)",
     "description": "Xem phim trên trang Motchill",
