@@ -25,9 +25,14 @@ class ExploreCubit extends Cubit<ExploreState> {
               extension: ext, tabs: const [], status: StatusType.loading));
         }
       } else if (state is ExploreExtensionLoaded) {
-        final ext = await _database.getExtensionFirst;
-        if (ext == null) {
-          emit(ExploreExtensionNull());
+        final tmp = await _database.getExtensionById(state.extension.id!);
+        if (tmp == null) {
+          final ext = await _database.getExtensionFirst;
+          if (ext == null) {
+            emit(ExploreExtensionNull());
+          } else {
+            onInit();
+          }
         }
       }
     });

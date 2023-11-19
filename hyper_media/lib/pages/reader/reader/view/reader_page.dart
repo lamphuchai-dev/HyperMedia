@@ -8,6 +8,7 @@ import 'package:hyper_media/utils/system_utils.dart';
 import 'package:hyper_media/widgets/widget.dart';
 
 import '../../watch_comic/watch_comic.dart';
+import '../../watch_movie/watch_movie.dart';
 import '../../watch_novel/watch_novel.dart';
 import '../cubit/reader_cubit.dart';
 
@@ -93,7 +94,7 @@ class ReaderBook extends StatelessWidget {
     return switch (readerCubit.getExtensionType) {
       ExtensionType.comic => const WatchComicView(),
       ExtensionType.novel => const WatchNovelView(),
-      _ => const SizedBox(),
+      ExtensionType.movie => const WatchMovieView(),
     };
   }
 }

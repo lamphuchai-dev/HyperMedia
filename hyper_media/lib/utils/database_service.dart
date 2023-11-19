@@ -124,6 +124,10 @@ class DatabaseUtils {
     });
   }
 
+  Future<Extension?> getExtensionById(int id) async {
+    return database.extensions.get(id);
+  }
+
   Future<bool> deleteExtensionById(int id) async {
     return database.writeTxn(() => database.extensions.delete(id));
   }

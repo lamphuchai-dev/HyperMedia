@@ -37,7 +37,7 @@ async function chapter(url) {
   if (data) {
     result.push({
       data: data[0],
-      type: m3u8,
+      type: "m3u8",
     });
   }
   if (result.length == 0) {

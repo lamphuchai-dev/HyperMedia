@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hyper_media/app/types/app_type.dart';
+import 'package:hyper_media/widgets/loading_widget.dart';
 import '../cubit/watch_movie_cubit.dart';
 import '../widgets/widgets.dart';
 
@@ -22,7 +24,16 @@ class _WatchMoviePageState extends State<WatchMoviePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text("Watch movie")),
-      body: SizedBox(),
+      body: BlocBuilder<WatchMovieCubit, WatchMovieState>(
+        buildWhen: (previous, current) => previous.status != current.status,
+        builder: (context, state) {
+          return switch (state.status) {
+            StatusType.loading => LoadingWidget(),
+            StatusType.loaded => Text("data"),
+            _ => SizedBox(),
+          };
+        },
+      ),
     );
   }
 }
