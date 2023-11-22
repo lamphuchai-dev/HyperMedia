@@ -52,6 +52,6 @@ async function chapter(url) {
   return Response.success(result);
 }
 
-// runFn(() =>
-//   chapter("https://subnhanhs.com/xem-phim/di-ai-vi-doanh-tap-1-451257")
-// );
+runFn(() =>
+  chapter("https://subnhanhs.com/xem-phim/di-ai-vi-doanh-tap-1-451257")
+);

@@ -1,5 +1,13 @@
 async function chapters(url) {
   const host = "https://subnhanhs.com";
+
+  if (url.includes("/phim-le/")) {
+    return Response.success({
+      name: "Tập Full",
+      url: url.replace(host, ""),
+      host,
+    });
+  }
   const res = await Extension.request(url, {
     headers: {
       Origin: host,
@@ -25,4 +33,4 @@ async function chapters(url) {
   return Response.success(chapters);
 }
 
-// runFn(() => chapters("https://subnhanhs.com/phim-bo/di-ai-vi-doanh-451257"));
+// runFn(() => chapters("https://subnhanhs.com/phim-le/thu-kiem-an-cuu-luc"));

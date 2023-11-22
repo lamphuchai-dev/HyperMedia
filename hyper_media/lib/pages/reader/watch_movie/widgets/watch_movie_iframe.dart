@@ -28,26 +28,6 @@ class _WatchMovieByIframeState extends State<WatchMovieByIframe> {
   bool _isFullScreen = false;
   @override
   Widget build(BuildContext context) {
-    final data = '''
-
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Mobile Iframe Example</title>
-    </head>
-    <body>
-        <iframe
-          style="position: absolute;top: 0;left: 0;width: 100%;height: 100%;"
-          src="${widget.server.data}"
-          frameborder="0"
-          allowfullscreen
-        ></iframe>
-    </body>
-    </html>
-
-''';
     return SafeArea(
       child: Stack(
         fit: StackFit.expand,
@@ -55,7 +35,7 @@ class _WatchMovieByIframeState extends State<WatchMovieByIframe> {
           Positioned.fill(
               child: InAppWebView(
             key: _webViewKey,
-            initialData: InAppWebViewInitialData(data: data),
+            initialData: InAppWebViewInitialData(data: _initData),
             initialSettings: settings,
             onWebViewCreated: (controller) {
               _webViewController = controller;
@@ -107,6 +87,34 @@ class _WatchMovieByIframeState extends State<WatchMovieByIframe> {
         ],
       ),
     );
+  }
+
+  String get _initData => '''
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Mobile Iframe Example</title>
+    </head>
+    <body>
+        <iframe
+          style="position: absolute;top: 0;left: 0;width: 100%;height: 100%;"
+          src="${widget.server.data}"
+          frameborder="0"
+          allowfullscreen
+        ></iframe>
+    </body>
+    </html>
+
+''';
+
+  @override
+  void didUpdateWidget(covariant WatchMovieByIframe oldWidget) {
+    if (widget.server.data != oldWidget.server.data) {
+      _webViewController?.loadData(data: _initData);
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
