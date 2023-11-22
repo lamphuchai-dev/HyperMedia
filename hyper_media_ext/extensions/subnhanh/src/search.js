@@ -5,7 +5,6 @@ async function search(url, kw, page) {
   const res = await Extension.request(url, {
     queryParameters: {
       s: kw,
-      page: page,
     },
   });
   if (!res) return Response.error("Lỗi tải nội dung");

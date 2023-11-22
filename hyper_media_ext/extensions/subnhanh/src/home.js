@@ -5,7 +5,6 @@ async function home(url, page) {
   var host = "https://subnhanhs.com";
 
   const res = await Extension.request(url, {
-    queryParameters: { page: page },
     headers: {
       Origin: host,
       Referer: url,

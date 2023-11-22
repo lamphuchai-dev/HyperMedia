@@ -2,7 +2,7 @@
   "metadata": {
     "name": "Sub Nhanh",
     "author": "HyperMedia",
-    "version": 2,
+    "version": 1,
     "source": "https://subnhanhs.com",
     "regexp": "(subnhanhs).(com)",
     "description": "Xem phim trên trang SubNhanh",
