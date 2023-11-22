@@ -1,24 +1,9 @@
 async function chapters(url) {
-  const host = "https://motchillzzz.tv";
+  const host = "https://subnhanhs.com";
   const res = await Extension.request(url);
   if (!res) return Response.error("Lỗi tải nội dung");
 
-  var linkWatch = await Extension.getAttributeText(
-    res,
-    'main.container div[class="text-center"] a',
-    "href"
-  );
-
-  if (!linkWatch) return Response.error("Lỗi tải nội dung");
-
-  const html = await Extension.request(host + linkWatch);
-
-  if (!html) return Response.error("Lỗi tải nội dung");
-
-  const lstEl = await Extension.querySelectorAll(
-    html,
-    "section div a.text-center"
-  );
+  const lstEl = await Extension.querySelectorAll(res, "ul.episodios li");
 
   const chapters = [];
 
@@ -28,11 +13,11 @@ async function chapters(url) {
     var name = await Extension.querySelector(el, "a").text;
     chapters.push({
       name: name,
-      url: link,
+      url: link.replace(host, ""),
       host,
     });
   }
   return Response.success(chapters);
 }
 
-// runFn(() => chapters("https://motchillzzz.tv/hen-nhau-tren-sao-kim"));
+// runFn(() => chapters("https://subnhanhs.com/phim-bo/di-ai-vi-doanh-451257"));

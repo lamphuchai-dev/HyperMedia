@@ -1,28 +1,34 @@
 async function search(url, kw, page) {
-  const res = await Extension.request(url + "/search", {
+  if (page) {
+    url = url + "/page/" + page;
+  }
+  const res = await Extension.request(url, {
     queryParameters: {
-      searchText: kw,
+      s: kw,
       page: page,
     },
   });
   if (!res) return Response.error("Lỗi tải nội dung");
-  const lstEl = await Extension.querySelectorAll(res, "div article");
+  const lstEl = await Extension.querySelectorAll(
+    res,
+    "div.result-item article"
+  );
   const result = [];
-  var host = "https://motchillzzz.tv";
+  var host = "https://subnhanhs.com";
 
   for (const item of lstEl) {
-    const html = item.content;
-    var link = await Extension.getAttributeText(html, "a", "href");
+    const el = item.content;
+    var link = await Extension.getAttributeText(el, "div.title a", "href");
     result.push({
-      name: await Extension.getAttributeText(html, "a", "title"),
+      name: await Extension.querySelector(el, "div.title a").text,
       link: link.replace(host, ""),
-      description: await await Extension.querySelector(html, "article span")
+      description: await await Extension.querySelector(el, "div.contenido")
         .text,
-      cover: await Extension.getAttributeText(html, "img", "src"),
+      cover: await Extension.getAttributeText(el, "img", "src"),
       host,
     });
   }
   return Response.success(result);
 }
 
-// runFn(() => search("https://motchillzzz.tv", "tu tien", 2));
+// runFn(() => search("https://subnhanhs.com", "go", 2));

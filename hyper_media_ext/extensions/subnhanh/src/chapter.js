@@ -1,29 +1,52 @@
 async function chapter(url) {
-  var api = await Browser.launchFetchBlock(url, ".*?/api/play/get*?", 10000);
+  const host = "https://subnhanhs.com";
+  const res = await Extension.request(url);
 
-  if (!api) return Response.error("Có lỗi khi tải nội dung");
+  if (!res) return Response.error("Có lỗi khi tải nội dung");
 
-  api = api.replace("server=0", "server=3");
-  const data = await Extension.request(api, {
-    headers: {
-      Referer: url,
-    },
-  });
-  if (!data) return Response.error("Có lỗi khi tải nội dung");
-  var result = [];
+  var postId = await Extension.getAttributeText(
+    res,
+    "#player-option-1",
+    "data-post"
+  );
 
-  data.forEach((el) => {
-    if (el.Link) {
+  if (!postId) return Response.error("Có lỗi khi tải nội dung");
+
+  var lstSvEl = await Extension.querySelectorAll(res, "#playeroptionsul li");
+
+  var result = [3];
+
+  for (var i = 0; i < lstSvEl.length; i++) {
+    var el = lstSvEl[i].content;
+    const data = await Extension.request(
+      "https://subnhanhs.com/wp-admin/admin-ajax.php",
+      {
+        headers: {
+          Origin: host,
+          Referer: url,
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        method: "post",
+        formData: {
+          action: "doo_player_ajax",
+          post: postId,
+          nume: i + 1,
+          type: "tv",
+        },
+      }
+    );
+    if (data) {
       result.push({
-        name: el.ServerName,
-        data: el.Link,
-        type: el.IsFrame ? "iframe" : "m3u8",
+        name: await Extension.querySelector(el, "span").text,
+        data: data.embed_url,
+        type: "iframe",
       });
     }
-  });
+  }
+
   return Response.success(result);
 }
 
 // runFn(() =>
-//   chapter("https://motchillzzz.tv/xem-phim-ninh-an-nhu-mong-tap-1_103d")
+//   chapter("https://subnhanhs.com/xem-phim/di-ai-vi-doanh-tap-1-451257")
 // );
