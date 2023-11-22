@@ -176,7 +176,6 @@ class Script {
 class Metadata {
   String? name;
   String? author;
-  String? slug;
   int? version;
   String? source;
   String? regexp;
@@ -191,7 +190,6 @@ class Metadata {
   Metadata(
       {this.name,
       this.author,
-      this.slug,
       this.version,
       this.source,
       this.regexp,
@@ -221,7 +219,6 @@ class Metadata {
     return Metadata(
         name: name ?? this.name,
         author: author ?? this.author,
-        slug: slug ?? this.slug,
         version: version ?? this.version,
         source: source ?? this.source,
         regexp: regexp ?? this.regexp,
@@ -238,7 +235,6 @@ class Metadata {
     return <String, dynamic>{
       'name': name,
       'author': author,
-      'slug': slug,
       'version': version,
       'source': source,
       'regexp': regexp,
@@ -254,15 +250,14 @@ class Metadata {
 
   factory Metadata.fromMap(Map<String, dynamic> map) {
     return Metadata(
-      name: map['name'] as String,
-      author: map['author'] as String,
-      slug: map['slug'] as String,
+      name: map['name']??"",
+      author: map['author']??"",
       version: map['version'] as int,
-      source: map['source'] as String,
-      regexp: map['regexp'] as String,
-      description: map['description'] as String,
-      locale: map['locale'] as String,
-      language: map['language'] as String,
+      source: map['source']??"",
+      regexp: map['regexp']??"",
+      description: map['description']??"",
+      locale: map['locale']??"",
+      language: map['language']??"",
       type: ExtensionType.values.firstWhere(
         (type) => type.name == map["type"],
         orElse: () => ExtensionType.novel,
@@ -284,7 +279,6 @@ class Metadata {
 
     return other.name == name &&
         other.author == author &&
-        other.slug == slug &&
         other.version == version &&
         other.source == source &&
         other.regexp == regexp &&
@@ -301,7 +295,6 @@ class Metadata {
   int get hashCode {
     return name.hashCode ^
         author.hashCode ^
-        slug.hashCode ^
         version.hashCode ^
         source.hashCode ^
         regexp.hashCode ^
@@ -316,6 +309,6 @@ class Metadata {
 
   @override
   String toString() {
-    return 'Metadata(name: $name, author: $author, slug: $slug, version: $version, source: $source, regexp: $regexp, description: $description, locale: $locale, language: $language, type: $type, path: $path, icon: $icon, tag: $tag)';
+    return 'Metadata(name: $name, author: $author, version: $version, source: $source, regexp: $regexp, description: $description, locale: $locale, language: $language, type: $type, path: $path, icon: $icon, tag: $tag)';
   }
 }

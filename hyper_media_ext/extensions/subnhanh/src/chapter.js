@@ -1,6 +1,11 @@
 async function chapter(url) {
   const host = "https://subnhanhs.com";
-  const res = await Extension.request(url);
+  const res = await Extension.request(url, {
+    headers: {
+      Origin: host,
+      Referer: url,
+    },
+  });
 
   if (!res) return Response.error("Có lỗi khi tải nội dung");
 
@@ -14,7 +19,7 @@ async function chapter(url) {
 
   var lstSvEl = await Extension.querySelectorAll(res, "#playeroptionsul li");
 
-  var result = [3];
+  var result = [];
 
   for (var i = 0; i < lstSvEl.length; i++) {
     var el = lstSvEl[i].content;

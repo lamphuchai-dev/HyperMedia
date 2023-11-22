@@ -1,6 +1,11 @@
 async function detail(url) {
   const host = "https://subnhanhs.com";
-  const res = await Extension.request(url);
+  const res = await Extension.request(url, {
+    headers: {
+      Origin: host,
+      Referer: url,
+    },
+  });
   if (!res) return Response.error("Lỗi tải nội dung");
 
   const detailEl = await Extension.querySelector(res, "div.sheader").outerHTML;

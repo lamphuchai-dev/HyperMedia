@@ -2,8 +2,14 @@ async function home(url, page) {
   if (page) {
     url = url + "/page/" + page;
   }
+  var host = "https://subnhanhs.com";
+
   const res = await Extension.request(url, {
     queryParameters: { page: page },
+    headers: {
+      Origin: host,
+      Referer: url,
+    },
   });
   if (!res) return Response.error("Lỗi tải nội dung");
   const lstEl = await Extension.querySelectorAll(
@@ -11,7 +17,6 @@ async function home(url, page) {
     "#archive-content article"
   );
   const result = [];
-  var host = "https://subnhanhs.com";
 
   for (const item of lstEl) {
     const el = item.content;

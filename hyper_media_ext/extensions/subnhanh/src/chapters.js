@@ -1,6 +1,11 @@
 async function chapters(url) {
   const host = "https://subnhanhs.com";
-  const res = await Extension.request(url);
+  const res = await Extension.request(url, {
+    headers: {
+      Origin: host,
+      Referer: url,
+    },
+  });
   if (!res) return Response.error("Lỗi tải nội dung");
 
   const lstEl = await Extension.querySelectorAll(res, "ul.episodios li");

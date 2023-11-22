@@ -1845,29 +1845,24 @@ const MetadataSchema = Schema(
       name: r'regexp',
       type: IsarType.string,
     ),
-    r'slug': PropertySchema(
-      id: 9,
-      name: r'slug',
-      type: IsarType.string,
-    ),
     r'source': PropertySchema(
-      id: 10,
+      id: 9,
       name: r'source',
       type: IsarType.string,
     ),
     r'tag': PropertySchema(
-      id: 11,
+      id: 10,
       name: r'tag',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 12,
+      id: 11,
       name: r'type',
       type: IsarType.string,
       enumMap: _MetadatatypeEnumValueMap,
     ),
     r'version': PropertySchema(
-      id: 13,
+      id: 12,
       name: r'version',
       type: IsarType.long,
     )
@@ -1933,12 +1928,6 @@ int _metadataEstimateSize(
     }
   }
   {
-    final value = object.slug;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
-  {
     final value = object.source;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -1974,11 +1963,10 @@ void _metadataSerialize(
   writer.writeString(offsets[6], object.name);
   writer.writeString(offsets[7], object.path);
   writer.writeString(offsets[8], object.regexp);
-  writer.writeString(offsets[9], object.slug);
-  writer.writeString(offsets[10], object.source);
-  writer.writeString(offsets[11], object.tag);
-  writer.writeString(offsets[12], object.type?.name);
-  writer.writeLong(offsets[13], object.version);
+  writer.writeString(offsets[9], object.source);
+  writer.writeString(offsets[10], object.tag);
+  writer.writeString(offsets[11], object.type?.name);
+  writer.writeLong(offsets[12], object.version);
 }
 
 Metadata _metadataDeserialize(
@@ -1996,11 +1984,10 @@ Metadata _metadataDeserialize(
     name: reader.readStringOrNull(offsets[6]),
     path: reader.readStringOrNull(offsets[7]),
     regexp: reader.readStringOrNull(offsets[8]),
-    slug: reader.readStringOrNull(offsets[9]),
-    source: reader.readStringOrNull(offsets[10]),
-    tag: reader.readStringOrNull(offsets[11]),
-    type: _MetadatatypeValueEnumMap[reader.readStringOrNull(offsets[12])],
-    version: reader.readLongOrNull(offsets[13]),
+    source: reader.readStringOrNull(offsets[9]),
+    tag: reader.readStringOrNull(offsets[10]),
+    type: _MetadatatypeValueEnumMap[reader.readStringOrNull(offsets[11])],
+    version: reader.readLongOrNull(offsets[12]),
   );
   return object;
 }
@@ -2035,10 +2022,8 @@ P _metadataDeserializeProp<P>(
     case 10:
       return (reader.readStringOrNull(offset)) as P;
     case 11:
-      return (reader.readStringOrNull(offset)) as P;
-    case 12:
       return (_MetadatatypeValueEnumMap[reader.readStringOrNull(offset)]) as P;
-    case 13:
+    case 12:
       return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -3277,152 +3262,6 @@ extension MetadataQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'regexp',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Metadata, Metadata, QAfterFilterCondition> slugIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'slug',
-      ));
-    });
-  }
-
-  QueryBuilder<Metadata, Metadata, QAfterFilterCondition> slugIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'slug',
-      ));
-    });
-  }
-
-  QueryBuilder<Metadata, Metadata, QAfterFilterCondition> slugEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'slug',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Metadata, Metadata, QAfterFilterCondition> slugGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'slug',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Metadata, Metadata, QAfterFilterCondition> slugLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'slug',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Metadata, Metadata, QAfterFilterCondition> slugBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'slug',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Metadata, Metadata, QAfterFilterCondition> slugStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'slug',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Metadata, Metadata, QAfterFilterCondition> slugEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'slug',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Metadata, Metadata, QAfterFilterCondition> slugContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'slug',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Metadata, Metadata, QAfterFilterCondition> slugMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'slug',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Metadata, Metadata, QAfterFilterCondition> slugIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'slug',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Metadata, Metadata, QAfterFilterCondition> slugIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'slug',
         value: '',
       ));
     });
