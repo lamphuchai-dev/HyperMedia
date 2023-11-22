@@ -2,11 +2,13 @@ async function chapters(url) {
   const host = "https://subnhanhs.com";
 
   if (url.includes("/phim-le/")) {
-    return Response.success({
-      name: "Tập Full",
-      url: url.replace(host, ""),
-      host,
-    });
+    return Response.success([
+      {
+        name: "Tập Full",
+        url: url.replace(host, ""),
+        host,
+      },
+    ]);
   }
   const res = await Extension.request(url, {
     headers: {

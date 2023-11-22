@@ -17,14 +17,17 @@ async function home(url, page) {
   for (const item of lstEl) {
     const el = item.content;
     var link = await Extension.getAttributeText(el, "a", "href");
-    result.push({
-      name: await Extension.querySelector(el, "h3 a").text,
-      link: link.replace(host, ""),
-      description: await await Extension.querySelector(el, "div.trangthai")
-        .text,
-      cover: await Extension.getAttributeText(el, "img", "src"),
-      host,
-    });
+    var name = await Extension.querySelector(el, "h3 a").text;
+    if (name) {
+      result.push({
+        name,
+        link: link.replace(host, ""),
+        description: await await Extension.querySelector(el, "div.trangthai")
+          .text,
+        cover: await Extension.getAttributeText(el, "img", "src"),
+        host,
+      });
+    }
   }
   return Response.success(result);
 }

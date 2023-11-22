@@ -45,17 +45,6 @@ class _WatchMoviePageState extends State<WatchMoviePage> {
               if (server == null) return const SizedBox();
               return GestureDetector(
                 onTap: () {
-                  // showModalBottomSheet(
-                  //   context: context,
-                  //   isScrollControlled: true,
-                  //   builder: (context) {
-                  //     return SelectServerBottomSheet(
-                  //       servers: _watchMovieCubit.servers,
-                  //       current: server,
-                  //       onChange: _watchMovieCubit.onChangeServer,
-                  //     );
-                  //   },
-                  // );
                   showDialog(
                     context: context,
                     builder: (context) => ServersDialog(
@@ -134,7 +123,7 @@ class _WatchMoviePageState extends State<WatchMoviePage> {
             Gaps.hGap12,
             EpisodesWidget(
               onTapChapter: (chapter) {
-                _scrollController.jumpTo(50);
+                _scrollController.jumpTo(0);
                 _watchMovieCubit.onChangeChapter(chapter);
               },
             )
