@@ -1,3 +1,4 @@
+import 'package:desktop_webview_window/desktop_webview_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -225,12 +226,17 @@ class _MyAppState extends State<MyApp> {
       ),
       body: Center(
         child: ElevatedButton(
-            onPressed: () {
-              widget.browser.openUrlRequest(
-                  urlRequest: URLRequest(
-                      url: WebUri(
-                          "https://lamphuchai-dev.github.io/?video=https://1080.opstream4.com/20231007/48183_d75f5a34/index.m3u8")),
-                  settings: settings);
+            onPressed: () async {
+              // widget.browser.openUrlRequest(
+              //     urlRequest: URLRequest(
+              //         url: WebUri(
+              //             "https://lamphuchai-dev.github.io/?video=https://1080.opstream4.com/20231007/48183_d75f5a34/index.m3u8")),
+              //     settings: settings);
+
+              final webview = await WebviewWindow.create(
+                  configuration: CreateConfiguration(openMaximized: true));
+              webview.launch(
+                  "https://lamphuchai-dev.github.io/?video=https://1080.opstream4.com/20231106/48968_700fdd82/index.m3u8?sign=490fd0f3e4d98f508217acb15b7e70ae");
             },
             child: Text("Open InAppBrowser")),
       ),

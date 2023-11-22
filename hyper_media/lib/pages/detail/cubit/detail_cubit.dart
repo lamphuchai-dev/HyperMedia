@@ -73,14 +73,11 @@ class DetailCubit extends Cubit<DetailState> {
 
   Future<Book?> getDetailByBookUrl() async {
     try {
-      final result = await _jsRuntime.getDetail(
+      final result = await _jsRuntime.getDetail<Map<String, dynamic>>(
         url: _bookUrl,
         source: _extension!.getDetailScript,
       );
-      if (result is SuccessJsRuntime) {
-        return Book.fromMap(result.data);
-      }
-      return null;
+      return Book.fromMap(result);
     } catch (error) {
       _logger.error(error, name: "getDetailBook");
       return null;

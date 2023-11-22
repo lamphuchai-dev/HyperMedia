@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hyper_media/app/constants/dimens.dart';
 import 'package:hyper_media/app/constants/gaps.dart';
-import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/app/route/routes_name.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/pages/genre/genre.dart';
 import 'package:hyper_media/widgets/widget.dart';
+import 'package:readmore/readmore.dart';
 
 class BookDetail extends StatelessWidget {
   const BookDetail({super.key, required this.book, required this.extension});
@@ -87,7 +87,20 @@ class BookDetail extends StatelessWidget {
   Widget _description() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [const Text("Giới thiệu"), Text(book.description)],
+      children: [
+        const Text("Giới thiệu"),
+        ReadMoreText(
+          book.description,
+          trimLines: 4,
+          trimMode: TrimMode.Line,
+          trimCollapsedText: 'Xem thêm',
+          trimExpandedText: ' Ẩn',
+          moreStyle: const TextStyle(
+              fontSize: 14, fontWeight: FontWeight.bold, color: Colors.teal),
+          lessStyle: const TextStyle(
+              fontSize: 14, fontWeight: FontWeight.bold, color: Colors.teal),
+        )
+      ],
     );
   }
 }

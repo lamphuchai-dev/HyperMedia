@@ -32,6 +32,7 @@ dependencies:
   code_text_field: ^1.1.0
   cupertino_icons: ^1.0.2
   desktop_multi_window: ^0.2.0
+  desktop_webview_window: ^0.2.3
   desktop_window: ^0.4.0
   dio_client:
     path: ../hyper_media/packages/dio_client

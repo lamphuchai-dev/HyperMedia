@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hyper_media/app/route/routes.dart';
 import 'package:hyper_media/pages/explore/widgets/widgets.dart';
 import 'package:hyper_media/widgets/loading_widget.dart';
 import '../cubit/explore_cubit.dart';
@@ -38,5 +39,10 @@ class _ExplorePageState extends State<ExplorePage> {
         };
       },
     );
+    // return Navigator(
+    //   onGenerateRoute: Routes.onGenerateRoute,
+    //   initialRoute: Routes.initialRoute,
+
+    // );
   }
 }

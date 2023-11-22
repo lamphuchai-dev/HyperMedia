@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hyper_media/app/extensions/index.dart';
+import 'package:hyper_media/utils/system_utils.dart';
 import 'package:hyper_media/widgets/widget.dart';
 
 import '../cubit/watch_movie_cubit.dart';
@@ -24,6 +25,7 @@ class _WatchMovieByIframeState extends State<WatchMovieByIframe> {
           "Mozilla/5.0 (Linux; Android 13; Pixel 6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36");
 
   bool _loading = false;
+  bool _isFullScreen = false;
   @override
   Widget build(BuildContext context) {
     final data = '''
@@ -82,11 +84,24 @@ class _WatchMovieByIframeState extends State<WatchMovieByIframe> {
                 _loading = false;
               });
             },
+            onEnterFullscreen: (controller) {
+              _isFullScreen = true;
+              var isPortrait =
+                  MediaQuery.of(context).orientation == Orientation.portrait;
+              if (isPortrait) {
+                SystemUtils.setRotationDevice();
+              }
+            },
+            onExitFullscreen: (controller) {
+              if (_isFullScreen) {
+                SystemUtils.setPreferredOrientations();
+              }
+            },
           )),
           if (_loading)
             Positioned.fill(
                 child: Container(
-              color: context.colorScheme.background,
+              color: Colors.black,
               child: const LoadingWidget(),
             ))
         ],

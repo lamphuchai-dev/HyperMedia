@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
+import 'package:js_runtime/js_runtime.dart';
 
 import '../../reader/cubit/reader_cubit.dart';
 
@@ -19,6 +20,12 @@ class WatchMovieCubit extends Cubit<WatchMovieState> {
             status: StatusType.init));
   final ReaderCubit _readerCubit;
   List<MovieServer> servers = [];
+
+  Book get getBook => _readerCubit.book;
+
+  String? _messageError;
+
+  String? get getMessage => _messageError;
 
   void onInit() {
     getDetailChapter(state.watchChapter);
@@ -47,6 +54,9 @@ class WatchMovieCubit extends Cubit<WatchMovieState> {
       } else {
         emit(state.copyWith(watchChapter: chapter, status: StatusType.error));
       }
+    } on JsRuntimeException catch (error) {
+      _messageError = error.message;
+      emit(state.copyWith(watchChapter: chapter, status: StatusType.error));
     } catch (error) {
       emit(state.copyWith(watchChapter: chapter, status: StatusType.error));
     }

@@ -26,28 +26,26 @@ class ChaptersCubit extends Cubit<ChaptersState> {
   void onInit() async {
     emit(state.copyWith(statusType: StatusType.loading));
     try {
-      final result = await _jsRuntime.getChapters(
+      final result = await _jsRuntime.getChapters<List<dynamic>>(
           url: book.bookUrl, source: extensionModel.getChaptersScript);
-      if (result is SuccessJsRuntime) {
-        List<Chapter> chapters = [];
-        for (var i = 0; i < result.data.length; i++) {
-          final map = result.data[i];
-          if (map is Map<String, dynamic>) {
-            if (book.id != null) {
-              chapters.add(
-                  Chapter.fromMap({...map, "index": i, "bookId": book.id}));
-            } else {
-              chapters.add(Chapter.fromMap({...map, "index": i}));
-            }
+      List<Chapter> chapters = [];
+      for (var i = 0; i < result.length; i++) {
+        final map = result[i];
+        if (map is Map<String, dynamic>) {
+          if (book.id != null) {
+            chapters
+                .add(Chapter.fromMap({...map, "index": i, "bookId": book.id}));
+          } else {
+            chapters.add(Chapter.fromMap({...map, "index": i}));
           }
         }
-        emit(state.copyWith(
-            chapters: chapters,
-            sortType: SortChapterType.lastChapter,
-            statusType: StatusType.loaded));
-      } else {
-        emit(state.copyWith(statusType: StatusType.error));
       }
+      emit(state.copyWith(
+          chapters: chapters,
+          sortType: SortChapterType.lastChapter,
+          statusType: StatusType.loaded));
+    } on JsRuntimeException catch (error) {
+      _logger.log(error.message);
     } catch (error) {
       if (isClosed) return;
       emit(state.copyWith(statusType: StatusType.error));

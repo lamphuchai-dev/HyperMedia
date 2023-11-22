@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:hyper_media/pages/bottom_nav/bottom_nav.dart';
 import 'package:hyper_media/pages/chapters/chapters.dart';
 import 'package:hyper_media/pages/detail/detail.dart';
+import 'package:hyper_media/pages/explore/view/explore_view.dart';
 import 'package:hyper_media/pages/genre/genre.dart';
+import 'package:hyper_media/pages/library/view/library_view.dart';
 import 'package:hyper_media/pages/web_view/view/web_view_view.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:hyper_media/pages/extensions/extensions.dart';
 // import 'package:hyper_media/pages/reader_book/reader_book.dart';
 import 'package:hyper_media/pages/reader/reader/reader.dart';
-
 
 import 'routes_name.dart';
 
@@ -20,6 +21,9 @@ class Routes {
       case initialRoute:
         return PageTransition(
             child: const BottomNavView(), type: PageTransitionType.rightToLeft);
+      case ExploreView.routeName:
+        return PageTransition(
+            child: const ExploreView(), type: PageTransitionType.fade);
       case RoutesName.detail:
         assert(args != null && args is String, "args must be String");
         return PageTransition(

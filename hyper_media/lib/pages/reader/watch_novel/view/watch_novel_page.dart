@@ -96,6 +96,10 @@ class _WatchNovelPageState extends State<WatchNovelPage> {
                                   );
                                 },
                               ),
+                            StatusType.error => Center(
+                                child: Text(
+                                    _watchNovelCubit.getMessage ?? "Error"),
+                              ),
                             _ => const SizedBox()
                           };
                         },

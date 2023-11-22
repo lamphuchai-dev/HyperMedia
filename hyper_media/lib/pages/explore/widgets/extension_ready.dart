@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/constants/index.dart';
 import 'package:hyper_media/app/route/routes_name.dart';
+import 'package:hyper_media/app/theme/themes.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/book.dart';
 import 'package:hyper_media/data/models/extension.dart';
@@ -138,15 +139,6 @@ class ExtensionReady extends StatelessWidget {
           ),
           actions: [
             ToolBarIconButton(
-              icon: const MacosIcon(
-                CupertinoIcons.folder_badge_plus,
-              ),
-              // onPressed: () => debugPrint('New Folder...'),
-              label: 'New Folder',
-              showLabel: true,
-              tooltipMessage: 'This is a beautiful tooltip',
-            ),
-            ToolBarIconButton(
               label: 'Toggle Sidebar',
               icon: const MacosIcon(
                 CupertinoIcons.sidebar_left,
@@ -159,7 +151,27 @@ class ExtensionReady extends StatelessWidget {
         children: [
           ContentArea(
             builder: (context, scrollController) {
-              return Container();
+              return BlocBuilder<ExploreCubit, ExploreState>(
+                buildWhen: (previous, current) {
+                  if (previous is ExploreExtensionLoaded &&
+                      current is ExploreExtensionLoaded) {
+                    return previous.status != current.status;
+                  }
+                  return false;
+                },
+                builder: (context, state) {
+                  if (state is ExploreExtensionLoaded) {
+                    return switch (state.status) {
+                      StatusType.loading => const LoadingWidget(),
+                      StatusType.loaded =>
+                        _extReady(context, state.extension, state.tabs),
+                      StatusType.error => const Text("error"),
+                      _ => const SizedBox()
+                    };
+                  }
+                  return const SizedBox();
+                },
+              );
             },
           )
         ],
@@ -203,24 +215,18 @@ class ExtensionReady extends StatelessWidget {
     }
     return DefaultTabController(
       length: tabItems.length,
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                    child: TabBar(
-                        isScrollable: true,
-                        dividerColor: Colors.transparent,
-                        tabs: tabItems)),
-                Gaps.wGap8,
-                const Icon(Icons.menu_rounded),
-                Gaps.wGap8,
-              ],
-            ),
-            Expanded(child: TabBarView(children: tabChildren))
-          ],
+      child: Material(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TabBar(
+                  isScrollable: true,
+                  dividerColor: Colors.transparent,
+                  tabs: tabItems),
+              Expanded(child: TabBarView(children: tabChildren))
+            ],
+          ),
         ),
       ),
     );

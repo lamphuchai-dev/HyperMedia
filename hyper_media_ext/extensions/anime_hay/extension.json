@@ -2,7 +2,6 @@
   "metadata": {
     "name": "Anime Hay",
     "author": "HyperMedia",
-    "slug": "anime_hay",
     "version": 2,
     "source": "https://animehay.city",
     "regexp": "(animehay).(city)",

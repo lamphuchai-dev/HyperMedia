@@ -32,15 +32,16 @@ function zipExtensions() {
 function updateINFO() {
   const data = [];
   var files = glob.sync("./extensions/*/*.json");
-  const urlPath =
-    "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions";
+  const urlGit =
+    "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext";
   files.forEach((file) => {
     let raw_data = fs.readFileSync(file, { encoding: "utf8" });
     let plugin_detail = JSON.parse(raw_data);
+    let pathGit = urlGit + "/" + file.replace("/extension.json", "");
     const metadata = plugin_detail.metadata;
     if (metadata) {
-      const pathExt = `${urlPath}/${plugin_detail.metadata.slug}/extension.zip`;
-      const icon = `${urlPath}/${plugin_detail.metadata.slug}/icon.png`;
+      const pathExt = pathGit + "/extension.zip";
+      const icon = pathGit + "/icon.png";
       data.push({ ...metadata, path: pathExt, icon: icon });
     }
   });

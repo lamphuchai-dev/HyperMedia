@@ -24,25 +24,20 @@ class _WatchMovieByVideoState extends State<WatchMovieByVideo> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: AspectRatio(
-        aspectRatio: 16 / 9.3,
-        child: MaterialVideoControlsTheme(
-          normal: const MaterialVideoControlsThemeData(
-            volumeGesture: true,
-            brightnessGesture: true,
-            buttonBarButtonSize: 24.0,
-            buttonBarButtonColor: Colors.white,
-            topButtonBarMargin: EdgeInsets.only(top: 30),
-          ),
-          fullscreen: const MaterialVideoControlsThemeData(
-            seekBarMargin: EdgeInsets.only(bottom: 60, left: 16, right: 16),
-          ),
-          child: Video(
-            aspectRatio: 16 / 9,
-            controller: _videoController!,
-          ),
-        ),
+    return MaterialVideoControlsTheme(
+      normal: const MaterialVideoControlsThemeData(
+        volumeGesture: true,
+        brightnessGesture: true,
+        buttonBarButtonSize: 24.0,
+        buttonBarButtonColor: Colors.white,
+        topButtonBarMargin: EdgeInsets.only(top: 30),
+      ),
+      fullscreen: const MaterialVideoControlsThemeData(
+        seekBarMargin: EdgeInsets.only(bottom: 60, left: 16, right: 16),
+      ),
+      child: Video(
+        aspectRatio: 16 / 9,
+        controller: _videoController!,
       ),
     );
   }

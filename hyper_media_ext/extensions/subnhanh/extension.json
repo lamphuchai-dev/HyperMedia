@@ -1,14 +1,16 @@
 {
   "metadata": {
-    "name": "Net Truyện",
+    "name": "Sub Nhanh",
     "author": "HyperMedia",
-    "version": 2,
-    "source": "https://www.nettruyenus.com",
-    "regexp": "(www.)?(nettruyenus).(com)",
-    "description": "Đọc truyện trên trang Net Truyện",
+    "version": 1,
+    "source": "https://subnhanhs.com",
+    "regexp": "(subnhanhs).(com)",
+    "description": "Xem phim trên trang SubNhanh",
     "locale": "vi_VN",
     "language": "javascript",
-    "type": "comic"
+    "type": "movie",
+    "search": true,
+    "genre": true
   },
   "script": {
     "tabs": "src/tabs.js",

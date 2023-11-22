@@ -21,12 +21,9 @@ class GenreCubit extends Cubit<GenreState> {
 
   Future<List<Book>> onGetListBook(int page) async {
     try {
-      final result = await _jsRuntime.getList(
+      final result = await _jsRuntime.getList<List<dynamic>>(
           url: _genre.url!, page: page, source: _extension.getHomeScript);
-      if (result is SuccessJsRuntime) {
-        return result.data.map<Book>((e) => Book.fromMap(e)).toList();
-      }
-      return [];
+      return result.map<Book>((e) => Book.fromMap(e)).toList();
     } catch (error) {
       //
     }

@@ -1,5 +1,7 @@
+import 'package:desktop_webview_window/desktop_webview_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:hyper_media/utils/system_utils.dart';
 import 'package:hyper_media/widgets/widget.dart';
 
 import '../cubit/watch_movie_cubit.dart';
@@ -18,10 +20,14 @@ class _WatchMovieByM3u8State extends State<WatchMovieByM3u8> {
   InAppWebViewController? _webViewController;
   InAppWebViewSettings settings = InAppWebViewSettings(
       supportZoom: false,
+      mediaPlaybackRequiresUserGesture: true,
+      iframeAllowFullscreen: true,
       userAgent:
           "Mozilla/5.0 (Linux; Android 13; Pixel 6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36");
   String url = "https://lamphuchai-dev.github.io/";
   bool _loading = false;
+
+  bool _isFullScreen = false;
 
   @override
   void initState() {
@@ -35,12 +41,11 @@ class _WatchMovieByM3u8State extends State<WatchMovieByM3u8> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Align(
-            child: InAppWebView(
+    return PlatformWidget(
+        mobileWidget: Stack(
+          fit: StackFit.expand,
+          children: [
+            InAppWebView(
               key: _webViewKey,
               initialUrlRequest: URLRequest(url: WebUri(url)),
               initialSettings: settings,
@@ -65,23 +70,36 @@ class _WatchMovieByM3u8State extends State<WatchMovieByM3u8> {
                   _loading = false;
                 });
               },
+              onEnterFullscreen: (controller) {
+                _isFullScreen = true;
+                var isPortrait =
+                    MediaQuery.of(context).orientation == Orientation.portrait;
+                if (isPortrait) {
+                  SystemUtils.setRotationDevice();
+                }
+              },
+              onExitFullscreen: (controller) {
+                if (_isFullScreen) {
+                  SystemUtils.setPreferredOrientations();
+                }
+              },
             ),
-          ),
-          if (_loading)
-            Positioned.fill(
-                child: Container(
-              color: Colors.black,
-              child: const LoadingWidget(),
-            ))
-        ],
-      ),
-    );
+            if (_loading) const Positioned.fill(child: LoadingWidget())
+          ],
+        ),
+        macosWidget: ElevatedButton(
+            onPressed: () async {
+              final webview = await WebviewWindow.create();
+              webview.launch(
+                  "https://animehay.city/xem-phim/thon-phe-tinh-khong-tap-92-59837.html");
+            },
+            child: Text("Xem Phim")));
   }
 
   @override
   void didUpdateWidget(covariant WatchMovieByM3u8 oldWidget) {
     if (oldWidget.server.data != widget.server.data) {
-      _webViewController?.loadUrl(urlRequest: URLRequest(url: WebUri(url)));
+      // _webViewController?.loadUrl(urlRequest: URLRequest(url: WebUri(url)));
     }
     super.didUpdateWidget(oldWidget);
   }

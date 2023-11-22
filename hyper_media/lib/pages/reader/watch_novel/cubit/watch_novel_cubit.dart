@@ -5,6 +5,7 @@ import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/utils/auto_scroll_notifier.dart';
 import 'package:hyper_media/utils/progress_watch_notifier.dart';
+import 'package:js_runtime/js_runtime.dart';
 
 import '../../reader/cubit/reader_cubit.dart';
 import '../widgets/menu_novel.dart';
@@ -30,6 +31,10 @@ class WatchNovelCubit extends Cubit<WatchNovelState> {
       MenuNovelAnimationController();
 
   Book get getBook => _readerCubit.book;
+
+  String? _messageError;
+
+  String? get getMessage => _messageError;
 
   void onInit() {
     getDetailChapter(state.watchChapter);
@@ -63,6 +68,9 @@ class WatchNovelCubit extends Cubit<WatchNovelState> {
         chapter = await _readerCubit.getContentsChapter(chapter);
         emit(state.copyWith(watchChapter: chapter, status: StatusType.loaded));
       }
+    } on JsRuntimeException catch (error) {
+      _messageError = error.message;
+      emit(state.copyWith(watchChapter: chapter, status: StatusType.error));
     } catch (error) {
       emit(state.copyWith(watchChapter: chapter, status: StatusType.error));
     }

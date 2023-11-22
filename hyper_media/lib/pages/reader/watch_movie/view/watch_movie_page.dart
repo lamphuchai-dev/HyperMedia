@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/constants/index.dart';
 import 'package:hyper_media/app/extensions/index.dart';
+import 'package:hyper_media/app/route/routes_name.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
-import 'package:hyper_media/pages/reader/reader/cubit/reader_cubit.dart';
 import 'package:hyper_media/pages/reader/watch_movie/widgets/widgets.dart';
-import 'package:hyper_media/widgets/loading_widget.dart';
+import 'package:hyper_media/widgets/widget.dart';
 import '../cubit/watch_movie_cubit.dart';
 
 class WatchMoviePage extends StatefulWidget {
@@ -18,9 +18,11 @@ class WatchMoviePage extends StatefulWidget {
 
 class _WatchMoviePageState extends State<WatchMoviePage> {
   late WatchMovieCubit _watchMovieCubit;
+  late ScrollController _scrollController;
   @override
   void initState() {
     _watchMovieCubit = context.read<WatchMovieCubit>();
+    _scrollController = ScrollController();
     super.initState();
   }
 
@@ -43,16 +45,24 @@ class _WatchMoviePageState extends State<WatchMoviePage> {
               if (server == null) return const SizedBox();
               return GestureDetector(
                 onTap: () {
-                  showModalBottomSheet(
+                  // showModalBottomSheet(
+                  //   context: context,
+                  //   isScrollControlled: true,
+                  //   builder: (context) {
+                  //     return SelectServerBottomSheet(
+                  //       servers: _watchMovieCubit.servers,
+                  //       current: server,
+                  //       onChange: _watchMovieCubit.onChangeServer,
+                  //     );
+                  //   },
+                  // );
+                  showDialog(
                     context: context,
-                    isScrollControlled: true,
-                    builder: (context) {
-                      return SelectServerBottomSheet(
-                        servers: _watchMovieCubit.servers,
-                        current: server,
-                        onChange: _watchMovieCubit.onChangeServer,
-                      );
-                    },
+                    builder: (context) => ServersDialog(
+                      servers: _watchMovieCubit.servers,
+                      current: server,
+                      onChange: _watchMovieCubit.onChangeServer,
+                    ),
                   );
                 },
                 child: Container(
@@ -71,62 +81,65 @@ class _WatchMoviePageState extends State<WatchMoviePage> {
             },
           ),
           Gaps.wGap4,
-          BlocSelector<WatchMovieCubit, WatchMovieState, Chapter>(
-            selector: (state) {
-              return state.watchChapter;
-            },
-            builder: (context, chapter) {
-              return IconButton(
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      elevation: 0,
-                      enableDrag: false,
-                      clipBehavior: Clip.hardEdge,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => ChaptersBottomSheet(
-                        readerCubit: context.read<ReaderCubit>(),
-                        currentIndex: chapter.index,
-                        onTapChapter: _watchMovieCubit.onChangeChapter,
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.list_rounded));
-            },
-          ),
+          IconButton(
+              onPressed: () {
+                _watchMovieCubit
+                    .getDetailChapter(_watchMovieCubit.state.watchChapter);
+              },
+              icon: const Icon(Icons.refresh_rounded)),
           Gaps.wGap4,
         ],
       ),
-      body: BlocBuilder<WatchMovieCubit, WatchMovieState>(
-        buildWhen: (previous, current) => previous.status != current.status,
-        builder: (context, state) {
-          return switch (state.status) {
-            StatusType.loading => const LoadingWidget(),
-            StatusType.loaded =>
-              BlocSelector<WatchMovieCubit, WatchMovieState, MovieServer?>(
-                selector: (state) {
-                  return state.server;
-                },
-                builder: (context, server) {
-                  if (server == null) {
-                    return const Center(
-                      child: Text("Có lỗi khi lấy nội dung"),
-                    );
-                  }
-                  return switch (server.type) {
-                    "video" => WatchMovieByVideo(server: server),
-                    "iframe" => WatchMovieByIframe(server: server),
-                    "m3u8" => WatchMovieByM3u8(server: server),
-                    _ => const Center(
-                        child: Text("Trình phát chưa được hỗ trợ"),
-                      ),
-                  };
-                },
+      body: SingleChildScrollView(
+        controller: _scrollController,
+        child: Column(
+          children: [
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: ColoredBox(
+                color: Colors.black,
+                child: BlocBuilder<WatchMovieCubit, WatchMovieState>(
+                  buildWhen: (previous, current) =>
+                      previous.status != current.status,
+                  builder: (context, state) {
+                    return switch (state.status) {
+                      StatusType.loading => const LoadingWidget(),
+                      StatusType.loaded => BlocSelector<WatchMovieCubit,
+                            WatchMovieState, MovieServer?>(
+                          selector: (state) {
+                            return state.server;
+                          },
+                          builder: (context, server) {
+                            if (server == null) {
+                              return const Center(
+                                child: Text("Có lỗi khi lấy nội dung"),
+                              );
+                            }
+                            return switch (server.type) {
+                              "video" => WatchMovieByVideo(server: server),
+                              "iframe" => WatchMovieByIframe(server: server),
+                              "m3u8" => WatchMovieByM3u8(server: server),
+                              _ => const Center(
+                                  child: Text("Trình phát chưa được hỗ trợ"),
+                                ),
+                            };
+                          },
+                        ),
+                      _ => const SizedBox(),
+                    };
+                  },
+                ),
               ),
-            _ => const SizedBox(),
-          };
-        },
+            ),
+            Gaps.hGap12,
+            EpisodesWidget(
+              onTapChapter: (chapter) {
+                _scrollController.jumpTo(50);
+                _watchMovieCubit.onChangeChapter(chapter);
+              },
+            )
+          ],
+        ),
       ),
     );
   }

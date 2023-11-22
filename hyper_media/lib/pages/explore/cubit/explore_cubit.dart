@@ -68,18 +68,17 @@ class ExploreCubit extends Cubit<ExploreState> {
     try {
       emit(state.copyWith(status: StatusType.loading));
 
-      final result = await _jsRuntime.getTabs(state.extension.getTabsScript);
-      if (result is SuccessJsRuntime && result.data is List) {
-        final tabs = result.data
-            .map<ItemTabExplore>(
-              (e) => ItemTabExplore.fromMap(e),
-            )
-            .toList();
+      final result = await _jsRuntime
+          .getTabs<List<dynamic>>(state.extension.getTabsScript);
 
-        emit(state.copyWith(status: StatusType.loaded, tabs: tabs));
-      } else {
-        emit(state.copyWith(status: StatusType.error));
-      }
+      final tabs = result
+          .map<ItemTabExplore>(
+            (e) => ItemTabExplore.fromMap(e),
+          )
+          .toList();
+      emit(state.copyWith(status: StatusType.loaded, tabs: tabs));
+    } on JsRuntimeException catch (error) {
+      _logger.log(error.message);
     } catch (error) {
       emit(state.copyWith(status: StatusType.error));
     }
@@ -91,19 +90,16 @@ class ExploreCubit extends Cubit<ExploreState> {
 
     try {
       url = "${state.extension.source}$url";
-      final result = await _jsRuntime.getList(
+      final result = await _jsRuntime.getList<List<dynamic>>(
         url: url,
         page: page,
         source: state.extension.getHomeScript,
       );
-      if (result is SuccessJsRuntime) {
-        return result.data.map<Book>((e) => Book.fromMap(e)).toList();
-      }
-      return [];
+      return result.map<Book>((e) => Book.fromMap(e)).toList();
     } catch (error) {
       _logger.error(error, name: "onGetListBook");
+      rethrow;
     }
-    return [];
   }
 
   Future<List<Genre>> onGetListGenre() async {
@@ -111,12 +107,11 @@ class ExploreCubit extends Cubit<ExploreState> {
     if (state is! ExploreExtensionLoaded) return [];
 
     try {
-      final result = await _jsRuntime.getGenre(
+      final result = await _jsRuntime.getGenre<List<dynamic>>(
           url: state.extension.source, source: state.extension.getGenreScript!);
-      if (result is SuccessJsRuntime) {
-        return result.data.map<Genre>((e) => Genre.fromMap(e)).toList();
-      }
-      return [];
+      return result.map<Genre>((e) => Genre.fromMap(e)).toList();
+    } on JsRuntimeException catch (error) {
+      _logger.log(error.message);
     } catch (error) {
       _logger.error(error, name: "onGetListGenre");
     }

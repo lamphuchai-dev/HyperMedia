@@ -275,25 +275,25 @@ class JsRuntime {
     });
   }
 
-  bool _evaluateJsScript(String code, {bool exception = true}) {
-    final jsEvalResult = _runtime.evaluate(code);
-    if (jsEvalResult.isError && exception) {
-      throw RuntimeException(
-          type: RuntimeExceptionType.extensionScript,
-          error: jsEvalResult.stringResult);
+  bool _evaluateJsScript(String code) {
+    try {
+      final jsEvalResult = _runtime.evaluate(code);
+      return jsEvalResult.isError;
+    } catch (error) {
+      throw JsRuntimeException(error.toString());
     }
-    return jsEvalResult.isError;
   }
 
-  Future<JsEvalResult> _evaluateAsyncJsScript(String code,
-      {bool exception = true}) async {
-    final jsEvalResult = await _runtime.evaluateAsync(code);
-    if (jsEvalResult.isError && exception) {
-      throw RuntimeException(
-          type: RuntimeExceptionType.extensionScript,
-          error: jsEvalResult.stringResult);
+  Future<JsEvalResult> _evaluateAsyncJsScript(String code) async {
+    try {
+      final jsEvalResult = await _runtime.evaluateAsync(code);
+      if (jsEvalResult.isError) {
+        throw JsRuntimeException("Run script extension error");
+      }
+      return jsEvalResult;
+    } catch (error) {
+      throw JsRuntimeException(error.toString());
     }
-    return jsEvalResult;
   }
 
   Future<dynamic> tesJs(String source) async {
@@ -305,80 +305,77 @@ class JsRuntime {
     });
   }
 
-  Future<ResponseJsRuntime> getTabs(String source) async {
-    return _runExtension(() async {
+  Future<T> getTabs<T>(String source) async {
+    return _runExtension<T>(() async {
       _evaluateJsScript(source);
       final jsResult = await _runtime
           .handlePromise(await _evaluateAsyncJsScript('stringify(()=>tabs())'));
-      return jsResult.toResponse;
+      return jsResult.toResult;
     });
   }
 
-  Future<ResponseJsRuntime> getList(
+  Future<T> getList<T>(
       {required String url,
       required String source,
       int page = 1,
       dynamic arg}) async {
-    return _runExtension(() async {
+    return _runExtension<T>(() async {
       _evaluateJsScript(source);
       final jsResult = await _runtime.handlePromise(
           await _evaluateAsyncJsScript(
               'stringify(()=>home("$url",$page,$arg))'));
-      return jsResult.toResponse;
+      return jsResult.toResult;
     });
   }
 
-  Future<ResponseJsRuntime> getDetail(
-      {required String url, required String source}) async {
-    return _runExtension(() async {
+  Future<T> getDetail<T>({required String url, required String source}) async {
+    return _runExtension<T>(() async {
       _evaluateJsScript(source);
       final jsResult = await _runtime.handlePromise(
           await _evaluateAsyncJsScript('stringify(()=>detail("$url"))'));
-      return jsResult.toResponse;
+      return jsResult.toResult;
     });
   }
 
-  Future<ResponseJsRuntime> getChapters(
+  Future<T> getChapters<T>(
       {required String url, required String source, int? page = 1}) async {
-    return _runExtension(() async {
+    return _runExtension<T>(() async {
       _evaluateJsScript(source);
       final jsResult = await _runtime.handlePromise(
           await _evaluateAsyncJsScript('stringify(()=>chapters("$url"))'));
-      return jsResult.toResponse;
+      return jsResult.toResult;
     });
   }
 
-  Future<ResponseJsRuntime> getChapter(
-      {required String url, required String source}) async {
-    return _runExtension(() async {
+  Future<T> getChapter<T>({required String url, required String source}) async {
+    return _runExtension<T>(() async {
       _evaluateJsScript(source);
       final jsResult = await _runtime.handlePromise(
           await _evaluateAsyncJsScript('stringify(()=>chapter("$url"))'));
-      return jsResult.toResponse;
+      return jsResult.toResult;
     });
   }
 
-  Future<ResponseJsRuntime> getSearch(
+  Future<T> getSearch<T>(
       {required String url,
       required String keyWord,
       int? page = 1,
       required String source}) async {
-    return _runExtension(() async {
+    return _runExtension<T>(() async {
       _evaluateJsScript(source);
       final jsResult = await _runtime.handlePromise(
           await _evaluateAsyncJsScript(
               'stringify(()=>search("$url","$keyWord",$page))'));
-      return jsResult.toResponse;
+      return jsResult.toResult;
     });
   }
 
-  Future<ResponseJsRuntime> getGenre(
-      {required String url, required String source}) async {
-    return _runExtension(() async {
+  Future<T> getGenre<T>({required String url, required String source}) async {
+    return _runExtension<T>(() async {
       _evaluateJsScript(source);
       final jsResult = await _runtime.handlePromise(
           await _evaluateAsyncJsScript('stringify(()=>genre("$url"))'));
-      return jsResult.toResponse;
+      return jsResult.toResult;
     });
   }
 }
@@ -405,15 +402,18 @@ extension Json on JsEvalResult {
     return ErrorJsRuntime(error: map["data"] ?? "Error");
   }
 
+  dynamic get toResult {
+    final map = toJson;
+    if (map is! Map) {
+      throw JsRuntimeException("Extension error");
+    }
+    if (map["type"] == "success") {
+      return map["data"];
+    }
+    throw JsRuntimeException(map["data"] ?? "Error");
+  }
+
   ResponseJsRuntime fromToError(String error) {
     return ErrorJsRuntime(error: error);
   }
-}
-
-enum RuntimeExceptionType { extensionScript, convertValue, other }
-
-class RuntimeException implements Exception {
-  final RuntimeExceptionType type;
-  final String? error;
-  const RuntimeException({required this.type, this.error});
 }

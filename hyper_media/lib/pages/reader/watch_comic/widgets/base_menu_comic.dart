@@ -192,7 +192,7 @@ class BaseMenuComic extends StatelessWidget {
                         return Slider(
                           min: 0,
                           max: 100,
-                          value: value?.percent ?? 0,
+                          value: value?.percent.clamp(0, 100) ?? 0,
                           onChanged: (value) {
                             watchComicCubit.onChangeSliderScroll(value);
                           },

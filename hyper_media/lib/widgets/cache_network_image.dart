@@ -36,11 +36,11 @@ class CacheNetWorkImage extends StatelessWidget {
             placeholder ??
             Image.asset(
               AppAssets.backgroundBook,
-              fit: fit,
+              fit: BoxFit.cover,
             ),
         errorWidget: (context, url, error) => Image.asset(
           AppAssets.backgroundBook,
-          fit: fit,
+          fit: BoxFit.cover,
         ),
       ),
     );

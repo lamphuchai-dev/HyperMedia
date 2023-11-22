@@ -1,11 +1,14 @@
 // ignore_for_file: unused_element
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hyper_media/app/constants/index.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/widgets/item_book.dart';
+import 'package:js_runtime/js_runtime.dart';
 
 import 'empty_list_data_widget.dart';
 import 'loading_widget.dart';
@@ -76,23 +79,37 @@ class _BooksGridWidgetState extends State<BooksGridWidget> {
   }
 
   void _onLoading() async {
-    setState(() {
-      _isLoading = true;
-    });
-    _page = 1;
-    _listBook.clear();
-    List<Book> books = await widget.onFetchListBook!.call(_page);
-
-    if (books.isNotEmpty && books.length < 15) {
-      _page++;
-      final result = await widget.onFetchListBook!.call(_page);
-      books.addAll(result);
-    }
-    _listBook.addAll(books);
-    if (mounted) {
+    try {
       setState(() {
-        _isLoading = false;
+        _isLoading = true;
       });
+      _page = 1;
+      _listBook.clear();
+      List<Book> books = await widget.onFetchListBook!.call(_page);
+
+      if (books.isNotEmpty && books.length < 15) {
+        _page++;
+        final result = await widget.onFetchListBook!.call(_page);
+        books.addAll(result);
+      }
+      _listBook.addAll(books);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } on JsRuntimeException catch (error) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -117,22 +134,12 @@ class _BooksGridWidgetState extends State<BooksGridWidget> {
     });
   }
 
-  ({int minItem, int maxItem, double heightItem, int crossAxisCount}) _get(
-      int countItem) {
-    const minWidth = 90;
-    const maxWidth = 180;
-    const heightFot = 40;
-
-    final width = context.width - Dimens.horizontalPadding * 2;
-    final minItem = width ~/ maxWidth;
-    final maxItem = width ~/ minWidth;
-    final heightItem = (width / countItem) * 1.45 + heightFot;
-    return (
-      minItem: minItem,
-      maxItem: maxItem,
-      heightItem: heightItem,
-      crossAxisCount: countItem
-    );
+  int getCrossAxisCount() {
+    final width = context.width;
+    if (Platform.isAndroid || Platform.isIOS) {
+      return width ~/ 120;
+    }
+    return width ~/ 200;
   }
 
   @override
@@ -141,7 +148,6 @@ class _BooksGridWidgetState extends State<BooksGridWidget> {
       return const LoadingWidget();
     }
 
-    final girdConfig = _get(context.width > 800 ? 5 : 3);
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: Dimens.horizontalPadding,
@@ -159,9 +165,9 @@ class _BooksGridWidgetState extends State<BooksGridWidget> {
                   ),
                   SliverGrid(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: girdConfig.crossAxisCount,
+                        crossAxisCount: getCrossAxisCount(),
                         crossAxisSpacing: 8,
-                        mainAxisExtent: girdConfig.heightItem,
+                        childAspectRatio: 2 / 3.8,
                         mainAxisSpacing: 8),
                     delegate: SliverChildBuilderDelegate(
                       (BuildContext context, int index) {

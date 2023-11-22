@@ -112,42 +112,38 @@ class _BookLoadedState extends State<BookLoaded> {
                         child: Row(
                           children: [
                             Gaps.wGap16,
-                            Flexible(
-                              flex: 2,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8)),
-                                clipBehavior: Clip.hardEdge,
-                                child: CacheNetWorkImage(
-                                  coverUrl,
-                                ),
+                            AspectRatio(
+                              aspectRatio: 2 / 3,
+                              child: CacheNetWorkImage(
+                                coverUrl,
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             Gaps.wGap12,
                             Expanded(
-                                flex: 3,
+                                // flex: 3,
                                 child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 12),
-                                        child: Text(
-                                          book.name,
-                                          style: textTheme.titleLarge,
-                                          maxLines: 2,
-                                        ),
-                                      ),
-                                      Text(
-                                        book.author,
-                                        maxLines: 2,
-                                      ),
-                                      Text(book.bookStatus),
-                                      Text(book.totalChapters == 0
-                                          ? ""
-                                          : book.totalChapters.toString()),
-                                    ])),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
+                                    child: Text(
+                                      book.name,
+                                      style: textTheme.titleLarge,
+                                      maxLines: 2,
+                                    ),
+                                  ),
+                                  Text(
+                                    book.author,
+                                    maxLines: 2,
+                                  ),
+                                  Text(book.bookStatus),
+                                  Text(book.totalChapters == 0
+                                      ? ""
+                                      : book.totalChapters.toString()),
+                                ])),
                             Gaps.wGap16,
                           ],
                         ),

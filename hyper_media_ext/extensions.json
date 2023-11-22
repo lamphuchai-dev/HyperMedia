@@ -1,7 +1,21 @@
 [
     {
+        "name": "Sub Nhanh",
+        "author": "HyperMedia",
+        "version": 1,
+        "source": "https://subnhanhs.com",
+        "regexp": "(subnhanhs).(com)",
+        "description": "Xem phim trên trang SubNhanh",
+        "locale": "vi_VN",
+        "language": "javascript",
+        "type": "movie",
+        "search": true,
+        "genre": true,
+        "path": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/subnhanh/extension.zip",
+        "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/subnhanh/icon.png"
+    },
+    {
         "name": "Net Truyện",
-        "slug": "net_truyen",
         "author": "HyperMedia",
         "version": 2,
         "source": "https://www.nettruyenus.com",
@@ -16,7 +30,6 @@
     {
         "name": "Mot Chill",
         "author": "HyperMedia",
-        "slug": "motchill",
         "version": 2,
         "source": "https://motchillzzz.tv",
         "regexp": "(motchillzzz).(tv)",
@@ -31,7 +44,6 @@
     },
     {
         "name": "Mê Truyện Cv",
-        "slug": "metruyencv",
         "author": "HyperMedia",
         "version": 1,
         "source": "https://metruyencv.com",
@@ -46,7 +58,6 @@
     {
         "name": "Manga18fx",
         "author": "HyperMedia",
-        "slug": "manga18fx",
         "version": 1,
         "source": "https://manga18fx.com",
         "regexp": "(manga18fx).(com)",
@@ -62,7 +73,6 @@
     {
         "name": "Anime Hay",
         "author": "HyperMedia",
-        "slug": "anime_hay",
         "version": 2,
         "source": "https://animehay.city",
         "regexp": "(animehay).(city)",

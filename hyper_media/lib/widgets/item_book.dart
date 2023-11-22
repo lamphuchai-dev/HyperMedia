@@ -5,7 +5,6 @@ import 'package:hyper_media/data/models/models.dart';
 
 import 'cache_network_image.dart';
 
-
 enum BookLayoutType { column, stack }
 
 class ItemBook extends StatelessWidget {
@@ -135,5 +134,3 @@ class ItemBook extends StatelessWidget {
     );
   }
 }
-
-class BookLayout {}

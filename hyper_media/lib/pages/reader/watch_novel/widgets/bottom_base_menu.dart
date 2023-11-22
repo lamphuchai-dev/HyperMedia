@@ -69,7 +69,8 @@ class BottomBaseMenu extends StatelessWidget {
                             min: 0,
                             value: valueSlider,
                             label: "3",
-                            max: 100,
+                            max: watchNovelCubit.getBook.totalChapters
+                                .toDouble(),
                             onChanged: (value) {
                               setState(() {
                                 valueSlider = value;
