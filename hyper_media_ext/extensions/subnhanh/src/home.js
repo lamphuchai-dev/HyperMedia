@@ -11,10 +11,7 @@ async function home(url, page) {
     },
   });
   if (!res) return Response.error("Lỗi tải nội dung");
-  const lstEl = await Extension.querySelectorAll(
-    res,
-    "#archive-content article"
-  );
+  const lstEl = await Extension.querySelectorAll(res, "div.content article");
   const result = [];
 
   for (const item of lstEl) {
