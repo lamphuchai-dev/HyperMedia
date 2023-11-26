@@ -17,8 +17,7 @@ class WatchNovelCubit extends Cubit<WatchNovelState> {
       : _readerCubit = readerBookCubit,
         super(WatchNovelState(
             status: StatusType.init,
-            watchChapter:
-                readerBookCubit.chapters[readerBookCubit.watchInitial]));
+            watchChapter: readerBookCubit.watchChapterInit!));
 
   final ReaderCubit _readerCubit;
 

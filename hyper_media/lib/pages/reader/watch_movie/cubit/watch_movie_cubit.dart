@@ -15,8 +15,7 @@ class WatchMovieCubit extends Cubit<WatchMovieState> {
   WatchMovieCubit({required ReaderCubit readerBookCubit})
       : _readerCubit = readerBookCubit,
         super(WatchMovieState(
-            watchChapter:
-                readerBookCubit.chapters[readerBookCubit.watchInitial],
+            watchChapter:readerBookCubit.watchChapterInit!,
             status: StatusType.init));
   final ReaderCubit _readerCubit;
   List<MovieServer> servers = [];

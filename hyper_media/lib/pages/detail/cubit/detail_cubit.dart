@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hyper_media/app/bloc/app_cubit/app_cubit_cubit.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/utils/app_browser.dart';
@@ -16,10 +17,12 @@ class DetailCubit extends Cubit<DetailState> {
   DetailCubit(
       {required String bookUrl,
       required DatabaseUtils databaseService,
-      required JsRuntime jsRuntime})
+      required JsRuntime jsRuntime,
+      required AppCubitCubit appCubitCubit})
       : _bookUrl = bookUrl,
         _databaseService = databaseService,
         _jsRuntime = jsRuntime,
+        _appCubitCubit = appCubitCubit,
         super(DetailInitial());
 
   final _logger = Logger("DetailBookCubit");
@@ -28,6 +31,7 @@ class DetailCubit extends Cubit<DetailState> {
   Extension? _extension;
   final JsRuntime _jsRuntime;
   final String _bookUrl;
+  AppCubitCubit _appCubitCubit;
 
   final FToast fToast = FToast();
 
@@ -84,43 +88,17 @@ class DetailCubit extends Cubit<DetailState> {
     }
   }
 
-  Future<void> addBookmark() async {
-    // final state = this.state;
-    // if (state is! DetailLoaded) return;
-    // try {
-    //   final bookId = await _databaseService.onInsertBook(state.book);
-    //   final chapters = await _jsRuntime.getChapters(
-    //     url: _bookUrl,
-    //     bookId: bookId,
-    //     jsScript: _extension!.getChaptersScript,
-    //   );
-
-    //   if (chapters.isEmpty) return;
-    //   await _databaseService.insertChapters(chapters);
-    //   emit(state.copyWith(
-    //       book: state.book.copyWith(id: bookId, bookmark: true)));
-
-    //   fToast.showToast(
-    //     child: ToastWidget(msg: "bookmark.add_complete".tr()),
-    //     gravity: ToastGravity.BOTTOM,
-    //     toastDuration: const Duration(seconds: 2),
-    //   );
-    // } catch (error) {
-    //   _logger.error(error, name: "addBookmark");
-
-    //   fToast.showToast(
-    //     child: ToastWidget(msg: "bookmark.add_failed".tr()),
-    //     gravity: ToastGravity.BOTTOM,
-    //     toastDuration: const Duration(seconds: 2),
-    //   );
-    // }
-  }
-
   void openBrowser() {
     _appBrowser ??= AppBrowser();
     _appBrowser!.openUrlRequest(
         urlRequest: URLRequest(url: WebUri(_bookUrl)),
         settings: _appBrowser!.setting);
     // _appBrowser.openData(data: data)
+  }
+
+  void addBookmark() {
+    final state = this.state;
+    if (state is! DetailLoaded) return;
+    _appCubitCubit.addBookmark(book: state.book, extension: _extension!);
   }
 }

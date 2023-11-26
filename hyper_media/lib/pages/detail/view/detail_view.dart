@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hyper_media/app/bloc/app_cubit/app_cubit_cubit.dart';
 import 'package:hyper_media/di/components/service_locator.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:js_runtime/js_runtime.dart';
@@ -17,6 +18,7 @@ class DetailView extends StatelessWidget {
       create: (context) => DetailCubit(
           bookUrl: bookUrl,
           databaseService: getIt<DatabaseUtils>(),
+          appCubitCubit: context.read<AppCubitCubit>(),
           jsRuntime: getIt<JsRuntime>()),
       child: const DetailPage(),
     );

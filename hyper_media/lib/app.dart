@@ -9,17 +9,14 @@ import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/app/route/routes_name.dart';
 import 'package:hyper_media/data/sharedpref/shared_preference_helper.dart';
 import 'package:hyper_media/di/components/service_locator.dart';
-import 'package:hyper_media/pages/explore/explore.dart';
-import 'package:hyper_media/pages/explore/view/explore_page.dart';
-import 'package:hyper_media/pages/test_ui/view/test_ui_view.dart';
+import 'package:hyper_media/utils/database_service.dart';
+import 'package:js_runtime/js_runtime.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'app/route/routes.dart';
 import 'app/theme/themes.dart';
 import 'flavors.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
-import 'pages/bottom_nav/bottom_nav.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
@@ -30,8 +27,10 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) => AppCubitCubit(
-            sharedPreferenceHelper: getIt<SharedPreferenceHelper>())
-          ..onInit(),
+            sharedPreferenceHelper: getIt<SharedPreferenceHelper>(),
+            jsRuntime: getIt<JsRuntime>(),
+            database: getIt<DatabaseUtils>())
+          ..onInit(context),
         child: BlocConsumer<AppCubitCubit, AppCubitState>(
             listenWhen: (previous, current) =>
                 previous.themeMode != current.themeMode,
@@ -49,6 +48,7 @@ class App extends StatelessWidget {
               if (Platform.isAndroid || Platform.isIOS) {
                 return MaterialApp(
                   title: FlavorApp.name,
+                  navigatorKey: navigatorKey,
                   themeMode: state.themeMode,
                   theme: Themes.light,
                   darkTheme: Themes.dark,
@@ -64,7 +64,7 @@ class App extends StatelessWidget {
                 );
               } else {
                 return MacosApp(
-                  // navigatorKey: navigatorKey,
+                  navigatorKey: navigatorKey,
                   title: FlavorApp.name,
                   theme: MacosThemeData.light(),
                   darkTheme: MacosThemeData.dark(),
@@ -87,7 +87,9 @@ class App extends StatelessWidget {
                         ? Themes.dark
                         : Themes.light,
                     child: _flavorBanner(
-                        child: HomeMacos(), show: kDebugMode, context: context),
+                        child: const HomeMacos(),
+                        show: kDebugMode,
+                        context: context),
                   ),
                 );
               }
@@ -105,7 +107,15 @@ class App extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 fontSize: 12.0,
                 letterSpacing: 1.0),
-            child: child,
+            child: Overlay(
+              initialEntries: [
+                if (child != null) ...[
+                  OverlayEntry(
+                    builder: (context) => child,
+                  ),
+                ],
+              ],
+            ),
           )
         : Container(child: child);
   }
@@ -154,7 +164,7 @@ class _HomeMacosState extends State<HomeMacos> {
             });
           },
         ),
-        ExtView()
+        const ExtView()
       ]),
     );
   }
@@ -177,7 +187,7 @@ class LibView extends StatelessWidget {
                   arguments:
                       "https://www.nettruyenus.com/truyen-tranh/saijaku-teima-wa-gomi-hiroi-no-tabi-o-hajimemashita-277830");
             },
-            child: Text("TEST")),
+            child: const Text("TEST")),
       ),
     );
   }

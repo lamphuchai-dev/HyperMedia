@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/constants/index.dart';
 import 'package:hyper_media/app/route/routes_name.dart';
-import 'package:hyper_media/app/theme/themes.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/book.dart';
 import 'package:hyper_media/data/models/extension.dart';
@@ -64,15 +63,13 @@ class ExtensionReady extends StatelessWidget {
               ),
             ),
             actions: [
-              IconButton(
-                  onPressed: () {
-                    // showSearch(
-                    //     context: context,
-                    //     delegate: SearchBookDelegate(
-                    //         onSearchBook: _discoveryCubit.onSearchBook,
-                    //         extensionModel: state.extension));
-                  },
-                  icon: const Icon(Icons.search_rounded))
+              if (extension.script.search != null)
+                IconButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, RoutesName.search,
+                          arguments: extension);
+                    },
+                    icon: const Icon(Icons.search_rounded))
             ]),
         body: BlocBuilder<ExploreCubit, ExploreState>(
           buildWhen: (previous, current) {

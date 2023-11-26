@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:hyper_media/data/models/bookmark.dart';
+import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/pages/bottom_nav/bottom_nav.dart';
 import 'package:hyper_media/pages/chapters/chapters.dart';
 import 'package:hyper_media/pages/detail/detail.dart';
 import 'package:hyper_media/pages/explore/view/explore_view.dart';
 import 'package:hyper_media/pages/genre/genre.dart';
-import 'package:hyper_media/pages/library/view/library_view.dart';
 import 'package:hyper_media/pages/web_view/view/web_view_view.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:hyper_media/pages/extensions/extensions.dart';
-// import 'package:hyper_media/pages/reader_book/reader_book.dart';
 import 'package:hyper_media/pages/reader/reader/reader.dart';
+import 'package:hyper_media/pages/search/search.dart';
 
 import 'routes_name.dart';
 
@@ -54,13 +55,23 @@ class Routes {
             type: PageTransitionType.rightToLeft);
 
       case RoutesName.reader:
-        assert(args != null && args is ReaderArgs, "args must be ReaderArgs");
+        assert(args != null && (args is ReaderArgs || args is Bookmark),
+            "args must be ReaderArgs || Bookmark");
+
+        if (args is Bookmark) {
+          return PageTransition(
+              // settings: settings,
+              child: ReaderView(
+                bookmark: args as Bookmark,
+              ),
+              type: PageTransitionType.fade);
+        }
         return PageTransition(
             // settings: settings,
             child: ReaderView(
               readerArgs: args as ReaderArgs,
             ),
-            type: PageTransitionType.rightToLeft);
+            type: PageTransitionType.fade);
 
       case RoutesName.webView:
         assert(args != null && args is String, "args must be String");
@@ -70,6 +81,14 @@ class Routes {
               url: args as String,
             ),
             type: PageTransitionType.rightToLeft);
+
+      case RoutesName.search:
+        assert(args != null && args is Extension, "args must be Extension");
+        return PageTransition(
+            child: SearchView(
+              extension: args as Extension,
+            ),
+            type: PageTransitionType.fade);
 
       default:
         return _errRoute();

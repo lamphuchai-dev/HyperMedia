@@ -4,6 +4,7 @@ import 'package:hyper_media/pages/detail/detail.dart';
 import 'package:hyper_media/pages/extensions/extensions.dart';
 import 'package:hyper_media/pages/genre/genre.dart';
 import 'package:hyper_media/pages/reader/reader/reader.dart';
+import 'package:hyper_media/pages/search/search.dart';
 import 'package:hyper_media/pages/web_view/web_view.dart';
 
 class RoutesName {
@@ -15,5 +16,7 @@ class RoutesName {
   static const genre = GenreView.routeName;
   static const webView = WebViewView.routeName;
   static const reader = ReaderView.routeName;
+  static const search = SearchView.routeName;
+
 
 }

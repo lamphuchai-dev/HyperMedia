@@ -71,7 +71,8 @@ class BaseMenuComic extends StatelessWidget {
                           ),
                           IconButtonComic(
                             onTap: () {
-                              watchComicCubit.onRefresh();
+                              // watchComicCubit.onRefresh();
+                              watchComicCubit.add();
                             },
                             colorBackground: colorBackground,
                             icon: const Icon(

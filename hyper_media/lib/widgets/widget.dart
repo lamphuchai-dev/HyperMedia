@@ -15,3 +15,4 @@ export './platform_widget.dart';
 export './draggable_scrollable_sheet_widget.dart';
 export './icon_button_comic.dart';
 export './ toast_widget.dart';
+export './base_bottom_sheet_ui.dart';

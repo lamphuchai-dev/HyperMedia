@@ -359,7 +359,7 @@ class JsRuntime {
   Future<T> getSearch<T>(
       {required String url,
       required String keyWord,
-      int? page = 1,
+      int? page,
       required String source}) async {
     return _runExtension<T>(() async {
       _evaluateJsScript(source);

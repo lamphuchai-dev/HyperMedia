@@ -15,8 +15,7 @@ class WatchComicCubit extends Cubit<WatchComicState> {
   WatchComicCubit({required ReaderCubit readerBookCubit})
       : _readerCubit = readerBookCubit,
         super(WatchComicState(
-            watchChapter:
-                readerBookCubit.chapters[readerBookCubit.watchInitial],
+            watchChapter: readerBookCubit.watchChapterInit!,
             watchStatus: StatusType.init));
   final MenuComicAnimationController menuWatchController =
       MenuComicAnimationController();
@@ -26,6 +25,16 @@ class WatchComicCubit extends Cubit<WatchComicState> {
   AutoScrollNotifier autoScrollValue = AutoScrollNotifier();
   void onInit() async {
     getDetailChapter(state.watchChapter);
+  }
+
+  @override
+  void onChange(Change<WatchComicState> change) {
+    super.onChange(change);
+    if (change.currentState.watchChapter.index !=
+        change.nextState.watchChapter.index) {
+      _readerCubit.onChangeReader(change.nextState.watchChapter);
+      progressWatchValue.value = ProgressWatch.init();
+    }
   }
 
   void setup(double height) {
@@ -126,5 +135,9 @@ class WatchComicCubit extends Cubit<WatchComicState> {
 
   void onChangeChapter(Chapter chapter) {
     getDetailChapter(chapter);
+  }
+
+  void add() {
+    _readerCubit.addBookmark();
   }
 }

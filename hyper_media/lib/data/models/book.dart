@@ -25,8 +25,6 @@ class Book {
   final String bookStatus;
   final int totalChapters;
   final DateTime? updateAt;
-  final bool isDownload;
-  final ReadBook? readBook;
 
   @ignore
   final List<Genre> genres;
@@ -34,7 +32,6 @@ class Book {
   const Book(
       {this.id,
       required this.name,
-      required this.isDownload,
       required this.link,
       required this.host,
       required this.author,
@@ -42,7 +39,6 @@ class Book {
       required this.description,
       required this.cover,
       required this.totalChapters,
-      this.readBook,
       this.genres = const [],
       this.updateAt});
 
@@ -61,29 +57,25 @@ class Book {
       int? currentReadChapter,
       DateTime? updateAt,
       List<Genre>? genres,
-      ReadBook? readBook,
       List<Book>? recommended}) {
     return Book(
         id: id ?? this.id,
         name: name ?? this.name,
         link: link ?? this.link,
         host: host ?? this.host,
-        isDownload: isDownload ?? this.isDownload,
         author: author ?? this.author,
         bookStatus: bookStatus ?? this.bookStatus,
         description: description ?? this.description,
         cover: cover ?? this.cover,
         totalChapters: totalChapters ?? this.totalChapters,
         genres: genres ?? this.genres,
-        updateAt: updateAt ?? this.updateAt,
-        readBook: readBook ?? this.readBook);
+        updateAt: updateAt ?? this.updateAt);
   }
 
   Book deleteBookmark() {
     return Book(
       id: null,
       name: name,
-      isDownload: isDownload,
       link: link,
       host: host,
       author: author,
@@ -106,32 +98,27 @@ class Book {
       "genres": genres.map(
         (e) => e.toMap(),
       ),
-      'readBook': readBook?.toMap(),
     };
   }
 
   factory Book.fromMap(Map<String, dynamic> map) {
     return Book(
-      name: map['name'] ?? "",
-      link: map['link'] ?? "",
-      host: map["host"] ?? "",
-      author: map['author'] ?? "",
-      description: map['description'] ?? "",
-      cover: map['cover'] ?? "",
-      totalChapters: map['totalChapters'] ?? 0,
-      bookStatus: map["bookStatus"] ?? "",
-      isDownload: map["isDownload"] ?? false,
-      genres: map["genres"] != null
-          ? List<Genre>.from(
-              (map['genres']).map<Genre>(
-                (x) => Genre.fromMap(x),
-              ),
-            )
-          : [],
-      updateAt: map["updateAt"],
-      readBook:
-          map["readBook"] != null ? ReadBook.fromMap(map["readBook"]) : null,
-    );
+        name: map['name'] ?? "",
+        link: map['link'] ?? "",
+        host: map["host"] ?? "",
+        author: map['author'] ?? "",
+        description: map['description'] ?? "",
+        cover: map['cover'] ?? "",
+        totalChapters: map['totalChapters'] ?? 0,
+        bookStatus: map["bookStatus"] ?? "",
+        genres: map["genres"] != null
+            ? List<Genre>.from(
+                (map['genres']).map<Genre>(
+                  (x) => Genre.fromMap(x),
+                ),
+              )
+            : [],
+        updateAt: map["updateAt"]);
   }
 
   String toJson() => json.encode(toMap());
@@ -141,7 +128,7 @@ class Book {
 
   @override
   String toString() {
-    return 'Book(id: $id, name: $name, link: $link, host: $host, author: $author, description: $description, cover: $cover, bookStatus: $bookStatus, totalChapters: $totalChapters, updateAt: $updateAt, isDownload: $isDownload, readBook: $readBook, genres: $genres)';
+    return 'Book(id: $id, name: $name, link: $link, host: $host, author: $author, description: $description, cover: $cover, bookStatus: $bookStatus, totalChapters: $totalChapters, updateAt: $updateAt, genres: $genres)';
   }
 
   @override
@@ -158,8 +145,6 @@ class Book {
         other.bookStatus == bookStatus &&
         other.totalChapters == totalChapters &&
         other.updateAt == updateAt &&
-        other.isDownload == isDownload &&
-        other.readBook == readBook &&
         listEquals(other.genres, genres);
   }
 
@@ -175,17 +160,15 @@ class Book {
         bookStatus.hashCode ^
         totalChapters.hashCode ^
         updateAt.hashCode ^
-        isDownload.hashCode ^
-        readBook.hashCode ^
         genres.hashCode;
   }
 }
 
 extension BookExtension on Book {
-  String get getPercentRead {
-    final result = ((readBook?.index ?? 1) / totalChapters) * 100;
-    return result.toStringAsFixed(2);
-  }
+  // String get getPercentRead {
+  //   final result = ((readBook?.index ?? 1) / totalChapters) * 100;
+  //   return result.toStringAsFixed(2);
+  // }
 
   String get bookUrl => host + link;
 
@@ -193,58 +176,4 @@ extension BookExtension on Book {
     final uri = Uri.parse(link);
     return "${uri.scheme}://${uri.host}";
   }
-}
-
-@embedded
-class ReadBook {
-  final int? index;
-  final String? titleChapter;
-  final String? nameExtension;
-  final double? offsetLast;
-  ReadBook({
-    this.index,
-    this.titleChapter,
-    this.nameExtension,
-    this.offsetLast,
-  });
-
-  ReadBook copyWith({
-    int? index,
-    String? titleChapter,
-    String? nameExtension,
-    double? offsetLast,
-  }) {
-    return ReadBook(
-      index: index ?? this.index,
-      titleChapter: titleChapter ?? this.titleChapter,
-      nameExtension: nameExtension ?? this.nameExtension,
-      offsetLast: offsetLast ?? this.offsetLast,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'index': index,
-      'titleChapter': titleChapter,
-      'nameExtension': nameExtension,
-      'offsetLast': offsetLast,
-    };
-  }
-
-  factory ReadBook.fromMap(Map<String, dynamic> map) {
-    return ReadBook(
-      index: map['index'] != null ? map['index'] as int : null,
-      titleChapter:
-          map['titleChapter'] != null ? map['titleChapter'] as String : null,
-      nameExtension:
-          map['nameExtension'] != null ? map['nameExtension'] as String : null,
-      offsetLast:
-          map['offsetLast'] != null ? map['offsetLast'] as double : null,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory ReadBook.fromJson(String source) =>
-      ReadBook.fromMap(json.decode(source) as Map<String, dynamic>);
 }

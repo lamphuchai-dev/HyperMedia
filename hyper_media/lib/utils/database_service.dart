@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:archive/archive_io.dart';
 import 'package:dio_client/index.dart';
 import 'package:hyper_media/app/extensions/index.dart';
+import 'package:hyper_media/data/models/bookmark.dart';
 import 'package:hyper_media/data/models/models.dart';
+import 'package:hyper_media/data/models/reader.dart';
 import 'package:hyper_media/utils/logger.dart';
 import 'package:isar/isar.dart';
 
@@ -15,10 +18,13 @@ class DatabaseUtils {
   final _logger = Logger("DatabaseUtils");
   Future<void> ensureInitialized() async {
     _path = await DirectoryUtils.getDirectory;
-    database = await Isar.open(
-      [ExtensionSchema, BookSchema, ChapterSchema],
-      directory: _path,
-    );
+    database = await Isar.open([
+      ExtensionSchema,
+      BookSchema,
+      ChapterSchema,
+      BookmarkSchema,
+      ReaderSchema
+    ], directory: _path, name: "db");
   }
 
   Stream<void> get extensionsChange => database.extensions.watchLazy();
@@ -141,7 +147,11 @@ class DatabaseUtils {
   }
 
   Future<List<Chapter>> getChaptersByBookId(int bookId) {
-    return database.chapters.filter().bookIdEqualTo(bookId).findAll();
+    return database.chapters
+        .filter()
+        .bookIdEqualTo(bookId)
+        .sortByIndex()
+        .findAll();
   }
 
   Future<int> onInsertBook(Book book) async {
@@ -165,7 +175,9 @@ class DatabaseUtils {
   Future<Book?> getBookByLink(String link) =>
       database.books.filter().linkEqualTo(link).findFirst();
 
-  Stream<void> get bookStream => database.books.watchLazy();
+  Stream<void> get bookmark => database.bookmarks.watchLazy();
+
+  Stream<void> get reader => database.readers.watchLazy();
 
   Future<List<int>> insertChapters(List<Chapter> chapters) {
     return database.writeTxn(() => database.chapters.putAll(chapters));
@@ -174,5 +186,63 @@ class DatabaseUtils {
   Future<int> deleteChaptersByBookId(int bookId) {
     return database.writeTxn(
         () => database.chapters.filter().bookIdEqualTo(bookId).deleteAll());
+  }
+
+  Future<int> addBookmark(
+      {required Book book,
+      required List<Chapter> chapters,
+      Reader? reader}) async {
+    final bookmark = Bookmark();
+    if (reader == null && chapters.isNotEmpty) {
+      reader = Reader(
+          nameChapter: chapters.first.name,
+          offset: 0.0,
+          url: chapters.first.url,
+          time: DateTime.now());
+    }
+    bookmark.reader.value = reader;
+    bookmark.book.value = book;
+    bookmark.chapters.addAll(chapters);
+
+    return database.writeTxnSync(() {
+      return database.bookmarks.putSync(bookmark);
+    });
+  }
+
+  Future<List<Bookmark>> get getBookmarks =>
+      database.bookmarks.where().findAll();
+
+  Future<void> upReaderBook(
+      {required int bookId, required Reader reader}) async {
+    final bookmark = await database.bookmarks
+        .filter()
+        .book((q) => q.idEqualTo(bookId))
+        .findFirst();
+    if (bookmark != null && bookmark.reader.value!.id != null) {
+      await database.readers
+          .put(reader.copyWith(id: bookmark.reader.value!.id));
+      bookmark.reader.save();
+    }
+  }
+
+  Future<int> upReader(Reader reader) {
+    return database.writeTxn(() => database.readers.put(reader));
+  }
+
+  Future<bool> deleteBookmarkById(
+      {required int id,
+      int? bookId,
+      int? readerId,
+      List<int> chapterIds = const []}) async {
+    return database.writeTxn(() async {
+      await database.chapters.deleteAll(chapterIds);
+      if (bookId != null) {
+        await database.books.delete(bookId);
+      }
+      if (readerId != null) {
+        await database.readers.delete(readerId);
+      }
+      return database.bookmarks.delete(id);
+    });
   }
 }

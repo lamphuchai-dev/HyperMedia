@@ -86,28 +86,28 @@ class ItemBook extends StatelessWidget {
       decoration: const BoxDecoration(
           color: Colors.black54,
           borderRadius: BorderRadius.only(bottomRight: Radius.circular(8))),
-      child: Text(
-        "${book.readBook?.index ?? 1}/${book.totalChapters}",
-        style: const TextStyle(fontSize: 10),
-      ),
+      // child: Text(
+      //   "${book.readBook?.index ?? 1}/${book.totalChapters}",
+      //   style: const TextStyle(fontSize: 10),
+      // ),
     );
   }
 
   Widget _readChapter() {
-    if (book.readBook == null) return const SizedBox();
+    // if (book.readBook == null) return const SizedBox();
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       alignment: Alignment.center,
       decoration: const BoxDecoration(
           color: Colors.black54,
           borderRadius: BorderRadius.only(bottomRight: Radius.circular(8))),
-      child: Text(
-        "${book.readBook!.titleChapter}",
-        style: const TextStyle(
-          fontSize: 10,
-        ),
-        maxLines: 3,
-      ),
+      // child: Text(
+      //   "${book.readBook!.titleChapter}",
+      //   style: const TextStyle(
+      //     fontSize: 10,
+      //   ),
+      //   maxLines: 3,
+      // ),
     );
   }
 

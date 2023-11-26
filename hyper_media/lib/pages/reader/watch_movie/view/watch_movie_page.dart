@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/constants/index.dart';
 import 'package:hyper_media/app/extensions/index.dart';
-import 'package:hyper_media/app/route/routes_name.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/pages/reader/watch_movie/widgets/widgets.dart';

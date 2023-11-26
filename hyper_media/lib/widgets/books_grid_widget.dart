@@ -7,6 +7,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hyper_media/app/constants/index.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/data/models/models.dart';
+import 'package:hyper_media/data/models/reader.dart';
 import 'package:hyper_media/widgets/item_book.dart';
 import 'package:js_runtime/js_runtime.dart';
 
@@ -37,7 +38,6 @@ class BooksGridWidget extends StatefulWidget {
   final bool listenBooks;
   final ValueChanged<Book>? onTap;
   final ValueChanged<Book>? onLongTap;
-
   final BookLayoutType layout;
 
   @override
@@ -59,8 +59,7 @@ class _BooksGridWidgetState extends State<BooksGridWidget> {
     _scrollController.addListener(() {
       if ((_scrollController.offset >
               _scrollController.position.maxScrollExtent - 200) &&
-          !_isLoadMore &&
-          widget.useFetch) {
+          !_isLoadMore) {
         _onLoadMore();
       }
       // if (_listBook.isNotEmpty &&

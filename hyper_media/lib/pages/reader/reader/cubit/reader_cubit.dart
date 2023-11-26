@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
+import 'package:hyper_media/data/models/reader.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:hyper_media/utils/logger.dart';
 import 'package:hyper_media/utils/system_utils.dart';
@@ -36,9 +38,14 @@ class ReaderCubit extends Cubit<ReaderState> {
   final JsRuntime _jsRuntime;
 
   Book get book => state.book;
-  List<Chapter> get chapters => state.chapters;
+  List<Chapter> get chapters =>
+      state.chapters.sorted((a, b) => a.index.compareTo(b.index));
 
-  int watchInitial = 0;
+  late Reader _readerBook;
+
+  Chapter? watchChapterInit;
+
+  // int watchInitial = 0;
 
   final FToast fToast = FToast();
 
@@ -46,7 +53,7 @@ class ReaderCubit extends Cubit<ReaderState> {
     fToast.init(context);
   }
 
-  void onInit(int watchInitial) async {
+  void onInit(Reader reader) async {
     try {
       _extension = await _database.getExtensionByHost(book.host);
       if (_extension == null) {
@@ -88,25 +95,27 @@ class ReaderCubit extends Cubit<ReaderState> {
         }
       }
 
-      if (chapters.isEmpty && watchInitial > chapters.length) {
-        emit(state.copyWith(extensionStatus: ExtensionStatus.ready));
-        return;
+      _readerBook = reader;
+      watchChapterInit = chapters
+          .firstWhereOrNull((element) => element.url == _readerBook.url);
+      if (watchChapterInit == null) {
+        emit(state.copyWith(extensionStatus: ExtensionStatus.error));
       }
-
-      this.watchInitial = watchInitial;
-
+      readerBookState = readerBookState.copyWith(
+          chapters: readerBookState.chapters
+              .sorted((a, b) => a.index.compareTo(b.index)));
       emit(readerBookState.copyWith(
         extensionStatus: ExtensionStatus.ready,
       ));
 
       if (book.id != null) {
-        _database.updateBook(book.copyWith(
-            updateAt: DateTime.now(),
-            readBook: ReadBook(
-                index: chapters[watchInitial].index,
-                offsetLast: 0.0,
-                titleChapter: chapters[watchInitial].name,
-                nameExtension: _extension!.metadata.name)));
+        // _database.updateBook(book.copyWith(
+        //     updateAt: DateTime.now(),
+        //     readBook: ReadBook(
+        //         index: chapters[watchInitial].index,
+        //         offsetLast: 0.0,
+        //         titleChapter: chapters[watchInitial].name,
+        //         nameExtension: _extension!.metadata.name)));
       }
     } catch (error) {
       emit(state.copyWith(extensionStatus: ExtensionStatus.error));
@@ -188,6 +197,17 @@ class ReaderCubit extends Cubit<ReaderState> {
       );
       return false;
     }
+  }
+
+  onChangeReader(Chapter chapter) {
+    if (_readerBook.id == null) return;
+    _readerBook = _readerBook.copyWith(
+        nameChapter: chapter.name, url: chapter.url, time: DateTime.now());
+    _database.upReader(_readerBook);
+  }
+
+  void addBookmark() {
+    _database.addBookmark(book: book, chapters: chapters);
   }
 
   @override
