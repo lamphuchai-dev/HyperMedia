@@ -1,5 +1,18 @@
 [
     {
+        "name": "Truyện Cv",
+        "author": "HyperMedia",
+        "version": 1,
+        "source": "https://truyencv.info",
+        "regexp": "(truyencv).(info)",
+        "description": "Đọc truyện trên trang TruyệnCv",
+        "locale": "vi_VN",
+        "language": "javascript",
+        "type": "novel",
+        "path": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/truyencv/extension.zip",
+        "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/truyencv/icon.png"
+    },
+    {
         "name": "Sub Nhanh",
         "author": "HyperMedia",
         "version": 2,

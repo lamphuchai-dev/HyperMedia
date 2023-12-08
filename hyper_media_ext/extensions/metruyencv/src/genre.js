@@ -13,5 +13,5 @@ async function genre(url) {
       url: await Extension.getAttributeText(element.content, "option", "value"),
     });
   }
-  return result;
+  return Response.success(result);
 }

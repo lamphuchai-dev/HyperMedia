@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "name": "Truyện Cv",
+    "author": "HyperMedia",
+    "version": 1,
+    "source": "https://truyencv.info",
+    "regexp": "(truyencv).(info)",
+    "description": "Đọc truyện trên trang TruyệnCv",
+    "locale": "vi_VN",
+    "language": "javascript",
+    "type": "novel"
+  },
+  "script": {
+    "tabs": "src/tabs.js",
+    "home": "src/home.js",
+    "detail": "src/detail.js",
+    "chapters": "src/chapters.js",
+    "chapter": "src/chapter.js",
+    "search": "src/search.js",
+    "genre": "src/genre.js"
+  }
+}
