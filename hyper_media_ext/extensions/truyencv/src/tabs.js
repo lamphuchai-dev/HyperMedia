@@ -1,8 +1,8 @@
 async function tabs() {
   return Response.success([
     {
-      title: "/updates",
-      url: "Cập nhật",
+      title: "Cập nhật",
+      url: "/updates",
     },
     {
       title: "Xem nhiều",
