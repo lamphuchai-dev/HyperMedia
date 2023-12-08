@@ -8,7 +8,8 @@ async function detail(url) {
   const name = await Extension.querySelector(detailEl, "h1").text;
   var cover = await Extension.getAttributeText(detailEl, "img", "src");
 
-  var author = await Extension.querySelector(detail, "div.media-body p a").text;
+  var author = await Extension.querySelector(detailEl, "div.media-body p a")
+    .text;
 
   var bookStatus = await Extension.querySelector(detailEl, "div.story-stage p")
     .text;
