@@ -1,6 +1,13 @@
 async function chapter(url) {
   const res = await Extension.request(url);
   if (!res) return Response.error("Có lỗi khi tải nội dung");
+  var title = await Extension.querySelector(res, "h1.header-page").text;
+
+  if (title != null) {
+    title = title.trim();
+    title = title.replace(": ", "");
+  }
+
   var contentEl = await Extension.querySelector(
     res,
     "div.story-content article"
@@ -10,6 +17,7 @@ async function chapter(url) {
 
   html = html.replace(/<br>/g, "\n");
 
+  html = html.replace(title + "\n", "");
   var text = await Extension.querySelector(html, "article").text;
   return Response.success(text);
 }

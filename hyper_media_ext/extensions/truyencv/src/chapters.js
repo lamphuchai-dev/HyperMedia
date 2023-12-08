@@ -7,7 +7,7 @@ async function chapters(bookUrl) {
   for (var index = 0; index < listEl.length; index++) {
     const el = listEl[index].content;
     const url = await Extension.getAttributeText(el, "a", "href");
-    const name = await Extension.getAttributeText(el, "a", "title");
+    const name = await Extension.querySelector(el, "span").text;
     chapters.push({
       name: name != null ? name.trim() : "",
       url: url,
