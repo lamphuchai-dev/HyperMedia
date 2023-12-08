@@ -27,12 +27,12 @@ async function tabs() {
     },
 
     {
-      title: "/latest",
-      url: "Mới đăng",
+      title: "Mới đăng",
+      url: "/latest",
     },
     {
-      title: "/alphabet",
-      url: "A-Z",
+      title: "A-Z",
+      url: "/alphabet",
     },
   ]);
 }

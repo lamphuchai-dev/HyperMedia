@@ -49,7 +49,6 @@ class JsRuntime {
             method: args[1]['method'] ?? 'get',
           ),
         );
-        // print(dataResponse.toString().length);
         return dataResponse;
       } catch (error) {
         return null;
@@ -66,10 +65,6 @@ class JsRuntime {
         final content = args[0];
         final selector = args[1];
         final fun = args[2];
-        if (content == null) {
-          print("null");
-          print(selector);
-        }
 
         final doc = parse(content).querySelector(selector);
         switch (fun) {
