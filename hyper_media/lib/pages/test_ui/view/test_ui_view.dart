@@ -13,5 +13,6 @@ class TestUiView extends StatelessWidget {
       create: (context) => TestUiCubit()..onInit(),
       child: const TestUiPage(),
     );
+    // return WatchComicView();
   }
 }

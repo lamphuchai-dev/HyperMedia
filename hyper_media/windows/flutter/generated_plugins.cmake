@@ -6,12 +6,15 @@ list(APPEND FLUTTER_PLUGIN_LIST
   desktop_webview_window
   desktop_window
   flutter_js
+  irondash_engine_context
   isar_flutter_libs
   media_kit_libs_windows_video
   media_kit_video
+  pasteboard
   permission_handler_windows
   screen_brightness_windows
   share_plus
+  super_native_extensions
   url_launcher_windows
 )
 

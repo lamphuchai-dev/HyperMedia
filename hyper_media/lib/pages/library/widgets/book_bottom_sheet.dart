@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hyper_media/app/constants/index.dart';
 import 'package:hyper_media/app/extensions/index.dart';
+import 'package:hyper_media/app/route/routes_name.dart';
 import 'package:hyper_media/data/models/models.dart';
+import 'package:hyper_media/utils/common_utils.dart';
 import 'package:hyper_media/widgets/widget.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:text_scroll/text_scroll.dart';
 
 import '../cubit/library_cubit.dart';
@@ -51,6 +54,7 @@ class BookBottomSheet extends StatelessWidget {
                     IconButton(
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: book.bookUrl));
+                      
                         },
                         icon: const Icon(Icons.content_copy_rounded))
                   ],
@@ -62,8 +66,8 @@ class BookBottomSheet extends StatelessWidget {
                   children: [
                     AspectRatio(
                       aspectRatio: 2 / 3,
-                      child: CacheNetWorkImage(
-                        book.cover,
+                      child: BookCoverImage(
+                        cover: book.cover,
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
@@ -89,6 +93,7 @@ class BookBottomSheet extends StatelessWidget {
                                 ),
                               ],
                             )),
+
                             // Text(
                             //   "Nguồn : ${extBook == null ? "Chưa cài đặt" : extBook.metadata.name}",
                             //   style: texTheme.bodySmall,
@@ -98,7 +103,18 @@ class BookBottomSheet extends StatelessWidget {
                   ],
                 ),
               ),
-              Gaps.hGap16,
+              Gaps.hGap12,
+              Row(
+                children: [
+                  Icon(Icons.update),
+                  Gaps.wGap8,
+                  Text(
+                    DateFormat.yMMMMEEEEd().format(book.lastCheckTime!),
+                    style: texTheme.bodySmall,
+                  )
+                ],
+              ),
+              Gaps.hGap12,
               Row(
                 children: [
                   ElevatedButton(
@@ -109,8 +125,8 @@ class BookBottomSheet extends StatelessWidget {
 
                         // if (extBook == null) {
                         // } else {
-                        //   Navigator.pushNamed(context, RoutesName.detail,
-                        //       arguments: book.bookUrl);
+                        Navigator.pushNamed(context, RoutesName.detail,
+                            arguments: book.bookUrl);
                         // }
                       },
                       child: const Icon(Icons.info_rounded)),
@@ -119,7 +135,7 @@ class BookBottomSheet extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.surface),
                       onPressed: () {
-                        // Share.share(book.bookUrl);
+                        CommonUtils.share(book.bookUrl);
                       },
                       child: const Icon(Icons.share)),
                   Gaps.wGap8,

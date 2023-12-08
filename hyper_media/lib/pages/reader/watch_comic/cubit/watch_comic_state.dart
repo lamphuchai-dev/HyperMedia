@@ -3,19 +3,22 @@ part of 'watch_comic_cubit.dart';
 
 class WatchComicState extends Equatable {
   const WatchComicState(
-      {required this.watchChapter, required this.watchStatus});
+      {required this.settings,
+      required this.status,
+      required this.watchChapter});
+  final WatchComicSettings settings;
+  final StatusType status;
   final Chapter watchChapter;
-  final StatusType watchStatus;
   @override
-  List<Object> get props => [watchChapter, watchStatus];
+  List<Object> get props => [settings, status,watchChapter];
 
-  WatchComicState copyWith({
-    Chapter? watchChapter,
-    StatusType? watchStatus,
-  }) {
+  WatchComicState copyWith(
+      {WatchComicSettings? settings,
+      StatusType? status,
+      Chapter? watchChapter}) {
     return WatchComicState(
-      watchChapter: watchChapter ?? this.watchChapter,
-      watchStatus: watchStatus ?? this.watchStatus,
-    );
+        settings: settings ?? this.settings,
+        status: status ?? this.status,
+        watchChapter: watchChapter ?? this.watchChapter);
   }
 }

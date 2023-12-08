@@ -42,4 +42,20 @@ class SystemUtils {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
   }
+
+  static Future<void> setOrientationAuto() {
+    return SystemChrome.setPreferredOrientations([]);
+  }
+
+  static Future<void> setOrientationLandscape() {
+    return SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+  }
+
+  static Future<void> setOrientationPortrait() {
+    return SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  }
 }

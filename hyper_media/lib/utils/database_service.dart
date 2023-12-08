@@ -1,11 +1,10 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:archive/archive_io.dart';
 import 'package:dio_client/index.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:hyper_media/app/extensions/index.dart';
-import 'package:hyper_media/data/models/bookmark.dart';
 import 'package:hyper_media/data/models/models.dart';
-import 'package:hyper_media/data/models/reader.dart';
+import 'package:hyper_media/pages/reader/watch_comic/watch_comic.dart';
 import 'package:hyper_media/utils/logger.dart';
 import 'package:isar/isar.dart';
 
@@ -13,11 +12,16 @@ import 'directory_utils.dart';
 
 class DatabaseUtils {
   late final Isar database;
+  static late final Box settings;
   late String _path;
 
   final _logger = Logger("DatabaseUtils");
   Future<void> ensureInitialized() async {
     _path = await DirectoryUtils.getDirectory;
+    settings = await Hive.openBox(
+      "settings",
+      path: _path,
+    );
     database = await Isar.open([
       ExtensionSchema,
       BookSchema,
@@ -25,6 +29,19 @@ class DatabaseUtils {
       BookmarkSchema,
       ReaderSchema
     ], directory: _path, name: "db");
+  }
+
+
+  WatchComicSettings get getSettingsComic {
+    if (!settings.containsKey(SettingKey.settingComic)) {
+      return WatchComicSettings.init();
+    }
+    return WatchComicSettings.fromMap(
+        Map.from(settings.get(SettingKey.settingComic)));
+  }
+
+  void setSettingsComic(WatchComicSettings value) async {
+    await settings.put(SettingKey.settingComic, value.toMap());
   }
 
   Stream<void> get extensionsChange => database.extensions.watchLazy();
@@ -138,6 +155,11 @@ class DatabaseUtils {
     return database.writeTxn(() => database.extensions.delete(id));
   }
 
+  Future<int?> updateChapter(Chapter chapter) async {
+    if (chapter.id == null) return null;
+    return database.writeTxn(() => database.chapters.put(chapter));
+  }
+
   Future<int?> onInsertChapter(Chapter chapter) async {
     return database.writeTxn(() => database.chapters.put(chapter));
   }
@@ -159,8 +181,11 @@ class DatabaseUtils {
         () => database.books.put(book.copyWith(updateAt: DateTime.now())));
   }
 
-  Future<bool> onDeleteBook(int id) async {
-    return database.writeTxn(() => database.books.delete(id));
+  Future<bool> onDeleteBook(int bookId) async {
+    return database.writeTxn(() async {
+      await database.chapters.filter().bookIdEqualTo(bookId).deleteAll();
+      return database.books.delete(bookId);
+    });
   }
 
   Future<List<Book>> getBooks() {
@@ -175,6 +200,8 @@ class DatabaseUtils {
   Future<Book?> getBookByLink(String link) =>
       database.books.filter().linkEqualTo(link).findFirst();
 
+  Stream<void> get books => database.books.watchLazy();
+
   Stream<void> get bookmark => database.bookmarks.watchLazy();
 
   Stream<void> get reader => database.readers.watchLazy();
@@ -188,22 +215,7 @@ class DatabaseUtils {
         () => database.chapters.filter().bookIdEqualTo(bookId).deleteAll());
   }
 
-  Future<int> addBookmark(
-      {required Book book,
-      required List<Chapter> chapters,
-      Reader? reader}) async {
-    final bookmark = Bookmark();
-    if (reader == null && chapters.isNotEmpty) {
-      reader = Reader(
-          nameChapter: chapters.first.name,
-          offset: 0.0,
-          url: chapters.first.url,
-          time: DateTime.now());
-    }
-    bookmark.reader.value = reader;
-    bookmark.book.value = book;
-    bookmark.chapters.addAll(chapters);
-
+  Future<int> addBookmark({required Bookmark bookmark}) async {
     return database.writeTxnSync(() {
       return database.bookmarks.putSync(bookmark);
     });
@@ -214,15 +226,15 @@ class DatabaseUtils {
 
   Future<void> upReaderBook(
       {required int bookId, required Reader reader}) async {
-    final bookmark = await database.bookmarks
-        .filter()
-        .book((q) => q.idEqualTo(bookId))
-        .findFirst();
-    if (bookmark != null && bookmark.reader.value!.id != null) {
-      await database.readers
-          .put(reader.copyWith(id: bookmark.reader.value!.id));
-      bookmark.reader.save();
-    }
+    // final bookmark = await database.bookmarks
+    //     .filter()
+    //     .book((q) => q.idEqualTo(bookId))
+    //     .findFirst();
+    // if (bookmark != null && bookmark.reader.value!.id != null) {
+    //   await database.readers
+    //       .put(reader.copyWith(id: bookmark.reader.value!.id));
+    //   bookmark.reader.save();
+    // }
   }
 
   Future<int> upReader(Reader reader) {
@@ -245,4 +257,8 @@ class DatabaseUtils {
       return database.bookmarks.delete(id);
     });
   }
+}
+
+class SettingKey {
+  static const settingComic = "setting_comic";
 }

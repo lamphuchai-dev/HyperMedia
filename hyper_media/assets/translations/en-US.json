@@ -1,8 +1,22 @@
 {
   "common": {
     "delete": "Delete",
-    "genre": "Genre"
-
+    "genre": "Genre",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "settings": "Settings",
+    "background": "Background",
+    "light": "Light",
+    "dark": "Dark",
+    "screen_orientation": "Screen Orientation",
+    "auto": "Auto",
+    "landscape": "Landscape",
+    "portrait": "Portrait",
+    "reading_mode": "Reading Mode",
+    "horizontal": "Horizontal",
+    "vertical": "Vertical",
+    "tap_to_next_chapter": "Tap to Next Chapter",
+    "hold_image_to_zoom": "Hold Image to Zoom"
   },
   "discovery": {
     "title": "Discovery"
@@ -41,6 +55,8 @@
     "update_no_new_chapters": "No New Chapters",
     "update_new_chapters": "Update {} New Chapters",
     "new_chapter": "New Chapter",
-    "last_chapter": "Last Chapter"
+    "last_chapter": "Last Chapter",
+    "copy_image": "Copy image",
+    "save_image_to_library": "Save image to library"
   }
 }

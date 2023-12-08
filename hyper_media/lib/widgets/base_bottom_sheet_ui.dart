@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 
 class BaseBottomSheetUi extends StatelessWidget {
-  const BaseBottomSheetUi({super.key, required this.child});
-
+  const BaseBottomSheetUi({super.key, this.header, required this.child});
+  final Widget? header;
   final Widget child;
 
   @override
@@ -13,7 +13,8 @@ class BaseBottomSheetUi extends StatelessWidget {
         double maxHeight = context.height * 0.7;
         Widget childItem = child;
         if (orientation != Orientation.portrait) {
-          maxHeight = context.height * 0.8;
+          maxHeight =
+              header != null ? context.height * 0.6 : context.height * 0.8;
           childItem = SizedBox(
             height: maxHeight,
             child: SingleChildScrollView(
@@ -43,6 +44,7 @@ class BaseBottomSheetUi extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (header != null) header!,
                 childItem
               ],
             ),

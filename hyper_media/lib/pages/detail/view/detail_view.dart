@@ -1,11 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:hyper_media/app/bloc/app_cubit/app_cubit_cubit.dart';
-import 'package:hyper_media/di/components/service_locator.dart';
-import 'package:hyper_media/utils/database_service.dart';
-import 'package:js_runtime/js_runtime.dart';
-import '../cubit/detail_cubit.dart';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'detail_page.dart';
+import 'package:js_runtime/js_runtime.dart';
+import 'package:readmore/readmore.dart';
+
+import 'package:hyper_media/app/bloc/app_cubit/app_cubit_cubit.dart';
+import 'package:hyper_media/app/constants/index.dart';
+import 'package:hyper_media/app/extensions/context_extension.dart';
+import 'package:hyper_media/app/route/routes_name.dart';
+import 'package:hyper_media/data/models/models.dart';
+import 'package:hyper_media/di/components/service_locator.dart';
+import 'package:hyper_media/pages/chapters/chapters.dart';
+import 'package:hyper_media/pages/genre/genre.dart';
+import 'package:hyper_media/pages/reader/reader/reader.dart';
+import 'package:hyper_media/utils/database_service.dart';
+import 'package:hyper_media/widgets/widget.dart';
+
+import '../cubit/detail_cubit.dart';
+part 'detail_page.dart';
+
+part '../widgets/book_detail.dart';
+part '../widgets/detail_error_view.dart';
+part '../widgets/detail_loaded_view.dart';
 
 class DetailView extends StatelessWidget {
   const DetailView({super.key, required this.bookUrl});

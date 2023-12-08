@@ -2,7 +2,7 @@
 
 part of 'explore_cubit.dart';
 
-abstract class ExploreState extends Equatable {
+class ExploreState extends Equatable {
   const ExploreState();
   @override
   List<Object> get props => [];
@@ -10,34 +10,33 @@ abstract class ExploreState extends Equatable {
 
 class ExploreInitial extends ExploreState {}
 
-class ExploreExtensionLoading extends ExploreState {}
+class ExploreLoading extends ExploreState {}
 
-class ExploreExtensionLoaded extends ExploreState {
+class ExploreLoaded extends ExploreState {
   final Extension extension;
   final List<ItemTabExplore> tabs;
   final StatusType status;
-  const ExploreExtensionLoaded({required this.extension, required this.tabs,required this.status});
+  const ExploreLoaded(
+      {required this.extension, required this.tabs, required this.status});
   @override
-  List<Object> get props => [extension, tabs,status];
+  List<Object> get props => [extension, tabs, status];
 
-  ExploreExtensionLoaded copyWith({
-    Extension? extension,
-    List<ItemTabExplore>? tabs,
-    StatusType? status
-  }) {
-    return ExploreExtensionLoaded(
-      extension: extension ?? this.extension,
-      tabs: tabs ?? this.tabs,
-      status: status ?? this.status
-    );
+  ExploreLoaded copyWith(
+      {Extension? extension, List<ItemTabExplore>? tabs, StatusType? status}) {
+    return ExploreLoaded(
+        extension: extension ?? this.extension,
+        tabs: tabs ?? this.tabs,
+        status: status ?? this.status);
   }
 }
 
-class ExploreExtensionNull extends ExploreState {}
+class ExploreNotExtension extends ExploreState {
+  const ExploreNotExtension();
+}
 
-class ExploreExtensionError extends ExploreState {
+class ExploreError extends ExploreState {
   final String message;
-  const ExploreExtensionError(this.message);
+  const ExploreError(this.message);
   @override
   List<Object> get props => [message];
 }
@@ -66,5 +65,6 @@ class ItemTabExplore {
 
   String toJson() => json.encode(toMap());
 
-  factory ItemTabExplore.fromJson(String source) => ItemTabExplore.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ItemTabExplore.fromJson(String source) =>
+      ItemTabExplore.fromMap(json.decode(source) as Map<String, dynamic>);
 }

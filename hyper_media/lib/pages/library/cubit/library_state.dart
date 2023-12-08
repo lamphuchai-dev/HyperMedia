@@ -2,18 +2,18 @@
 part of 'library_cubit.dart';
 
 class LibraryState extends Equatable {
-  const LibraryState({required this.bookmarks, required this.status});
-  final List<Bookmark> bookmarks;
+  const LibraryState({required this.books, required this.status});
+  final List<Book> books;
   final StatusType status;
   @override
-  List<Object> get props => [bookmarks, status];
+  List<Object> get props => [books, status];
 
   LibraryState copyWith({
-    List<Bookmark>? bookmarks,
+    List<Book>? books,
     StatusType? status,
   }) {
     return LibraryState(
-      bookmarks: bookmarks ?? this.bookmarks,
+      books: books ?? this.books,
       status: status ?? this.status,
     );
   }

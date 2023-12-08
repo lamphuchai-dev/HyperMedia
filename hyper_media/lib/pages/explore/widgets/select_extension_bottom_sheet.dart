@@ -1,10 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:hyper_media/app/route/routes_name.dart';
-import 'package:hyper_media/data/models/extension.dart';
-import 'package:hyper_media/app/constants/dimens.dart';
-import 'package:hyper_media/app/constants/gaps.dart';
-import 'package:hyper_media/app/extensions/index.dart';
-import 'package:hyper_media/widgets/icon_extension.dart';
+part of '../view/explore_view.dart';
 
 class SelectExtensionBottomSheet extends StatelessWidget {
   const SelectExtensionBottomSheet(

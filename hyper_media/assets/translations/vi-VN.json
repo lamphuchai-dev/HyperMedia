@@ -1,7 +1,22 @@
 {
   "common": {
     "delete": "Xóa",
-    "genre": "Thể loại"
+    "genre": "Thể loại",
+    "refresh": "Làm mới",
+    "retry": "Thử lại",
+    "settings": "Cài đặt",
+    "background": "Nền",
+    "light": "Sáng",
+    "dark": "Tối",
+    "screen_orientation": "Định hướng màn hình",
+    "auto": "Tự động",
+    "landscape": "Ngang",
+    "portrait": "Dọc",
+    "reading_mode": "Chế độ đọc",
+    "horizontal": "Chiều Ngang",
+    "vertical": "Chiều Dọc",
+    "tap_to_next_chapter": "Chạm để qua chương",
+    "hold_image_to_zoom": "Nhấn giữ hình ảnh"
   },
   "library": {
     "title": "Thư viện"
@@ -50,6 +65,8 @@
     "update_no_new_chapters": "Không có chương nào mới",
     "update_new_chapters": "Cập nhập {} chương nào mới",
     "new_chapter": "Chương mới",
-    "last_chapter": "Chương củ"
+    "last_chapter": "Chương củ",
+    "copy_image": "Sao chép hình ảnh",
+    "save_image_to_library": "Lưu ảnh vào thư viện"
   }
 }

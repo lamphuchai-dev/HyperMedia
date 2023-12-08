@@ -1,10 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:hyper_media/app/constants/index.dart';
-import 'package:hyper_media/app/extensions/context_extension.dart';
-import 'package:hyper_media/app/route/routes_name.dart';
-import 'package:hyper_media/data/models/models.dart';
-import 'package:hyper_media/pages/reader/reader/cubit/reader_cubit.dart';
-import 'package:hyper_media/widgets/widget.dart';
+part of '../view/watch_comic_view.dart';
 
 class ChaptersBottomSheet extends StatefulWidget {
   const ChaptersBottomSheet(
@@ -92,9 +86,9 @@ class _ChaptersBottomSheetState extends State<ChaptersBottomSheet> {
                         children: [
                           AspectRatio(
                             aspectRatio: 3 / 4,
-                            child: CacheNetWorkImage(
-                              book.cover,
-                              borderRadius: BorderRadius.circular(4),
+                            child: BookCoverImage(
+                              cover: book.cover,
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
                           Gaps.wGap12,
@@ -143,10 +137,8 @@ class _ChaptersBottomSheetState extends State<ChaptersBottomSheet> {
           body: MediaQuery.removePadding(
             removeTop: true,
             context: context,
-            child: RawScrollbar(
-              controller: _scrollController,
-              radius: const Radius.circular(8),
-              thumbColor: colorScheme.surface,
+            child: DraggableScrollbar.arrows(
+              controller: _scrollController!,
               child: ListView.builder(
                 itemCount: _chapters.length,
                 controller: _scrollController,

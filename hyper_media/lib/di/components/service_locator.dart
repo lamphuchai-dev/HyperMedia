@@ -4,6 +4,7 @@ import 'package:hyper_media/app/constants/index.dart';
 import 'package:hyper_media/data/sharedpref/shared_preference_helper.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:hyper_media/utils/directory_utils.dart';
+import 'package:hyper_media/utils/download_service.dart';
 import 'package:js_runtime/js_runtime.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,11 +21,13 @@ Future<void> setupLocator() async {
 
   final databaseService = DatabaseUtils();
   await databaseService.ensureInitialized();
-  final jsRuntime = JsRuntime();
+  final dioClient = DioClient();
+  final jsRuntime = JsRuntime(dioClient: dioClient);
   await jsRuntime.initRuntime(
       pathSource: AppAssets.jsScriptExtension,
       dirCookie: await DirectoryUtils.getDirectory);
   getIt.registerSingleton(databaseService);
-  getIt.registerSingleton(DioClient());
+  getIt.registerSingleton(dioClient);
   getIt.registerSingleton(jsRuntime);
+  getIt.registerLazySingleton(() => DownloadService(dioClient: dioClient));
 }

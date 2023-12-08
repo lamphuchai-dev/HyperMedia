@@ -1,11 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:hyper_media/app/constants/dimens.dart';
-import 'package:hyper_media/app/constants/gaps.dart';
-import 'package:hyper_media/app/route/routes_name.dart';
-import 'package:hyper_media/data/models/models.dart';
-import 'package:hyper_media/pages/genre/genre.dart';
-import 'package:hyper_media/widgets/widget.dart';
-import 'package:readmore/readmore.dart';
+part of '../view/detail_view.dart';
 
 class BookDetail extends StatelessWidget {
   const BookDetail({super.key, required this.book, required this.extension});

@@ -1,9 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hyper_media/app/route/routes.dart';
-import 'package:hyper_media/pages/explore/widgets/widgets.dart';
-import 'package:hyper_media/widgets/loading_widget.dart';
-import '../cubit/explore_cubit.dart';
+part of 'explore_view.dart';
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
@@ -26,13 +21,13 @@ class _ExplorePageState extends State<ExplorePage> {
       buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
         return switch (state) {
-          ExploreExtensionLoading() => const LoadingWidget(),
-          ExploreExtensionLoaded() => ExtensionReady(
+          ExploreLoading() => const LoadingWidget(),
+          ExploreLoaded() => ExtensionReady(
               extension: state.extension,
               exploreCubit: _exploreCubit,
             ),
-          ExploreExtensionError() => const ExtensionLoadError(),
-          ExploreExtensionNull() => ExtensionNull(
+          ExploreError() => const ExtensionLoadError(),
+          ExploreNotExtension() => ExploreExtensionNull(
               exploreCubit: _exploreCubit,
             ),
           _ => const SizedBox()

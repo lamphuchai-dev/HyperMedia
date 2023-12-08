@@ -25,64 +25,67 @@ class Book {
   final String bookStatus;
   final int totalChapters;
   final DateTime? updateAt;
+  final String? latestChapterTitle;
+  // Thời điểm kiếm tra chương gần đây nhất
+  final DateTime? lastCheckTime;
+  // Tiêu đề của chương đang xem
+  final String? currentTitleChapter;
+  // index của chương đang xem
+  final int? currentIndex;
 
   @ignore
   final List<Genre> genres;
+  Book({
+    this.id,
+    required this.name,
+    required this.link,
+    required this.host,
+    required this.author,
+    required this.description,
+    required this.cover,
+    required this.bookStatus,
+    required this.totalChapters,
+    this.updateAt,
+    this.latestChapterTitle,
+    this.lastCheckTime,
+    this.currentTitleChapter,
+    this.currentIndex,
+    this.genres = const [],
+  });
 
-  const Book(
-      {this.id,
-      required this.name,
-      required this.link,
-      required this.host,
-      required this.author,
-      required this.bookStatus,
-      required this.description,
-      required this.cover,
-      required this.totalChapters,
-      this.genres = const [],
-      this.updateAt});
-
-  Book copyWith(
-      {Id? id,
-      String? name,
-      String? link,
-      String? author,
-      String? description,
-      String? cover,
-      String? host,
-      String? bookStatus,
-      int? totalChapters,
-      BookType? type,
-      bool? isDownload,
-      int? currentReadChapter,
-      DateTime? updateAt,
-      List<Genre>? genres,
-      List<Book>? recommended}) {
+  Book copyWith({
+    Id? id,
+    String? name,
+    String? link,
+    String? host,
+    String? author,
+    String? description,
+    String? cover,
+    String? bookStatus,
+    int? totalChapters,
+    DateTime? updateAt,
+    String? latestChapterTitle,
+    DateTime? lastCheckTime,
+    String? currentTitleChapter,
+    int? currentIndex,
+    List<Genre>? genres,
+  }) {
     return Book(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        link: link ?? this.link,
-        host: host ?? this.host,
-        author: author ?? this.author,
-        bookStatus: bookStatus ?? this.bookStatus,
-        description: description ?? this.description,
-        cover: cover ?? this.cover,
-        totalChapters: totalChapters ?? this.totalChapters,
-        genres: genres ?? this.genres,
-        updateAt: updateAt ?? this.updateAt);
-  }
-
-  Book deleteBookmark() {
-    return Book(
-      id: null,
-      name: name,
-      link: link,
-      host: host,
-      author: author,
-      bookStatus: bookStatus,
-      description: description,
-      cover: cover,
-      totalChapters: totalChapters,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      link: link ?? this.link,
+      host: host ?? this.host,
+      author: author ?? this.author,
+      description: description ?? this.description,
+      cover: cover ?? this.cover,
+      bookStatus: bookStatus ?? this.bookStatus,
+      totalChapters: totalChapters ?? this.totalChapters,
+      updateAt: updateAt ?? this.updateAt,
+      latestChapterTitle: latestChapterTitle ?? this.latestChapterTitle,
+      lastCheckTime: lastCheckTime ?? this.lastCheckTime,
+      currentTitleChapter: currentTitleChapter ?? this.currentTitleChapter,
+      currentIndex: currentIndex ?? this.currentIndex,
+      genres: genres ?? this.genres,
     );
   }
 
@@ -91,34 +94,53 @@ class Book {
       'id': id,
       'name': name,
       'link': link,
+      'host': host,
       'author': author,
       'description': description,
       'cover': cover,
+      'bookStatus': bookStatus,
       'totalChapters': totalChapters,
-      "genres": genres.map(
-        (e) => e.toMap(),
-      ),
+      'updateAt': updateAt?.millisecondsSinceEpoch,
+      'latestChapterTitle': latestChapterTitle,
+      'lastCheckTime': lastCheckTime?.millisecondsSinceEpoch,
+      'currentTitleChapter': currentTitleChapter,
+      'currentIndex': currentIndex,
+      'genres': genres.map((x) => x.toMap()).toList(),
     };
   }
 
   factory Book.fromMap(Map<String, dynamic> map) {
     return Book(
-        name: map['name'] ?? "",
-        link: map['link'] ?? "",
-        host: map["host"] ?? "",
-        author: map['author'] ?? "",
-        description: map['description'] ?? "",
-        cover: map['cover'] ?? "",
-        totalChapters: map['totalChapters'] ?? 0,
-        bookStatus: map["bookStatus"] ?? "",
-        genres: map["genres"] != null
-            ? List<Genre>.from(
-                (map['genres']).map<Genre>(
-                  (x) => Genre.fromMap(x),
-                ),
-              )
-            : [],
-        updateAt: map["updateAt"]);
+      id: map['id'],
+      name: map['name'] ?? "",
+      link: map['link'] ?? "",
+      host: map['host'] ?? "",
+      author: map['author'] ?? "",
+      description: map['description'] ?? "",
+      cover: map['cover'] ?? "",
+      bookStatus: map['bookStatus'] ?? "",
+      totalChapters: map['totalChapters'] ?? 0,
+      updateAt: map['updateAt'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['updateAt'] as int)
+          : null,
+      latestChapterTitle: map['latestChapterTitle'] != null
+          ? map['latestChapterTitle'] as String
+          : null,
+      lastCheckTime: map['lastCheckTime'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['lastCheckTime'] as int)
+          : null,
+      currentTitleChapter: map['currentTitleChapter'] != null
+          ? map['currentTitleChapter'] as String
+          : null,
+      currentIndex: map['currentIndex'] ?? 0,
+      genres: map["genres"] != null
+          ? List<Genre>.from(
+              (map['genres']).map<Genre>(
+                (x) => Genre.fromMap(x),
+              ),
+            )
+          : [],
+    );
   }
 
   String toJson() => json.encode(toMap());
@@ -128,7 +150,7 @@ class Book {
 
   @override
   String toString() {
-    return 'Book(id: $id, name: $name, link: $link, host: $host, author: $author, description: $description, cover: $cover, bookStatus: $bookStatus, totalChapters: $totalChapters, updateAt: $updateAt, genres: $genres)';
+    return 'Book(id: $id, name: $name, link: $link, host: $host, author: $author, description: $description, cover: $cover, bookStatus: $bookStatus, totalChapters: $totalChapters, updateAt: $updateAt, latestChapterTitle: $latestChapterTitle, lastCheckTime: $lastCheckTime, currentTitleChapter: $currentTitleChapter, currentIndex: $currentIndex, genres: $genres)';
   }
 
   @override
@@ -145,6 +167,10 @@ class Book {
         other.bookStatus == bookStatus &&
         other.totalChapters == totalChapters &&
         other.updateAt == updateAt &&
+        other.latestChapterTitle == latestChapterTitle &&
+        other.lastCheckTime == lastCheckTime &&
+        other.currentTitleChapter == currentTitleChapter &&
+        other.currentIndex == currentIndex &&
         listEquals(other.genres, genres);
   }
 
@@ -160,6 +186,10 @@ class Book {
         bookStatus.hashCode ^
         totalChapters.hashCode ^
         updateAt.hashCode ^
+        latestChapterTitle.hashCode ^
+        lastCheckTime.hashCode ^
+        currentTitleChapter.hashCode ^
+        currentIndex.hashCode ^
         genres.hashCode;
   }
 }

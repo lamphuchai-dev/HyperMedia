@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:hyper_media/pages/reader/watch_movie/cubit/watch_movie_cubit.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
+part of '../view/watch_movie_view.dart';
+
 
 class WatchMovieByVideo extends StatefulWidget {
   const WatchMovieByVideo({super.key, required this.server});

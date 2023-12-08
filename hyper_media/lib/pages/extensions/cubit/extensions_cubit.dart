@@ -24,10 +24,10 @@ class ExtensionsCubit extends Cubit<ExtensionsState> {
   final DioClient _dioClient;
   void onInit() async {
     getExtensions();
-    getExtensionsInstalled();
+    getExtensionsInstalledTab();
   }
 
-  void getExtensionsInstalled() async {
+  void getExtensionsInstalledTab() async {
     try {
       emit(state.copyWith(
           installed: const StateModel(data: [], status: StatusType.init)));
@@ -35,7 +35,7 @@ class ExtensionsCubit extends Cubit<ExtensionsState> {
       emit(state.copyWith(
           installed: StateModel(data: exts, status: StatusType.loaded)));
     } catch (error) {
-      _logger.error(error, name: "getExtensionsInstalled");
+      _logger.error(error, name: "getExtensionsInstalledTab");
       emit(state.copyWith(
           installed: const StateModel(data: [], status: StatusType.error)));
     }

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import 'book_cover_image.dart';
 import 'cache_network_image.dart';
 
 class BlurredBackdropImage extends StatelessWidget {
@@ -18,8 +19,9 @@ class BlurredBackdropImage extends StatelessWidget {
           bottom: 1,
           right: 1,
           left: 1,
-          child: CacheNetWorkImage(
-            url,
+          child: BookCoverImage(
+            cover: url,
+            borderRadius: BorderRadius.circular(8),
           ),
         ),
         Positioned.fill(

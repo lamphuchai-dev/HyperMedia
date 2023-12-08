@@ -18,5 +18,4 @@ class FlavorApp {
         return 'title';
     }
   }
-
 }

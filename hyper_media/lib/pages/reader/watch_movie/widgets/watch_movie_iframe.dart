@@ -1,10 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:hyper_media/app/extensions/index.dart';
-import 'package:hyper_media/utils/system_utils.dart';
-import 'package:hyper_media/widgets/widget.dart';
+part of '../view/watch_movie_view.dart';
 
-import '../cubit/watch_movie_cubit.dart';
 
 class WatchMovieByIframe extends StatefulWidget {
   const WatchMovieByIframe({super.key, required this.server});
@@ -53,6 +48,11 @@ class _WatchMovieByIframeState extends State<WatchMovieByIframe> {
                 return NavigationActionPolicy.ALLOW;
               }
               return NavigationActionPolicy.CANCEL;
+            },
+            onLoadStart: (controller, url) {
+              setState(() {
+                _loading = true;
+              });
             },
             onLoadStop: (controller, url) {
               setState(() {

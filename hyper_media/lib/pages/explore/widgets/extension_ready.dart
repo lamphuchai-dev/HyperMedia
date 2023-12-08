@@ -1,18 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hyper_media/app/constants/index.dart';
-import 'package:hyper_media/app/route/routes_name.dart';
-import 'package:hyper_media/app/types/app_type.dart';
-import 'package:hyper_media/data/models/book.dart';
-import 'package:hyper_media/data/models/extension.dart';
-import 'package:hyper_media/pages/explore/cubit/explore_cubit.dart';
-import 'package:hyper_media/widgets/widget.dart';
-import 'package:macos_ui/macos_ui.dart';
-
-import 'genre_widget.dart';
-import 'select_extension_bottom_sheet.dart';
+part of '../view/explore_view.dart';
 
 class ExtensionReady extends StatelessWidget {
   const ExtensionReady(
@@ -37,8 +23,7 @@ class ExtensionReady extends StatelessWidget {
                           builder: (context) => SelectExtensionBottomSheet(
                             extensions: extensions,
                             exceptionPrimary:
-                                (exploreCubit.state as ExploreExtensionLoaded)
-                                    .extension,
+                                (exploreCubit.state as ExploreLoaded).extension,
                             onSelected: exploreCubit.onChangeExtension,
                           ),
                         ));
@@ -73,14 +58,13 @@ class ExtensionReady extends StatelessWidget {
             ]),
         body: BlocBuilder<ExploreCubit, ExploreState>(
           buildWhen: (previous, current) {
-            if (previous is ExploreExtensionLoaded &&
-                current is ExploreExtensionLoaded) {
+            if (previous is ExploreLoaded && current is ExploreLoaded) {
               return previous.status != current.status;
             }
             return false;
           },
           builder: (context, state) {
-            if (state is ExploreExtensionLoaded) {
+            if (state is ExploreLoaded) {
               return switch (state.status) {
                 StatusType.loading => const LoadingWidget(),
                 StatusType.loaded =>
@@ -109,8 +93,7 @@ class ExtensionReady extends StatelessWidget {
                         builder: (context) => SelectExtensionBottomSheet(
                           extensions: extensions,
                           exceptionPrimary:
-                              (exploreCubit.state as ExploreExtensionLoaded)
-                                  .extension,
+                              (exploreCubit.state as ExploreLoaded).extension,
                           onSelected: exploreCubit.onChangeExtension,
                         ),
                       ));
@@ -150,14 +133,13 @@ class ExtensionReady extends StatelessWidget {
             builder: (context, scrollController) {
               return BlocBuilder<ExploreCubit, ExploreState>(
                 buildWhen: (previous, current) {
-                  if (previous is ExploreExtensionLoaded &&
-                      current is ExploreExtensionLoaded) {
+                  if (previous is ExploreLoaded && current is ExploreLoaded) {
                     return previous.status != current.status;
                   }
                   return false;
                 },
                 builder: (context, state) {
-                  if (state is ExploreExtensionLoaded) {
+                  if (state is ExploreLoaded) {
                     return switch (state.status) {
                       StatusType.loading => const LoadingWidget(),
                       StatusType.loaded =>
@@ -205,7 +187,7 @@ class ExtensionReady extends StatelessWidget {
         text: "common.genre".tr(),
       ));
       tabChildren.add(KeepAliveWidget(
-          child: GenreWidget(
+          child: ExtensionGenreTab(
         onFetch: () async => exploreCubit.onGetListGenre(),
         extension: extension,
       )));

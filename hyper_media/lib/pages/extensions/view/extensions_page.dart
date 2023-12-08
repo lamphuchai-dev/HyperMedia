@@ -1,9 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hyper_media/app/extensions/index.dart';
-import 'package:hyper_media/widgets/widget.dart';
-import '../cubit/extensions_cubit.dart';
-import '../widgets/widgets.dart';
+part of './extensions_view.dart';
 
 class ExtensionsPage extends StatefulWidget {
   const ExtensionsPage({super.key});
@@ -44,7 +39,7 @@ class _ExtensionsPageState extends State<ExtensionsPage> {
                       text: "Đã cài đặt",
                     ),
                     Tab(
-                      text: "Tất cả",
+                      text: "Tất cả nguồn",
                     )
                   ]))
             ],
@@ -53,9 +48,9 @@ class _ExtensionsPageState extends State<ExtensionsPage> {
         body: Padding(
           padding: const EdgeInsets.only(top: 4),
           child: TabBarView(children: [
-            const KeepAliveWidget(child: ExtensionsInstalled()),
+            const KeepAliveWidget(child: ExtensionsInstalledTab()),
             KeepAliveWidget(
-                child: ExtensionsAll(
+                child: ExtensionsAllTab(
               extensionsCubit: _extensionsCubit,
             ))
           ]),

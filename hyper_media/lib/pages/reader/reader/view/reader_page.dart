@@ -4,10 +4,10 @@ import 'package:hyper_media/app/constants/index.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/book.dart';
+import 'package:hyper_media/pages/reader/watch_comic/watch_comic.dart';
 import 'package:hyper_media/utils/system_utils.dart';
 import 'package:hyper_media/widgets/widget.dart';
 
-import '../../watch_comic/watch_comic.dart';
 import '../../watch_movie/watch_movie.dart';
 import '../../watch_novel/watch_novel.dart';
 import '../cubit/reader_cubit.dart';

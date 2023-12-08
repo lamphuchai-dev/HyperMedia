@@ -15,7 +15,7 @@ class WatchMovieCubit extends Cubit<WatchMovieState> {
   WatchMovieCubit({required ReaderCubit readerBookCubit})
       : _readerCubit = readerBookCubit,
         super(WatchMovieState(
-            watchChapter:readerBookCubit.watchChapterInit!,
+            watchChapter: readerBookCubit.watchChapterInit!,
             status: StatusType.init));
   final ReaderCubit _readerCubit;
   List<MovieServer> servers = [];
@@ -28,6 +28,15 @@ class WatchMovieCubit extends Cubit<WatchMovieState> {
 
   void onInit() {
     getDetailChapter(state.watchChapter);
+  }
+
+  @override
+  void onChange(Change<WatchMovieState> change) {
+    super.onChange(change);
+    if (change.currentState.watchChapter.index !=
+        change.nextState.watchChapter.index) {
+      _readerCubit.onChangeReader(change.nextState.watchChapter);
+    }
   }
 
   void getDetailChapter(Chapter chapter) async {

@@ -45,3 +45,17 @@ class PlatformWidget extends StatelessWidget {
     return macosWidget;
   }
 }
+
+typedef ThemeBuild = Widget Function(BuildContext context, ThemeData themeData,
+    TextTheme textTheme, ColorScheme colorScheme);
+
+class ThemeBuildWidget extends StatelessWidget {
+  const ThemeBuildWidget({super.key, required this.builder});
+  final ThemeBuild builder;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.appTheme;
+    return builder(context, theme, theme.textTheme, theme.colorScheme);
+  }
+}

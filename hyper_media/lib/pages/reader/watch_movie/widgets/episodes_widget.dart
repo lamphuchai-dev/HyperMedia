@@ -1,13 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hyper_media/app/constants/index.dart';
-import 'package:hyper_media/app/extensions/index.dart';
-import 'package:hyper_media/app/route/routes_name.dart';
-import 'package:hyper_media/data/models/models.dart';
-import 'package:hyper_media/widgets/widget.dart';
-
-import '../../reader/cubit/reader_cubit.dart';
-import '../cubit/watch_movie_cubit.dart';
+part of '../view/watch_movie_view.dart';
 
 class EpisodesWidget extends StatefulWidget {
   const EpisodesWidget({super.key, required this.onTapChapter});
@@ -57,8 +48,8 @@ class _EpisodesWidgetState extends State<EpisodesWidget> {
             children: [
               AspectRatio(
                 aspectRatio: 3 / 4,
-                child: CacheNetWorkImage(
-                  book.cover,
+                child: BookCoverImage(
+                  cover: book.cover,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),

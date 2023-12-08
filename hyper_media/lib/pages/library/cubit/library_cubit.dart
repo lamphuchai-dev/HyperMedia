@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/types/app_type.dart';
@@ -8,18 +7,14 @@ import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:hyper_media/utils/logger.dart';
 
-import '../../../data/models/bookmark.dart';
 
 part 'library_state.dart';
 
 class LibraryCubit extends Cubit<LibraryState> {
   LibraryCubit({required DatabaseUtils database})
       : _database = database,
-        super(const LibraryState(bookmarks: [], status: StatusType.init)) {
-    _bookmarkStreamSubscription = database.bookmark.listen((_) {
-      onInit();
-    });
-    _readerStreamSubscription = database.reader.listen((_) {
+        super(const LibraryState(books: [], status: StatusType.init)) {
+    _bookmarkStreamSubscription = database.books.listen((_) {
       onInit();
     });
   }
@@ -27,42 +22,33 @@ class LibraryCubit extends Cubit<LibraryState> {
   final _logger = Logger("LibraryCubit");
 
   late StreamSubscription _bookmarkStreamSubscription;
-  late StreamSubscription _readerStreamSubscription;
 
   final DatabaseUtils _database;
   void onInit() async {
     try {
       emit(state.copyWith(status: StatusType.loading));
-      List<Bookmark> bookmarks = await _database.getBookmarks;
-      bookmarks = bookmarks.sorted(
-          (a, b) => b.reader.value!.time.compareTo(a.reader.value!.time));
-      emit(state.copyWith(status: StatusType.loaded, bookmarks: bookmarks));
+      List<Book> books = await _database.getBooks();
+      emit(state.copyWith(status: StatusType.loaded, books: books));
     } catch (error) {
       _logger.error(error, name: "onInit");
       emit(state.copyWith(status: StatusType.error));
     }
   }
 
-  List<Book> get books => state.bookmarks.map((e) => e.book.value!).toList();
+  void delete(Book book) async {
+    _database.onDeleteBook(book.id!);
 
-  Bookmark getBookmarkByBook(Book book) {
-    return state.bookmarks
-        .firstWhereOrNull((element) => element.book.value!.id == book.id)!;
-  }
-
-  void delete(Book book) {
-    final bookmark = getBookmarkByBook(book);
-    _database.deleteBookmarkById(
-        id: bookmark.id!,
-        bookId: bookmark.book.value?.id,
-        readerId: bookmark.reader.value?.id,
-        chapterIds: bookmark.chapters.map((e) => e.id!).toList());
+    // final bookmark = getBookmarkByBook(book);
+    // _database.deleteBookmarkById(
+    //     id: bookmark.id!,
+    //     bookId: bookmark.book.value?.id,
+    //     readerId: bookmark.reader.value?.id,
+    //     chapterIds: bookmark.chapters.map((e) => e.id!).toList());
   }
 
   @override
   Future<void> close() {
     _bookmarkStreamSubscription.cancel();
-    _readerStreamSubscription.cancel();
     return super.close();
   }
 }

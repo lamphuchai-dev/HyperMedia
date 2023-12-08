@@ -1,8 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:hyper_media/app/constants/index.dart';
-import 'package:hyper_media/app/extensions/index.dart';
+part of '../view/watch_movie_view.dart';
 
-import '../cubit/watch_movie_cubit.dart';
 
 class ServersDialog extends StatelessWidget {
   const ServersDialog(

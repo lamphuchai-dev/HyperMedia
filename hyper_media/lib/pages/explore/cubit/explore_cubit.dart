@@ -18,18 +18,18 @@ class ExploreCubit extends Cubit<ExploreState> {
     _extensionsStreamSubscription =
         _database.extensionsChange.listen((_) async {
       final state = this.state;
-      if (state is ExploreExtensionNull) {
+      if (state is ExploreNotExtension) {
         final ext = await _database.getExtensionFirst;
         if (ext != null) {
-          emit(ExploreExtensionLoaded(
+          emit(ExploreLoaded(
               extension: ext, tabs: const [], status: StatusType.loading));
         }
-      } else if (state is ExploreExtensionLoaded) {
+      } else if (state is ExploreLoaded) {
         final tmp = await _database.getExtensionById(state.extension.id!);
         if (tmp == null) {
           final ext = await _database.getExtensionFirst;
           if (ext == null) {
-            emit(ExploreExtensionNull());
+            emit(const ExploreNotExtension());
           } else {
             onInit();
           }
@@ -45,17 +45,17 @@ class ExploreCubit extends Cubit<ExploreState> {
 
   void onInit() async {
     try {
-      emit(ExploreExtensionLoading());
+      emit(ExploreLoading());
       final extension = await _database.getExtensionFirst;
       if (extension == null) {
-        emit(ExploreExtensionNull());
+        emit(const ExploreNotExtension());
       } else {
-        emit(ExploreExtensionLoaded(
+        emit(ExploreLoaded(
             extension: extension, tabs: const [], status: StatusType.loading));
         getTabsByExtension();
       }
     } catch (error) {
-      emit(const ExploreExtensionError("Loading extension error"));
+      emit(const ExploreError("Loading extension error"));
     }
   }
 
@@ -63,7 +63,7 @@ class ExploreCubit extends Cubit<ExploreState> {
 
   void getTabsByExtension() async {
     final state = this.state;
-    if (state is! ExploreExtensionLoaded) return;
+    if (state is! ExploreLoaded) return;
 
     try {
       emit(state.copyWith(status: StatusType.loading));
@@ -86,7 +86,7 @@ class ExploreCubit extends Cubit<ExploreState> {
 
   Future<List<Book>> onGetListBook(String url, int page) async {
     final state = this.state;
-    if (state is! ExploreExtensionLoaded) return [];
+    if (state is! ExploreLoaded) return [];
 
     try {
       url = "${state.extension.source}$url";
@@ -104,7 +104,7 @@ class ExploreCubit extends Cubit<ExploreState> {
 
   Future<List<Genre>> onGetListGenre() async {
     final state = this.state;
-    if (state is! ExploreExtensionLoaded) return [];
+    if (state is! ExploreLoaded) return [];
 
     try {
       final result = await _jsRuntime.getGenre<List<dynamic>>(
@@ -119,7 +119,7 @@ class ExploreCubit extends Cubit<ExploreState> {
   }
 
   onChangeExtension(Extension extension) async {
-    emit(ExploreExtensionLoaded(
+    emit(ExploreLoaded(
         extension: extension, tabs: const [], status: StatusType.loading));
     await Future.delayed(const Duration(milliseconds: 50));
     getTabsByExtension();

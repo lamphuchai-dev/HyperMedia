@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hyper_media/app/constants/index.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/data/models/models.dart';
 
+import 'book_cover_image.dart';
 import 'cache_network_image.dart';
 
 enum BookLayoutType { column, stack }
@@ -76,7 +79,26 @@ class ItemBook extends StatelessWidget {
   }
 
   Widget _coverBook() {
-    return CacheNetWorkImage(book.cover);
+    return BookCoverImage(
+      cover: book.cover,
+    );
+    if (book.cover.startsWith("http")) {
+      return CacheNetWorkImage(book.cover);
+    }
+    try {
+      final bytes = base64Decode(book.cover);
+      return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.memory(
+            bytes,
+            fit: BoxFit.cover,
+          ));
+    } catch (e) {
+      return Image.asset(
+        AppAssets.backgroundBook,
+        fit: BoxFit.cover,
+      );
+    }
   }
 
   Widget _cardPercent() {
@@ -86,28 +108,28 @@ class ItemBook extends StatelessWidget {
       decoration: const BoxDecoration(
           color: Colors.black54,
           borderRadius: BorderRadius.only(bottomRight: Radius.circular(8))),
-      // child: Text(
-      //   "${book.readBook?.index ?? 1}/${book.totalChapters}",
-      //   style: const TextStyle(fontSize: 10),
-      // ),
+      child: Text(
+        "${book.currentIndex! + 1}/${book.totalChapters}",
+        style: const TextStyle(fontSize: 10),
+      ),
     );
   }
 
   Widget _readChapter() {
-    // if (book.readBook == null) return const SizedBox();
+    if (book.currentTitleChapter == null) return const SizedBox();
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       alignment: Alignment.center,
       decoration: const BoxDecoration(
           color: Colors.black54,
           borderRadius: BorderRadius.only(bottomRight: Radius.circular(8))),
-      // child: Text(
-      //   "${book.readBook!.titleChapter}",
-      //   style: const TextStyle(
-      //     fontSize: 10,
-      //   ),
-      //   maxLines: 3,
-      // ),
+      child: Text(
+        "${book.latestChapterTitle}",
+        style: const TextStyle(
+          fontSize: 10,
+        ),
+        maxLines: 3,
+      ),
     );
   }
 

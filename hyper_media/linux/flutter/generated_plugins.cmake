@@ -6,9 +6,12 @@ list(APPEND FLUTTER_PLUGIN_LIST
   desktop_webview_window
   desktop_window
   flutter_js
+  irondash_engine_context
   isar_flutter_libs
   media_kit_libs_linux
   media_kit_video
+  pasteboard
+  super_native_extensions
   url_launcher_linux
 )
 

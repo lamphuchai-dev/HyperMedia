@@ -1,10 +1,5 @@
-import 'package:desktop_webview_window/desktop_webview_window.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:hyper_media/utils/system_utils.dart';
-import 'package:hyper_media/widgets/widget.dart';
+part of '../view/watch_movie_view.dart';
 
-import '../cubit/watch_movie_cubit.dart';
 
 class WatchMovieByM3u8 extends StatefulWidget {
   const WatchMovieByM3u8({super.key, required this.server});
@@ -99,7 +94,8 @@ class _WatchMovieByM3u8State extends State<WatchMovieByM3u8> {
   @override
   void didUpdateWidget(covariant WatchMovieByM3u8 oldWidget) {
     if (oldWidget.server.data != widget.server.data) {
-      // _webViewController?.loadUrl(urlRequest: URLRequest(url: WebUri(url)));
+      _createUrl();
+      _webViewController?.loadUrl(urlRequest: URLRequest(url: WebUri(url)));
     }
     super.didUpdateWidget(oldWidget);
   }

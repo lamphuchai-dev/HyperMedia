@@ -36,10 +36,11 @@ class _LibraryPageState extends State<LibraryPage> {
                 useFetch: false,
                 useRefresh: false,
                 listenBooks: true,
-                initialBooks: _libraryCubit.books,
+                initialBooks: state.books,
+                layout: BookLayoutType.stack,
                 onTap: (book) {
                   Navigator.pushNamed(context, RoutesName.reader,
-                      arguments: _libraryCubit.getBookmarkByBook(book));
+                      arguments: ReaderArgs(book: book, chapters: []));
                 },
                 onLongTap: _openBottomSheet,
               ),

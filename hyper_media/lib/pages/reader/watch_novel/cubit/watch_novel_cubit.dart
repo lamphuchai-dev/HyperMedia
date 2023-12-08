@@ -39,6 +39,15 @@ class WatchNovelCubit extends Cubit<WatchNovelState> {
     getDetailChapter(state.watchChapter);
   }
 
+  @override
+  void onChange(Change<WatchNovelState> change) {
+    super.onChange(change);
+    if (change.currentState.watchChapter.index !=
+        change.nextState.watchChapter.index) {
+      _readerCubit.onChangeReader(change.nextState.watchChapter);
+    }
+  }
+
   String get progressReader =>
       "${state.watchChapter.index + 1}/${_readerCubit.chapters.length}";
 

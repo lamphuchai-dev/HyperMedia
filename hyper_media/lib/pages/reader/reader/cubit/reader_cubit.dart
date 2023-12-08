@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
@@ -6,7 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
-import 'package:hyper_media/data/models/reader.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:hyper_media/utils/logger.dart';
 import 'package:hyper_media/utils/system_utils.dart';
@@ -41,19 +42,17 @@ class ReaderCubit extends Cubit<ReaderState> {
   List<Chapter> get chapters =>
       state.chapters.sorted((a, b) => a.index.compareTo(b.index));
 
-  late Reader _readerBook;
-
   Chapter? watchChapterInit;
 
-  // int watchInitial = 0;
-
   final FToast fToast = FToast();
+
+  Completer? _nextChapterCompleter;
 
   void onInitFToat(BuildContext context) {
     fToast.init(context);
   }
 
-  void onInit(Reader reader) async {
+  void onInit() async {
     try {
       _extension = await _database.getExtensionByHost(book.host);
       if (_extension == null) {
@@ -94,12 +93,11 @@ class ReaderCubit extends Cubit<ReaderState> {
           readerBookState = readerBookState.copyWith(chapters: localChapters);
         }
       }
-
-      _readerBook = reader;
-      watchChapterInit = chapters
-          .firstWhereOrNull((element) => element.url == _readerBook.url);
+      watchChapterInit = readerBookState.chapters.firstWhereOrNull(
+          (chapter) => chapter.index == readerBookState.book.currentIndex);
       if (watchChapterInit == null) {
         emit(state.copyWith(extensionStatus: ExtensionStatus.error));
+        return;
       }
       readerBookState = readerBookState.copyWith(
           chapters: readerBookState.chapters
@@ -107,15 +105,12 @@ class ReaderCubit extends Cubit<ReaderState> {
       emit(readerBookState.copyWith(
         extensionStatus: ExtensionStatus.ready,
       ));
-
       if (book.id != null) {
-        // _database.updateBook(book.copyWith(
-        //     updateAt: DateTime.now(),
-        //     readBook: ReadBook(
-        //         index: chapters[watchInitial].index,
-        //         offsetLast: 0.0,
-        //         titleChapter: chapters[watchInitial].name,
-        //         nameExtension: _extension!.metadata.name)));
+        _database.updateBook(book.copyWith(
+            updateAt: DateTime.now(),
+            currentIndex: watchChapterInit!.index,
+            currentTitleChapter: watchChapterInit!.name,
+            latestChapterTitle: readerBookState.chapters.last.name));
       }
     } catch (error) {
       emit(state.copyWith(extensionStatus: ExtensionStatus.error));
@@ -137,6 +132,9 @@ class ReaderCubit extends Cubit<ReaderState> {
           source: _extension!.getChapterScript);
       chapter = chapter.addContentByExtensionType(
           type: getExtensionType, value: result);
+      if (chapter.id != null) {
+        upChapterLocal(chapter);
+      }
       List<Chapter> chapters = state.chapters;
       chapters.removeAt(chapter.index);
       chapters.insert(chapter.index, chapter);
@@ -167,14 +165,15 @@ class ReaderCubit extends Cubit<ReaderState> {
             .toList();
         newChapters =
             newChapters.map((e) => e.copyWith(bookId: book.id)).toList();
-        // await _databaseService.insertChapters(newChapters);
+        await _database.insertChapters(newChapters);
 
-        // final chapters = await _databaseService.getChaptersByBookId(book.id!);
-
-        // await _databaseService.updateBook(book);
-        emit(state.copyWith(
-            chapters: chapters,
-            book: book.copyWith(totalChapters: chapters.length)));
+        final chapters = await _database.getChaptersByBookId(book.id!);
+        final newBook = book.copyWith(
+            totalChapters: chapters.length,
+            latestChapterTitle: chapters.last.name,
+            lastCheckTime: DateTime.now());
+        await _database.updateBook(newBook);
+        emit(state.copyWith(chapters: chapters, book: newBook));
       } else {
         final chapters = lstChapter;
         emit(state.copyWith(chapters: chapters));
@@ -200,14 +199,32 @@ class ReaderCubit extends Cubit<ReaderState> {
   }
 
   onChangeReader(Chapter chapter) {
-    if (_readerBook.id == null) return;
-    _readerBook = _readerBook.copyWith(
-        nameChapter: chapter.name, url: chapter.url, time: DateTime.now());
-    _database.upReader(_readerBook);
+    if (book.id != null) {
+      _database.updateBook(book.copyWith(
+          updateAt: DateTime.now(),
+          currentIndex: chapter.index,
+          currentTitleChapter: chapter.name));
+    }
   }
 
   void addBookmark() {
-    _database.addBookmark(book: book, chapters: chapters);
+    // _database.addBookmark(book: book, chapters: chapters);
+  }
+
+  Chapter? onPreviousChapter(int currentIndex) {
+    if (currentIndex == 0) return null;
+    if (currentIndex >= chapters.length) return null;
+    return chapters[currentIndex - 1];
+  }
+
+  Chapter? onNextChapter(int currentIndex) {
+    if (currentIndex < 0) return null;
+    if (currentIndex + 1 >= chapters.length) return null;
+    return chapters[currentIndex + 1];
+  }
+
+  void upChapterLocal(Chapter chapter) {
+    _database.updateChapter(chapter);
   }
 
   @override

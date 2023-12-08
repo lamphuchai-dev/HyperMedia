@@ -57,17 +57,7 @@ class Routes {
       case RoutesName.reader:
         assert(args != null && (args is ReaderArgs || args is Bookmark),
             "args must be ReaderArgs || Bookmark");
-
-        if (args is Bookmark) {
-          return PageTransition(
-              // settings: settings,
-              child: ReaderView(
-                bookmark: args as Bookmark,
-              ),
-              type: PageTransitionType.fade);
-        }
         return PageTransition(
-            // settings: settings,
             child: ReaderView(
               readerArgs: args as ReaderArgs,
             ),

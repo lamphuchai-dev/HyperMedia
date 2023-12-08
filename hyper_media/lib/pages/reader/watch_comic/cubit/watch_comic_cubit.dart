@@ -1,35 +1,70 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
-import 'package:hyper_media/utils/auto_scroll_notifier.dart';
+import 'package:hyper_media/utils/database_service.dart';
+import 'package:hyper_media/utils/download_service.dart';
+import 'package:hyper_media/utils/logger.dart';
 import 'package:hyper_media/utils/progress_watch_notifier.dart';
+import 'package:hyper_media/utils/system_utils.dart';
 
 import '../../reader/cubit/reader_cubit.dart';
-import '../widgets/menu_comic_animation.dart';
+import '../view/auto_scroll_widget.dart';
+import '../view/watch_comic_view.dart';
 
 part 'watch_comic_state.dart';
 
 class WatchComicCubit extends Cubit<WatchComicState> {
-  WatchComicCubit({required ReaderCubit readerBookCubit})
-      : _readerCubit = readerBookCubit,
-        super(WatchComicState(
-            watchChapter: readerBookCubit.watchChapterInit!,
-            watchStatus: StatusType.init));
-  final MenuComicAnimationController menuWatchController =
-      MenuComicAnimationController();
+  WatchComicCubit(
+      {required DatabaseUtils database,
+      required DownloadService downloadService,
+      required ReaderCubit readerCubit})
+      : _database = database,
+        _downloadService = downloadService,
+        _readerCubit = readerCubit,
+        super(
+          WatchComicState(
+              settings: database.getSettingsComic,
+              status: StatusType.init,
+              watchChapter: readerCubit.watchChapterInit!),
+        );
+  final _logger = Logger("WatchComicCubit");
+
+  final DatabaseUtils _database;
+  final DownloadService _downloadService;
+
   final ReaderCubit _readerCubit;
-  final ScrollController scrollController = ScrollController();
   ProgressWatchNotifier progressWatchValue = ProgressWatchNotifier();
-  AutoScrollNotifier autoScrollValue = AutoScrollNotifier();
-  void onInit() async {
-    getDetailChapter(state.watchChapter);
-  }
+  final MenuController menuController = MenuController();
+
+  Map<String, String> headersChapter = {};
+
+  final AutoScrollController autoScrollController =
+      AutoScrollController(scrollType: ScrollType.list);
+
+  final ValueNotifier autoScrollStatus =
+      ValueNotifier(AutoScrollStatus.noActive);
+
+  ValueNotifier<double> timerAutoScrollStatus = ValueNotifier(5.0);
+
+  Timer? _timerChangeAutoScroll;
+
+  String get bookName => _readerCubit.book.name;
 
   @override
   void onChange(Change<WatchComicState> change) {
     super.onChange(change);
+    final current = change.currentState;
+    final next = change.nextState;
+    if (current.settings != next.settings) {
+      final nextSettings = next.settings;
+      _applyWatchSetting(
+          nextSettings, current.settings.watchType != next.settings.watchType);
+      _database.setSettingsComic(next.settings);
+    }
     if (change.currentState.watchChapter.index !=
         change.nextState.watchChapter.index) {
       _readerCubit.onChangeReader(change.nextState.watchChapter);
@@ -37,107 +72,190 @@ class WatchComicCubit extends Cubit<WatchComicState> {
     }
   }
 
-  void setup(double height) {
-    autoScrollValue.init(scrollController: scrollController, height: height);
-    autoScrollValue.onCompleteCallback = () {
-      final isNextChapter = onNext();
-      if (isNextChapter) return;
-      onCloseAutoScroll();
-    };
-    scrollController.addListener(() {
+  void setHeight(double height) {
+    autoScrollController.setHeight(height);
+    autoScrollController.onScrollLister = (maxScrollExtent, offset, height) {
       progressWatchValue.addListenerProgress(
-          maxScrollExtent: scrollController.position.maxScrollExtent,
-          offsetCurrent: scrollController.offset,
+          maxScrollExtent: maxScrollExtent,
+          offsetCurrent: offset,
           height: height);
-      autoScrollValue.update();
-    });
+    };
+    autoScrollController.onCompleteCallback = () {
+      final chapter = _readerCubit.onNextChapter(state.watchChapter.index);
+      if (chapter == null) {
+        onCloseAutoScroll();
+      } else {
+        getDetailChapter(chapter);
+      }
+    };
+    timerAutoScrollStatus.value = autoScrollController.timeAutoScroll;
   }
 
-  String get bookName => _readerCubit.book.name;
+  void onInit() {
+    try {
+      _applyWatchSetting(state.settings, true);
+      headersChapter = {"Referer": _readerCubit.book.host};
+      emit(state.copyWith(status: StatusType.loading));
+      autoScrollController.clean();
+      getDetailChapter(state.watchChapter);
+    } catch (err) {
+      _logger.error(err);
+      emit(state.copyWith(status: StatusType.error));
+    }
+  }
+
+  void _applyWatchSetting(WatchComicSettings settings, bool intController) {
+    switch (settings.orientation) {
+      case WatchOrientation.auto:
+        SystemUtils.setOrientationAuto();
+        break;
+      case WatchOrientation.landscape:
+        SystemUtils.setOrientationLandscape();
+        break;
+      case WatchOrientation.portrait:
+        SystemUtils.setOrientationPortrait();
+        break;
+      default:
+        break;
+    }
+    if (!intController) return;
+    switch (settings.watchType) {
+      case WatchComicType.webtoon:
+        autoScrollController.initScrollController();
+        break;
+      case WatchComicType.horizontal:
+      case WatchComicType.vertical:
+        autoScrollController.initPageScroll();
+        break;
+      default:
+        break;
+    }
+  }
+
+  void onChangeSettings(WatchComicSettings settings) =>
+      emit(state.copyWith(settings: settings));
+
+  void onSaveImage(String url) async {
+    final tmp = await _downloadService.saveImage(url, headers: headersChapter);
+    print(tmp);
+  }
+
+  void onCopyImage(String url) async {
+    final tmp =
+        await _downloadService.clipboardImage(url, headers: headersChapter);
+    print(tmp);
+  }
 
   void getDetailChapter(Chapter chapter) async {
     try {
+      emit(state.copyWith(status: StatusType.loading));
+
       if (chapter.contentComic != null && chapter.contentComic!.isNotEmpty) {
-        emit(state.copyWith(
-            watchChapter: chapter, watchStatus: StatusType.loaded));
+        emit(state.copyWith(watchChapter: chapter, status: StatusType.loaded));
       } else {
-        emit(state.copyWith(watchStatus: StatusType.loading));
         chapter = await _readerCubit.getContentsChapter(chapter);
-        emit(state.copyWith(
-            watchChapter: chapter, watchStatus: StatusType.loaded));
+        if (chapter.contentComic != null) {
+          emit(
+              state.copyWith(watchChapter: chapter, status: StatusType.loaded));
+        } else {
+          emit(state.copyWith(status: StatusType.error));
+        }
       }
     } catch (error) {
-      emit(
-          state.copyWith(watchChapter: chapter, watchStatus: StatusType.error));
+      emit(state.copyWith(watchChapter: chapter, status: StatusType.error));
     }
+  }
+
+  void onChangeSliderScroll(double value) {
+    autoScrollController.jumpTo(value);
+  }
+
+  void onNext() {
+    final chapter = _readerCubit.onNextChapter(state.watchChapter.index);
+    if (chapter == null) return;
+    autoScrollController.jumpTo(0.0);
+    getDetailChapter(chapter);
+  }
+
+  void onPrevious() {
+    final chapter = _readerCubit.onPreviousChapter(state.watchChapter.index);
+    if (chapter == null) return;
+    autoScrollController.jumpTo(0.0);
+    getDetailChapter(chapter);
   }
 
   void onRefresh() async {
     try {
-      emit(state.copyWith(watchStatus: StatusType.loading));
+      emit(state.copyWith(status: StatusType.loading));
       final chapter = await _readerCubit.getContentsChapter(state.watchChapter,
           refresh: true);
-      emit(state.copyWith(
-          watchChapter: chapter, watchStatus: StatusType.loaded));
+      emit(state.copyWith(watchChapter: chapter, status: StatusType.loaded));
     } catch (error) {
-      emit(state.copyWith(watchStatus: StatusType.error));
+      emit(state.copyWith(status: StatusType.error));
     }
   }
 
   String get progressReader =>
       "${state.watchChapter.index + 1}/${_readerCubit.chapters.length}";
 
+  void onChangeChapter(Chapter chapter) {
+    getDetailChapter(chapter);
+  }
+
   void onEnableAutoScroll() {
-    autoScrollValue.start();
-    menuWatchController.hide();
-    menuWatchController.changeMenu();
+    autoScrollController.enableAutoScroll();
+    // menuController.hide();
+    menuController.changeMenuType(MenuType.autoScroll);
   }
 
   void onCloseAutoScroll() {
-    autoScrollValue.close();
-    menuWatchController.hide();
+    autoScrollController.closeAutoScroll();
+    menuController.changeMenuType(MenuType.base);
   }
 
-  void onChangeTimeAutoScroll(double value) {
-    autoScrollValue.onChangeTimerAuto(value);
-  }
-
-  bool onNext() {
-    if (state.watchChapter.index + 1 >= _readerCubit.chapters.length) {
-      return false;
-    }
-    final chapter = _readerCubit.chapters[state.watchChapter.index + 1];
-    scrollController.jumpTo(0.0);
-    getDetailChapter(chapter);
-    return true;
-  }
-
-  void onPrevious() {
-    final chapter = _readerCubit.chapters[state.watchChapter.index - 1];
-    scrollController.jumpTo(0.0);
-    getDetailChapter(chapter);
-  }
-
-  void onChangeSliderScroll(double value) {
-    if (scrollController.hasClients) {
-      final of = (value / 100) * scrollController.position.maxScrollExtent;
-      scrollController.jumpTo(of);
-    }
+  void onChangeAutoScrollStatus(AutoScrollStatus status) {
+    autoScrollStatus.value = status;
   }
 
   void onActionAutoScroll() {
-    autoScrollValue.onAction();
+    switch (autoScrollStatus.value) {
+      case AutoScrollStatus.active:
+        autoScrollController.closeAutoScroll();
+        break;
+      default:
+        autoScrollController.enableAutoScroll();
+        break;
+    }
+  }
+
+  void onChangeTimeAutoScroll(double value) {
+    timerAutoScrollStatus.value = value;
+    if (_timerChangeAutoScroll != null) _timerChangeAutoScroll!.cancel();
+    _timerChangeAutoScroll = Timer(const Duration(milliseconds: 300), () {
+      autoScrollController.changeTimeAutoScroll(timerAutoScrollStatus.value);
+    });
   }
 
   void onCheckAutoScrollNextChapter() {
-    autoScrollValue.checkAutoNextChapter();
-  }
-
-  void onChangeChapter(Chapter chapter) {
-    getDetailChapter(chapter);
+    if (autoScrollStatus.value != AutoScrollStatus.complete) return;
+    debugPrint("checkAutoNextChapter");
+    Timer(const Duration(seconds: 2), () {
+      autoScrollController.enableAutoScroll();
+    });
   }
 
   void add() {
     _readerCubit.addBookmark();
   }
+
+  @override
+  Future<void> close() {
+    SystemUtils.setOrientationAuto();
+    autoScrollController.dispose();
+    _timerChangeAutoScroll?.cancel();
+    return super.close();
+  }
 }
+
+
+// class ChapterCom

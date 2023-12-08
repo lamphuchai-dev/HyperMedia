@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:dio_client/index.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,11 +67,19 @@ class AppCubitCubit extends Cubit<AppCubitState> {
     emit(state.copyWith(themeMode: themeMode));
   }
 
-  Future<bool> addBookmark(
-      {required Book book, required Extension extension}) async {
+  Future<Book?> addBookmark(
+      {required Book book,
+      required Extension extension,
+      required int currentIndex}) async {
     try {
       _fToast.showToast(child: const ToastWidget(msg: "Đang thêm bookmark"));
-
+      final bookId = await _database.onInsertBook(book);
+      book = book.copyWith(id: bookId);
+      final bytesIcon = await _jsRuntime.getDioClient
+          .get(book.cover, options: Options(responseType: ResponseType.bytes));
+      if (bytesIcon is List<int>) {
+        book = book.copyWith(cover: base64Encode(bytesIcon));
+      }
       final result = await _jsRuntime.getChapters<List<dynamic>>(
           url: book.bookUrl, source: extension.getChaptersScript);
       if (result.isNotEmpty) {
@@ -84,11 +95,20 @@ class AppCubitCubit extends Cubit<AppCubitState> {
             }
           }
         }
-        await _database.addBookmark(book: book, chapters: chapters);
-
-        FToast().init(navigatorKey.currentContext!).showToast(
-            child: const ToastWidget(msg: "Đang thêm thành công bookmark"));
-        return true;
+        final currentWatchChapter =
+            chapters.firstWhereOrNull((el) => el.index == currentIndex);
+        if (currentWatchChapter != null) {
+          book = book.copyWith(
+              latestChapterTitle: chapters.last.name,
+              currentIndex: currentWatchChapter.index,
+              currentTitleChapter: currentWatchChapter.name,
+              lastCheckTime: DateTime.now());
+          await _database.insertChapters(chapters);
+          await _database.updateBook(book);
+          FToast().init(navigatorKey.currentContext!).showToast(
+              child: const ToastWidget(msg: "Đang thêm thành công bookmark"));
+          return book;
+        }
       } else {
         FToast()
             .init(navigatorKey.currentContext!)
@@ -99,6 +119,6 @@ class AppCubitCubit extends Cubit<AppCubitState> {
           .init(navigatorKey.currentContext!)
           .showToast(child: const ToastWidget(msg: "Lỗi thêm bookmark"));
     }
-    return false;
+    return null;
   }
 }

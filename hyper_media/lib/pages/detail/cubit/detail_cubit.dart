@@ -15,12 +15,11 @@ part 'detail_state.dart';
 
 class DetailCubit extends Cubit<DetailState> {
   DetailCubit(
-      {required String bookUrl,
+      {required this.bookUrl,
       required DatabaseUtils databaseService,
       required JsRuntime jsRuntime,
       required AppCubitCubit appCubitCubit})
-      : _bookUrl = bookUrl,
-        _databaseService = databaseService,
+      : _databaseService = databaseService,
         _jsRuntime = jsRuntime,
         _appCubitCubit = appCubitCubit,
         super(DetailInitial());
@@ -30,7 +29,7 @@ class DetailCubit extends Cubit<DetailState> {
   final DatabaseUtils _databaseService;
   Extension? _extension;
   final JsRuntime _jsRuntime;
-  final String _bookUrl;
+  final String bookUrl;
   AppCubitCubit _appCubitCubit;
 
   final FToast fToast = FToast();
@@ -45,7 +44,7 @@ class DetailCubit extends Cubit<DetailState> {
 
   void onInit() async {
     emit(DetailLoading());
-    final hostBook = _bookUrl.getHostByUrl;
+    final hostBook = bookUrl.getHostByUrl;
     if (hostBook == null) {
       emit(const DetailError(message: "Book url error"));
       return;
@@ -56,12 +55,6 @@ class DetailCubit extends Cubit<DetailState> {
       return;
     }
 
-    int? booId;
-    // final bookInBookmark = await _databaseService.getBookByUrl(_bookUrl);
-    // if (bookInBookmark != null) {
-    //   booId = bookInBookmark.id;
-    // }
-
     Book? bookExt = await getDetailByBookUrl();
 
     if (bookExt == null) {
@@ -69,7 +62,13 @@ class DetailCubit extends Cubit<DetailState> {
       return;
     }
 
-    bookExt = bookExt.copyWith(id: booId);
+    final bookInBookmark = await _databaseService.getBookByLink(bookExt.link);
+    if (bookInBookmark != null) {
+      bookExt = bookInBookmark.copyWith(
+        totalChapters: bookExt.totalChapters,
+      );
+    }
+
     if (!isClosed) {
       emit(DetailLoaded(book: bookExt));
     }
@@ -78,7 +77,7 @@ class DetailCubit extends Cubit<DetailState> {
   Future<Book?> getDetailByBookUrl() async {
     try {
       final result = await _jsRuntime.getDetail<Map<String, dynamic>>(
-        url: _bookUrl,
+        url: bookUrl,
         source: _extension!.getDetailScript,
       );
       return Book.fromMap(result);
@@ -91,14 +90,18 @@ class DetailCubit extends Cubit<DetailState> {
   void openBrowser() {
     _appBrowser ??= AppBrowser();
     _appBrowser!.openUrlRequest(
-        urlRequest: URLRequest(url: WebUri(_bookUrl)),
+        urlRequest: URLRequest(url: WebUri(bookUrl)),
         settings: _appBrowser!.setting);
     // _appBrowser.openData(data: data)
   }
 
-  void addBookmark() {
+  Future<void> addBookmark() async {
     final state = this.state;
     if (state is! DetailLoaded) return;
-    _appCubitCubit.addBookmark(book: state.book, extension: _extension!);
+    final book = await _appCubitCubit.addBookmark(
+        book: state.book, extension: _extension!, currentIndex: 0);
+    if (book != null) {
+      emit(DetailLoaded(book: book));
+    }
   }
 }

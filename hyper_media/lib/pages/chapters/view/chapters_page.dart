@@ -5,9 +5,7 @@ import 'package:hyper_media/app/constants/dimens.dart';
 import 'package:hyper_media/app/extensions/context_extension.dart';
 import 'package:hyper_media/app/route/routes_name.dart';
 import 'package:hyper_media/app/types/app_type.dart';
-import 'package:hyper_media/data/models/book.dart';
 import 'package:hyper_media/data/models/models.dart';
-import 'package:hyper_media/data/models/reader.dart';
 import 'package:hyper_media/widgets/widget.dart';
 import '../../reader/reader/reader.dart';
 import '../cubit/chapters_cubit.dart';
@@ -131,13 +129,8 @@ class _ChaptersPageState extends State<ChaptersPage> {
                         SortChapterType.lastChapter);
                     Navigator.pushNamed(context, RoutesName.reader,
                         arguments: ReaderArgs(
-                            book: _book,
-                            chapters: chaptersSor,
-                            reader: Reader(
-                                nameChapter: chapter.name,
-                                url: chapter.url,
-                                offset: 0.0,
-                                time: DateTime.now())));
+                            book: _book.copyWith(currentIndex: chapter.index),
+                            chapters: chaptersSor));
                   },
                 )),
               ],

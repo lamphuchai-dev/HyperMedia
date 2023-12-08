@@ -116,7 +116,10 @@ class _ChaptersDrawerState extends State<ChaptersDrawer> {
                   children: [
                     AspectRatio(
                       aspectRatio: 3 / 4,
-                      child: CacheNetWorkImage(_book.cover),
+                      child: BookCoverImage(
+                        cover: _book.cover,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     Expanded(
                         child: Padding(
