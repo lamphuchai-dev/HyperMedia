@@ -22,7 +22,7 @@ async function chapters(bookUrl) {
     const name = await Extension.querySelector(el, "span").text;
     chapters.push({
       name: name != null ? name.trim() : "",
-      url: url.replace(host, ""),
+      url: url.replace(host, "").trim(),
       host,
     });
   }
