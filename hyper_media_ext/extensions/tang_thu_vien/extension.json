@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "name": "Tàng Thư Viện",
+    "author": "HyperMedia",
+    "version": 1,
+    "source": "https://truyen.tangthuvien.vn",
+    "regexp": "(truyen.)?(tangthuvien).(vn)",
+    "description": "Đọc truyện trên trang Tàng Thư Viện",
+    "locale": "vi_VN",
+    "language": "javascript",
+    "type": "novel"
+  },
+  "script": {
+    "tabs": "src/tabs.js",
+    "home": "src/home.js",
+    "detail": "src/detail.js",
+    "chapters": "src/chapters.js",
+    "chapter": "src/chapter.js",
+    "search": "src/search.js",
+    "genre": "src/genre.js"
+  }
+}

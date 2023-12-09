@@ -13,6 +13,19 @@
         "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/truyencv/icon.png"
     },
     {
+        "name": "Tàng Thư Viện",
+        "author": "HyperMedia",
+        "version": 1,
+        "source": "https://truyen.tangthuvien.vn",
+        "regexp": "(truyen.)?(tangthuvien).(vn)",
+        "description": "Đọc truyện trên trang Tàng Thư Viện",
+        "locale": "vi_VN",
+        "language": "javascript",
+        "type": "novel",
+        "path": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/tang_thu_vien/extension.zip",
+        "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/tang_thu_vien/icon.png"
+    },
+    {
         "name": "Sub Nhanh",
         "author": "HyperMedia",
         "version": 2,

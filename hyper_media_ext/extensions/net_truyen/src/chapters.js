@@ -17,8 +17,8 @@ async function chapters(bookUrl) {
   return Response.success(chapters.reverse());
 }
 
-runFn(() =>
-  chapters(
-    "https://www.nettruyenus.com/truyen-tranh/xuyen-nhanh-phan-dien-qua-sung-qua-me-nguoi-88810"
-  )
-);
+// runFn(() =>
+//   chapters(
+//     "https://www.nettruyenus.com/truyen-tranh/xuyen-nhanh-phan-dien-qua-sung-qua-me-nguoi-88810"
+//   )
+// );
