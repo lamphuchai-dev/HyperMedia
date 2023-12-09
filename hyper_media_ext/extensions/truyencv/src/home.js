@@ -38,4 +38,4 @@ async function home(url, page) {
   return Response.success(result);
 }
 
- runFn(() => home("https://truyencv.info/popular"));
+//  runFn(() => home("https://truyencv.info/popular"));

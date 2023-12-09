@@ -31,7 +31,7 @@ async function tabs() {
       url: "/tong-hop?fns=ht",
     },
     {
-      title: "/tong-hop?ord=new",
+      title: "Truyện mới",
       url: "/tong-hop?fns=ht",
     },
   ]);
