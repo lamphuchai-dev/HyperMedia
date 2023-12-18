@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hyper_media/data/models/bookmark.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/pages/bottom_nav/bottom_nav.dart';
 import 'package:hyper_media/pages/chapters/chapters.dart';

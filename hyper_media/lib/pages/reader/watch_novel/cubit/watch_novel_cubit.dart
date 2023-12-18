@@ -4,30 +4,36 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/utils/auto_scroll_notifier.dart';
+import 'package:hyper_media/utils/database_service.dart';
+import 'package:hyper_media/utils/mixin_watch_chapter.dart';
 import 'package:hyper_media/utils/progress_watch_notifier.dart';
 import 'package:js_runtime/js_runtime.dart';
 
 import '../../reader/cubit/reader_cubit.dart';
-import '../widgets/menu_novel.dart';
+import '../watch_novel.dart';
 
 part 'watch_novel_state.dart';
 
-class WatchNovelCubit extends Cubit<WatchNovelState> {
-  WatchNovelCubit({required ReaderCubit readerBookCubit})
-      : _readerCubit = readerBookCubit,
+class WatchNovelCubit extends Cubit<WatchNovelState> with MixinWatchChapter {
+  WatchNovelCubit({
+    required ReaderCubit readerBookCubit,
+    required DatabaseUtils database,
+  })  : _readerCubit = readerBookCubit,
+        _database = database,
         super(WatchNovelState(
             status: StatusType.init,
-            watchChapter: readerBookCubit.watchChapterInit!));
+            watchChapter: readerBookCubit.watchChapterInit!,
+            settings: database.getSettingsNovel));
 
   final ReaderCubit _readerCubit;
+  final DatabaseUtils _database;
 
   AutoScrollNotifier autoScrollValue = AutoScrollNotifier();
   ProgressWatchNotifier progressWatchValue = ProgressWatchNotifier();
 
   final ScrollController scrollController = ScrollController();
 
-  final MenuNovelAnimationController menuController =
-      MenuNovelAnimationController();
+  final menuController = MenuWatchNovelController();
 
   Book get getBook => _readerCubit.book;
 
@@ -42,6 +48,12 @@ class WatchNovelCubit extends Cubit<WatchNovelState> {
   @override
   void onChange(Change<WatchNovelState> change) {
     super.onChange(change);
+    final current = change.currentState;
+    final next = change.nextState;
+    if (current.settings != next.settings) {
+      final nextSettings = next.settings;
+      _database.setSettingsNovel(nextSettings);
+    }
     if (change.currentState.watchChapter.index !=
         change.nextState.watchChapter.index) {
       _readerCubit.onChangeReader(change.nextState.watchChapter);
@@ -84,12 +96,14 @@ class WatchNovelCubit extends Cubit<WatchNovelState> {
     }
   }
 
+  @override
   void onEnableAutoScroll() async {
     await menuController.hide();
     menuController.changeMenu(MenuNovelType.autoScroll);
     autoScrollValue.start();
   }
 
+  @override
   void onCloseAutoScroll() async {
     autoScrollValue.close();
     await menuController.hide();
@@ -100,18 +114,17 @@ class WatchNovelCubit extends Cubit<WatchNovelState> {
     getDetailChapter(chapter);
   }
 
-  void onHideCurrentMenu() {
-    menuController.hide();
-  }
-
+  @override
   void onActionAutoScroll() {
     autoScrollValue.onAction();
   }
 
+  @override
   void onChangeTimeAutoScroll(double value) {
     autoScrollValue.onChangeTimerAuto(value);
   }
 
+  @override
   bool onNext() {
     if (state.watchChapter.index + 1 >= _readerCubit.chapters.length) {
       return false;
@@ -122,13 +135,40 @@ class WatchNovelCubit extends Cubit<WatchNovelState> {
     return true;
   }
 
+  @override
   void onPrevious() {
     final chapter = _readerCubit.chapters[state.watchChapter.index - 1];
     scrollController.jumpTo(0.0);
     getDetailChapter(chapter);
   }
 
+  @override
   void onCheckAutoScrollNextChapter() {
     autoScrollValue.checkAutoNextChapter();
   }
+
+  void onCloseMenu() {
+    menuController.hide();
+  }
+
+  void onChangeSetting(WatchNovelSetting setting) {
+    emit(state.copyWith(settings: setting));
+  }
+
+  ThemeData themeData(ThemeData current) {
+    final themeWatchNovel = state.settings.themeWatchNovel;
+    final colorScheme = current.colorScheme.copyWith(
+        background: themeWatchNovel.background,
+        surface: themeWatchNovel.background);
+    final iconTheme = current.iconTheme.copyWith(color: themeWatchNovel.text);
+    final textTheme = current.textTheme.merge(TextTheme(
+      labelMedium: TextStyle(color: themeWatchNovel.text),
+      bodyMedium: TextStyle(color: themeWatchNovel.text),
+    ));
+    return current.copyWith(
+        colorScheme: colorScheme, iconTheme: iconTheme, textTheme: textTheme);
+  }
+
+  @override
+  void onRefresh() {}
 }

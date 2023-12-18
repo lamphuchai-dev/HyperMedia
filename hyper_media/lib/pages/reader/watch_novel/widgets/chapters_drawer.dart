@@ -1,14 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hyper_media/app/constants/gaps.dart';
-import 'package:hyper_media/app/extensions/index.dart';
-import 'package:hyper_media/app/route/routes_name.dart';
-import 'package:hyper_media/data/models/models.dart';
-import 'package:hyper_media/pages/reader/watch_novel/cubit/watch_novel_cubit.dart';
-import 'package:hyper_media/widgets/widget.dart';
-
-import '../../reader/cubit/reader_cubit.dart';
+part of "../view/watch_novel_view.dart";
 
 class ChaptersDrawer extends StatefulWidget {
   const ChaptersDrawer({super.key});
@@ -47,10 +37,9 @@ class _ChaptersDrawerState extends State<ChaptersDrawer> {
               return state.chapters;
             },
             builder: (context, chapters) {
-              return ListChaptersWidget(
-                indexSelect: _watchNovelCubit.state.watchChapter.index,
+              return _ListChaptersWidget(
+                index: _watchNovelCubit.state.watchChapter.index,
                 chapters: chapters,
-                usePage: UsePage.readChapter,
                 onTapChapter: (chapter) {
                   _watchNovelCubit.onChangeChapter(chapter);
                   Scaffold.of(context).openEndDrawer();
@@ -149,6 +138,131 @@ class _ChaptersDrawerState extends State<ChaptersDrawer> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ListChaptersWidget extends StatefulWidget {
+  const _ListChaptersWidget({
+    required this.index,
+    required this.chapters,
+    required this.onTapChapter,
+  });
+  final List<Chapter> chapters;
+  final int index;
+  final ValueChanged<Chapter> onTapChapter;
+
+  @override
+  State<_ListChaptersWidget> createState() => __ListChaptersWidgetState();
+}
+
+class __ListChaptersWidgetState extends State<_ListChaptersWidget> {
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    _scrollController = ScrollController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final valueJumTo = widget.index * 56.0;
+      if (valueJumTo > _scrollController.position.maxScrollExtent) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      } else {
+        _scrollController.jumpTo(valueJumTo);
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = context.appTextTheme;
+    final colorScheme = context.colorScheme;
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: true,
+      child: DraggableScrollbar.arrows(
+        controller: _scrollController,
+        backgroundColor: colorScheme.primary,
+        heightScrollThumb: 40,
+        child: ListView.builder(
+          itemCount: widget.chapters.length,
+          controller: _scrollController,
+          itemBuilder: (context, index) {
+            final chapter = widget.chapters[index];
+            final colorItemSelected = widget.index == index
+                ? colorScheme.primary
+                : textTheme.labelMedium?.color;
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              tileColor: colorScheme.surface,
+              leading: SizedBox(
+                width: 40,
+                child: Icon(
+                  Icons.circle,
+                  size: 8,
+                  color: colorItemSelected,
+                ),
+              ),
+              horizontalTitleGap: 0,
+              title: Text(
+                chapter.name,
+                style:
+                    textTheme.labelMedium?.copyWith(color: colorItemSelected),
+              ),
+              onTap: () => widget.onTapChapter.call(chapter),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+}
+
+class SliderCustom {
+  final double offset;
+  final bool show;
+  SliderCustom({
+    required this.offset,
+    this.show = false,
+  });
+
+  SliderCustom copyWith({
+    double? offset,
+    bool? show,
+  }) {
+    return SliderCustom(
+      offset: offset ?? this.offset,
+      show: show ?? this.show,
+    );
+  }
+}
+
+class ChildModel {
+  final Size size;
+  final Offset offset;
+  final double value;
+  ChildModel({required this.size, required this.offset, required this.value});
+
+  @override
+  String toString() => 'ChildModel(size: $size, offset: $offset)';
+
+  ChildModel copyWith({
+    Size? size,
+    Offset? offset,
+    double? value,
+  }) {
+    return ChildModel(
+      size: size ?? this.size,
+      offset: offset ?? this.offset,
+      value: value ?? this.value,
     );
   }
 }

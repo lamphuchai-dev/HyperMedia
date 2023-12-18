@@ -8,6 +8,7 @@ import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:hyper_media/utils/download_service.dart';
 import 'package:hyper_media/utils/logger.dart';
+import 'package:hyper_media/utils/mixin_watch_chapter.dart';
 import 'package:hyper_media/utils/progress_watch_notifier.dart';
 import 'package:hyper_media/utils/system_utils.dart';
 
@@ -17,7 +18,7 @@ import '../view/watch_comic_view.dart';
 
 part 'watch_comic_state.dart';
 
-class WatchComicCubit extends Cubit<WatchComicState> {
+class WatchComicCubit extends Cubit<WatchComicState> with MixinWatchChapter {
   WatchComicCubit(
       {required DatabaseUtils database,
       required DownloadService downloadService,
@@ -170,6 +171,7 @@ class WatchComicCubit extends Cubit<WatchComicState> {
     autoScrollController.jumpTo(value);
   }
 
+  @override
   void onNext() {
     final chapter = _readerCubit.onNextChapter(state.watchChapter.index);
     if (chapter == null) return;
@@ -177,6 +179,7 @@ class WatchComicCubit extends Cubit<WatchComicState> {
     getDetailChapter(chapter);
   }
 
+  @override
   void onPrevious() {
     final chapter = _readerCubit.onPreviousChapter(state.watchChapter.index);
     if (chapter == null) return;
@@ -184,6 +187,7 @@ class WatchComicCubit extends Cubit<WatchComicState> {
     getDetailChapter(chapter);
   }
 
+  @override
   void onRefresh() async {
     try {
       emit(state.copyWith(status: StatusType.loading));
@@ -202,12 +206,14 @@ class WatchComicCubit extends Cubit<WatchComicState> {
     getDetailChapter(chapter);
   }
 
+  @override
   void onEnableAutoScroll() {
     autoScrollController.enableAutoScroll();
     // menuController.hide();
     menuController.changeMenuType(MenuType.autoScroll);
   }
 
+  @override
   void onCloseAutoScroll() {
     autoScrollController.closeAutoScroll();
     menuController.changeMenuType(MenuType.base);
@@ -217,6 +223,7 @@ class WatchComicCubit extends Cubit<WatchComicState> {
     autoScrollStatus.value = status;
   }
 
+  @override
   void onActionAutoScroll() {
     switch (autoScrollStatus.value) {
       case AutoScrollStatus.active:
@@ -228,6 +235,7 @@ class WatchComicCubit extends Cubit<WatchComicState> {
     }
   }
 
+  @override
   void onChangeTimeAutoScroll(double value) {
     timerAutoScrollStatus.value = value;
     if (_timerChangeAutoScroll != null) _timerChangeAutoScroll!.cancel();
@@ -236,6 +244,7 @@ class WatchComicCubit extends Cubit<WatchComicState> {
     });
   }
 
+  @override
   void onCheckAutoScrollNextChapter() {
     if (autoScrollStatus.value != AutoScrollStatus.complete) return;
     debugPrint("checkAutoNextChapter");

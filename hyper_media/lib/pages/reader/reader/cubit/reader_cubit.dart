@@ -152,13 +152,12 @@ class ReaderCubit extends Cubit<ReaderState> {
       gravity: ToastGravity.BOTTOM,
       toastDuration: const Duration(seconds: 2),
     );
-    final result = await _jsRuntime.getChapters(
+    final result = await _jsRuntime.getChapters<List<dynamic>>(
         url: book.bookUrl, source: _extension!.getChaptersScript);
-    if (result is SuccessJsRuntime &&
-        result.data is List &&
-        (result.data as List).length > chapters.length) {
+    if (result.length > chapters.length) {
+      int totalNewChapter = 0;
       final lstChapter =
-          result.data.map<Chapter>((el) => Chapter.fromMap(el)).toList();
+          result.map<Chapter>((el) => Chapter.fromMap(el)).toList();
       if (book.id != null) {
         List<Chapter> newChapters = lstChapter
             .getRange(state.chapters.length, lstChapter.length)
@@ -173,13 +172,14 @@ class ReaderCubit extends Cubit<ReaderState> {
             latestChapterTitle: chapters.last.name,
             lastCheckTime: DateTime.now());
         await _database.updateBook(newBook);
+        totalNewChapter = lstChapter.length - state.chapters.length;
         emit(state.copyWith(chapters: chapters, book: newBook));
       } else {
         final chapters = lstChapter;
+        totalNewChapter = chapters.length;
         emit(state.copyWith(chapters: chapters));
       }
 
-      final totalNewChapter = lstChapter.length - state.chapters.length;
       fToast.showToast(
         child: ToastWidget(
             msg: "book.update_new_chapters"

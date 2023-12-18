@@ -31,7 +31,6 @@ class DatabaseUtils {
     ], directory: _path, name: "db");
   }
 
-
   WatchComicSettings get getSettingsComic {
     if (!settings.containsKey(SettingKey.settingComic)) {
       return WatchComicSettings.init();
@@ -42,6 +41,18 @@ class DatabaseUtils {
 
   void setSettingsComic(WatchComicSettings value) async {
     await settings.put(SettingKey.settingComic, value.toMap());
+  }
+
+  WatchNovelSetting get getSettingsNovel {
+    if (!settings.containsKey(SettingKey.settingNovel)) {
+      return WatchNovelSetting.init();
+    }
+    return WatchNovelSetting.fromMap(
+        Map.from(settings.get(SettingKey.settingNovel)));
+  }
+
+  void setSettingsNovel(WatchNovelSetting value) async {
+    await settings.put(SettingKey.settingNovel, value.toMap());
   }
 
   Stream<void> get extensionsChange => database.extensions.watchLazy();
@@ -261,4 +272,5 @@ class DatabaseUtils {
 
 class SettingKey {
   static const settingComic = "setting_comic";
+  static const settingNovel = "setting_novel";
 }

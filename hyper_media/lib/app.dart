@@ -18,7 +18,6 @@ import 'flavors.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-import 'pages/test_ui/test_ui.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
