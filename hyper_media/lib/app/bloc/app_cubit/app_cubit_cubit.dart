@@ -70,7 +70,8 @@ class AppCubitCubit extends Cubit<AppCubitState> {
   Future<Book?> addBookmark(
       {required Book book,
       required Extension extension,
-      required int currentIndex}) async {
+      required int currentIndex,
+      List<Chapter>? chapters}) async {
     try {
       _fToast.showToast(child: const ToastWidget(msg: "Đang thêm bookmark"));
       final bookId = await _database.onInsertBook(book);
@@ -80,39 +81,48 @@ class AppCubitCubit extends Cubit<AppCubitState> {
       if (bytesIcon is List<int>) {
         book = book.copyWith(cover: base64Encode(bytesIcon));
       }
-      final result = await _jsRuntime.getChapters<List<dynamic>>(
-          url: book.bookUrl, source: extension.getChaptersScript);
-      if (result.isNotEmpty) {
-        List<Chapter> chapters = [];
-        for (var i = 0; i < result.length; i++) {
-          final map = result[i];
-          if (map is Map<String, dynamic>) {
-            if (book.id != null) {
-              chapters.add(
-                  Chapter.fromMap({...map, "index": i, "bookId": book.id}));
-            } else {
-              chapters.add(Chapter.fromMap({...map, "index": i}));
-            }
-          }
-        }
-        final currentWatchChapter =
-            chapters.firstWhereOrNull((el) => el.index == currentIndex);
-        if (currentWatchChapter != null) {
-          book = book.copyWith(
-              latestChapterTitle: chapters.last.name,
-              currentIndex: currentWatchChapter.index,
-              currentTitleChapter: currentWatchChapter.name,
-              lastCheckTime: DateTime.now());
-          await _database.insertChapters(chapters);
-          await _database.updateBook(book);
-          FToast().init(navigatorKey.currentContext!).showToast(
-              child: const ToastWidget(msg: "Đang thêm thành công bookmark"));
-          return book;
+      List<Chapter> chaptersBook = [];
+      if (chapters != null && chapters.isNotEmpty) {
+        chaptersBook = chapters;
+        if (chapters.first.bookId == null) {
+          chaptersBook =
+              chaptersBook.map((e) => e.copyWith(bookId: book.id)).toList();
         }
       } else {
-        FToast()
-            .init(navigatorKey.currentContext!)
-            .showToast(child: const ToastWidget(msg: "Lỗi thêm bookmark"));
+        final result = await _jsRuntime.getChapters<List<dynamic>>(
+            url: book.bookUrl, source: extension.getChaptersScript);
+        if (result.isNotEmpty) {
+          for (var i = 0; i < result.length; i++) {
+            final map = result[i];
+            if (map is Map<String, dynamic>) {
+              if (book.id != null) {
+                chaptersBook.add(
+                    Chapter.fromMap({...map, "index": i, "bookId": book.id}));
+              } else {
+                chaptersBook.add(Chapter.fromMap({...map, "index": i}));
+              }
+            }
+          }
+        } else {
+          FToast()
+              .init(navigatorKey.currentContext!)
+              .showToast(child: const ToastWidget(msg: "Lỗi thêm bookmark"));
+          return null;
+        }
+      }
+      final currentWatchChapter =
+          chaptersBook.firstWhereOrNull((el) => el.index == currentIndex);
+      if (currentWatchChapter != null) {
+        book = book.copyWith(
+            latestChapterTitle: chaptersBook.last.name,
+            currentIndex: currentWatchChapter.index,
+            currentTitleChapter: currentWatchChapter.name,
+            lastCheckTime: DateTime.now());
+        await _database.insertChapters(chaptersBook);
+        await _database.updateBook(book);
+        FToast().init(navigatorKey.currentContext!).showToast(
+            child: const ToastWidget(msg: "Đang thêm thành công bookmark"));
+        return book;
       }
     } catch (error) {
       FToast()

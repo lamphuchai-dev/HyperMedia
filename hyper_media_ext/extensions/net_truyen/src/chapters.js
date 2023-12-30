@@ -3,7 +3,7 @@ async function chapters(bookUrl) {
   if (!res) return Response.error("Có lỗi khi lấy danh sách chương");
   const listEl = await Extension.querySelectorAll(res, "div.list-chapter ul a");
   const chapters = [];
-  const host = "https://www.nettruyenus.com";
+  const host = "https://www.nettruyenbing.com";
   for (var index = 0; index < listEl.length; index++) {
     const el = listEl[index].content;
     const url = await Extension.getAttributeText(el, "a", "href");
@@ -19,6 +19,6 @@ async function chapters(bookUrl) {
 
 // runFn(() =>
 //   chapters(
-//     "https://www.nettruyenus.com/truyen-tranh/xuyen-nhanh-phan-dien-qua-sung-qua-me-nguoi-88810"
+//     "https://www.nettruyenbing.com/truyen-tranh/xuyen-nhanh-phan-dien-qua-sung-qua-me-nguoi-88810"
 //   )
 // );

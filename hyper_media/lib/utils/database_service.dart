@@ -3,8 +3,9 @@ import 'package:archive/archive_io.dart';
 import 'package:dio_client/index.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hyper_media/app/extensions/index.dart';
+import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
-import 'package:hyper_media/pages/reader/watch_comic/watch_comic.dart';
+
 import 'package:hyper_media/utils/logger.dart';
 import 'package:isar/isar.dart';
 
@@ -27,7 +28,7 @@ class DatabaseUtils {
       BookSchema,
       ChapterSchema,
       BookmarkSchema,
-      ReaderSchema
+      DownloadSchema
     ], directory: _path, name: "db");
   }
 
@@ -215,8 +216,6 @@ class DatabaseUtils {
 
   Stream<void> get bookmark => database.bookmarks.watchLazy();
 
-  Stream<void> get reader => database.readers.watchLazy();
-
   Future<List<int>> insertChapters(List<Chapter> chapters) {
     return database.writeTxn(() => database.chapters.putAll(chapters));
   }
@@ -235,23 +234,6 @@ class DatabaseUtils {
   Future<List<Bookmark>> get getBookmarks =>
       database.bookmarks.where().findAll();
 
-  Future<void> upReaderBook(
-      {required int bookId, required Reader reader}) async {
-    // final bookmark = await database.bookmarks
-    //     .filter()
-    //     .book((q) => q.idEqualTo(bookId))
-    //     .findFirst();
-    // if (bookmark != null && bookmark.reader.value!.id != null) {
-    //   await database.readers
-    //       .put(reader.copyWith(id: bookmark.reader.value!.id));
-    //   bookmark.reader.save();
-    // }
-  }
-
-  Future<int> upReader(Reader reader) {
-    return database.writeTxn(() => database.readers.put(reader));
-  }
-
   Future<bool> deleteBookmarkById(
       {required int id,
       int? bookId,
@@ -262,11 +244,57 @@ class DatabaseUtils {
       if (bookId != null) {
         await database.books.delete(bookId);
       }
-      if (readerId != null) {
-        await database.readers.delete(readerId);
-      }
       return database.bookmarks.delete(id);
     });
+  }
+
+  // Stream<void> get downloadChange => database.downloads.watchLazy();
+
+  Future<int> addDownload(Download download) =>
+      database.writeTxn(() => database.downloads.put(download));
+  Future<Download?> getDownload() async {
+    return database.downloads
+        .filter()
+        .statusEqualTo(DownloadStatus.waiting)
+        .sortByDateTime()
+        .findFirst();
+  }
+
+  Future<Download?> getTaskDownloadFirst() async {
+    final taskDownloading = await database.downloads
+        .filter()
+        .statusEqualTo(DownloadStatus.downloading)
+        .sortByDateTime()
+        .findFirst();
+    if (taskDownloading != null) return taskDownloading;
+    return await database.downloads
+        .filter()
+        .statusEqualTo(DownloadStatus.waiting)
+        .sortByDateTime()
+        .findFirst();
+  }
+
+  Future<int> updateDownload(Download download) async {
+    return await database.writeTxn(() => database.downloads.put(download));
+  }
+
+  Future<List<Chapter>> getChaptersDownloadBookId(int bookId) {
+    return database.chapters
+        .filter()
+        .bookIdEqualTo(bookId)
+        .isDownloadEqualTo(false)
+        .findAll();
+  }
+
+  Future<Download?> getDownloadByBookId(int bookId) =>
+      database.downloads.filter().bookIdEqualTo(bookId).findFirst();
+
+  Future<List<Download>> getDownloads() {
+    return database.downloads.filter().anyOf([
+      DownloadStatus.waiting,
+      DownloadStatus.downloaded,
+      DownloadStatus.downloadErr
+    ], (q, element) => q.statusEqualTo(element)).findAll();
   }
 }
 

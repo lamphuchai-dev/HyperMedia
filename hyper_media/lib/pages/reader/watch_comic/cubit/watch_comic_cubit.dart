@@ -204,12 +204,12 @@ class WatchComicCubit extends Cubit<WatchComicState> with MixinWatchChapter {
 
   void onChangeChapter(Chapter chapter) {
     getDetailChapter(chapter);
+    menuController.hide();
   }
 
   @override
   void onEnableAutoScroll() {
     autoScrollController.enableAutoScroll();
-    // menuController.hide();
     menuController.changeMenuType(MenuType.autoScroll);
   }
 
@@ -255,6 +255,13 @@ class WatchComicCubit extends Cubit<WatchComicState> with MixinWatchChapter {
 
   void add() {
     _readerCubit.addBookmark();
+  }
+
+  bool get isLastChapter =>
+      _readerCubit.onNextChapter(state.watchChapter.index) == null;
+
+  void onRefreshChapters() {
+    _readerCubit.onRefreshChapters();
   }
 
   @override

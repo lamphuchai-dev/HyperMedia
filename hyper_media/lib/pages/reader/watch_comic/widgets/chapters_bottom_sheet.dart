@@ -28,14 +28,16 @@ class _ChaptersBottomSheetState extends State<ChaptersBottomSheet> {
     _chapters = _readerCubit.chapters;
     _controller = DraggableScrollableController();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      double jumpTo = widget.currentIndex * 56.0;
-      if (jumpTo < (context.height * 0.4 - 80 - 56)) return;
-      if (jumpTo > _scrollController!.position.maxScrollExtent) {
-        jumpTo =
-            _scrollController!.position.maxScrollExtent - context.height * 0.4;
-      }
-      _controller?.jumpTo(0.8);
-      _scrollController?.jumpTo(jumpTo);
+      Future.delayed(const Duration(milliseconds: 100)).then((value) {
+        double jumpTo = widget.currentIndex * 56.0;
+        if (jumpTo < (context.height * 0.4 - 80 - 56)) return;
+        if (jumpTo > _scrollController!.position.maxScrollExtent) {
+          jumpTo = _scrollController!.position.maxScrollExtent -
+              context.height * 0.4;
+        }
+        _controller?.jumpTo(0.8);
+        // _scrollController?.jumpTo(jumpTo);
+      });
     });
     super.initState();
   }

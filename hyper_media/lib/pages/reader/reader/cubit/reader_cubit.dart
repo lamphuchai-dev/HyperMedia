@@ -46,8 +46,6 @@ class ReaderCubit extends Cubit<ReaderState> {
 
   final FToast fToast = FToast();
 
-  Completer? _nextChapterCompleter;
-
   void onInitFToat(BuildContext context) {
     fToast.init(context);
   }
@@ -63,7 +61,13 @@ class ReaderCubit extends Cubit<ReaderState> {
       ReaderState readerBookState = state;
       final bookInDatabase = await _database.getBookByLink(book.link);
       if (bookInDatabase != null) {
-        readerBookState = readerBookState.copyWith(book: bookInDatabase);
+        if (bookInDatabase.currentIndex != readerBookState.book.currentIndex) {
+          readerBookState = readerBookState.copyWith(
+              book: bookInDatabase.copyWith(
+                  currentIndex: readerBookState.book.currentIndex));
+        } else {
+          readerBookState = readerBookState.copyWith(book: bookInDatabase);
+        }
       }
 
       // Check up lại bookUrl khi extension thay đổi source
@@ -76,19 +80,22 @@ class ReaderCubit extends Cubit<ReaderState> {
 
       // Lấy chapters của book đã lưu trong local,update chapter khi có sự thay đổi
       // Khi từ page chapters -> readBook page
-      if (book.id != null) {
-        final localChapters = await _database.getChaptersByBookId(book.id!);
+      if (readerBookState.book.id != null) {
+        final localChapters =
+            await _database.getChaptersByBookId(readerBookState.book.id!);
         if (chapters.isNotEmpty && chapters.length > localChapters.length) {
           // Lấy ra các chapters mới
           List<Chapter> newChapters =
               chapters.getRange(localChapters.length, chapters.length).toList();
-          newChapters =
-              newChapters.map((e) => e.copyWith(bookId: book.id)).toList();
+          newChapters = newChapters
+              .map((e) => e.copyWith(bookId: readerBookState.book.id))
+              .toList();
           // Update vào database theo bookId
           await _database.insertChapters(newChapters);
 
           readerBookState = readerBookState.copyWith(
-              chapters: await _database.getChaptersByBookId(book.id!));
+              chapters: await _database
+                  .getChaptersByBookId(readerBookState.book.id!));
         } else {
           readerBookState = readerBookState.copyWith(chapters: localChapters);
         }
@@ -156,8 +163,11 @@ class ReaderCubit extends Cubit<ReaderState> {
         url: book.bookUrl, source: _extension!.getChaptersScript);
     if (result.length > chapters.length) {
       int totalNewChapter = 0;
-      final lstChapter =
-          result.map<Chapter>((el) => Chapter.fromMap(el)).toList();
+      List<Chapter> lstChapter = [];
+      for (var i = 0; i < result.length; i++) {
+        final chapter = Chapter.fromMap({...result[i], "index": i});
+        lstChapter.add(chapter);
+      }
       if (book.id != null) {
         List<Chapter> newChapters = lstChapter
             .getRange(state.chapters.length, lstChapter.length)

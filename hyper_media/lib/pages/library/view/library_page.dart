@@ -26,7 +26,17 @@ class _LibraryPageState extends State<LibraryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text("Library")),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text("Library"),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, RoutesName.downloads);
+              },
+              icon: const Icon(Icons.download_rounded))
+        ],
+      ),
       body: BlocBuilder<LibraryCubit, LibraryState>(
         buildWhen: (previous, current) => previous.status != current.status,
         builder: (context, state) {

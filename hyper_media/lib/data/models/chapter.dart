@@ -18,6 +18,7 @@ class Chapter {
   final int index;
   final List<String>? contentComic;
   final String? contentNovel;
+  final bool isDownload;
   @ignore
   final List<Map<String, dynamic>>? contentVideo;
   Chapter({
@@ -27,33 +28,34 @@ class Chapter {
     required this.url,
     required this.host,
     required this.index,
+    required this.isDownload,
     this.contentComic,
     this.contentNovel,
     this.contentVideo,
   });
 
-  Chapter copyWith({
-    Id? id,
-    int? bookId,
-    String? name,
-    String? url,
-    String? host,
-    int? index,
-    List<String>? contentComic,
-    String? contentNovel,
-    List<Map<String, dynamic>>? contentVideo,
-  }) {
+  Chapter copyWith(
+      {Id? id,
+      int? bookId,
+      String? name,
+      String? url,
+      String? host,
+      int? index,
+      List<String>? contentComic,
+      String? contentNovel,
+      List<Map<String, dynamic>>? contentVideo,
+      bool? isDownload}) {
     return Chapter(
-      id: id ?? this.id,
-      bookId: bookId ?? this.bookId,
-      name: name ?? this.name,
-      url: url ?? this.url,
-      host: host ?? this.host,
-      index: index ?? this.index,
-      contentComic: contentComic ?? this.contentComic,
-      contentNovel: contentNovel ?? this.contentNovel,
-      contentVideo: contentVideo ?? this.contentVideo,
-    );
+        id: id ?? this.id,
+        bookId: bookId ?? this.bookId,
+        name: name ?? this.name,
+        url: url ?? this.url,
+        host: host ?? this.host,
+        index: index ?? this.index,
+        contentComic: contentComic ?? this.contentComic,
+        contentNovel: contentNovel ?? this.contentNovel,
+        contentVideo: contentVideo ?? this.contentVideo,
+        isDownload: isDownload ?? this.isDownload);
   }
 
   Map<String, dynamic> toMap() {
@@ -88,7 +90,8 @@ class Chapter {
                 (map['contentComic']),
               )
             : null,
-        contentNovel: map['contentNovel']);
+        contentNovel: map['contentNovel'],
+        isDownload: map["isDownload"] ?? false);
   }
 
   Chapter addContentByExtensionType(
@@ -126,7 +129,7 @@ class Chapter {
 
   @override
   String toString() {
-    return 'Chapter(id: $id, bookId: $bookId, name: $name, url: $url, host: $host, index: $index, contentComic: $contentComic, contentNovel: $contentNovel, contentVideo: $contentVideo)';
+    return 'Chapter(id: $id, bookId: $bookId, name: $name, url: $url, host: $host, index: $index, contentComic: $contentComic, contentNovel: $contentNovel, isDownload: $isDownload, contentVideo: $contentVideo)';
   }
 
   @override
@@ -141,6 +144,7 @@ class Chapter {
         other.index == index &&
         listEquals(other.contentComic, contentComic) &&
         other.contentNovel == contentNovel &&
+        other.isDownload == isDownload &&
         listEquals(other.contentVideo, contentVideo);
   }
 
@@ -154,6 +158,7 @@ class Chapter {
         index.hashCode ^
         contentComic.hashCode ^
         contentNovel.hashCode ^
+        isDownload.hashCode ^
         contentVideo.hashCode;
   }
 }

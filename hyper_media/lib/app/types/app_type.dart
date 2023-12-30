@@ -11,3 +11,5 @@ enum SortChapterType { newChapter, lastChapter }
 enum ExtensionStatus { init, ready, unknown, error }
 
 enum AutoScrollStatus { noActive, active, pause, complete }
+
+enum DownloadStatus { waiting, downloading, downloaded,downloadedCancel, downloadErr }

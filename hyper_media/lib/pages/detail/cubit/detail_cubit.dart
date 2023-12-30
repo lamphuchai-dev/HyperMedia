@@ -5,6 +5,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hyper_media/app/bloc/app_cubit/app_cubit_cubit.dart';
 import 'package:hyper_media/app/extensions/index.dart';
+import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/utils/app_browser.dart';
 import 'package:hyper_media/utils/database_service.dart';
@@ -22,7 +23,9 @@ class DetailCubit extends Cubit<DetailState> {
       : _databaseService = databaseService,
         _jsRuntime = jsRuntime,
         _appCubitCubit = appCubitCubit,
-        super(DetailInitial());
+        super(const DetailState(
+            bookState: StateRes(status: StatusType.init),
+            chaptersState: StateRes(status: StatusType.init)));
 
   final _logger = Logger("DetailBookCubit");
 
@@ -42,48 +45,84 @@ class DetailCubit extends Cubit<DetailState> {
 
   Extension get getExtension => _extension!;
 
+  StateRes<Book> get bookState => state.bookState;
+  StateRes<List<Chapter>> get chaptersState => state.chaptersState;
+
   void onInit() async {
-    emit(DetailLoading());
     final hostBook = bookUrl.getHostByUrl;
     if (hostBook == null) {
-      emit(const DetailError(message: "Book url error"));
+      emit(state.copyWith(
+          bookState: bookState.copyWith(
+              status: StatusType.error, message: "Book url error")));
+
       return;
     }
     _extension = await _databaseService.getExtensionByHost(hostBook);
     if (_extension == null) {
-      emit(const DetailError(message: "Extension not found"));
+      emit(state.copyWith(
+          bookState: bookState.copyWith(
+              status: StatusType.error, message: "Extension not found")));
       return;
     }
 
-    Book? bookExt = await getDetailByBookUrl();
-
-    if (bookExt == null) {
-      emit(const DetailError(message: "Error get data book"));
-      return;
-    }
-
-    final bookInBookmark = await _databaseService.getBookByLink(bookExt.link);
-    if (bookInBookmark != null) {
-      bookExt = bookInBookmark.copyWith(
-        totalChapters: bookExt.totalChapters,
-      );
-    }
-
-    if (!isClosed) {
-      emit(DetailLoaded(book: bookExt));
-    }
+    await Future.wait([_getDetailBook(), _getChapters()]);
   }
 
-  Future<Book?> getDetailByBookUrl() async {
+  Future<void> _getDetailBook() async {
     try {
+      emit(state.copyWith(
+          bookState: bookState.copyWith(status: StatusType.loading)));
       final result = await _jsRuntime.getDetail<Map<String, dynamic>>(
         url: bookUrl,
         source: _extension!.getDetailScript,
       );
-      return Book.fromMap(result);
+      Book book = Book.fromMap(result);
+      final bookInBookmark = await _databaseService.getBookByLink(book.link);
+      if (bookInBookmark != null) {
+        book = bookInBookmark.copyWith(
+          totalChapters: book.totalChapters,
+        );
+      }
+      emit(state.copyWith(
+          bookState:
+              bookState.copyWith(status: StatusType.loaded, data: book)));
     } catch (error) {
       _logger.error(error, name: "getDetailBook");
-      return null;
+      emit(state.copyWith(
+          bookState: bookState.copyWith(
+              status: StatusType.error, message: "Error get data book")));
+    }
+  }
+
+  Future<void> _getChapters() async {
+    emit(state.copyWith(
+        chaptersState: chaptersState.copyWith(status: StatusType.loading)));
+    try {
+      final result = await _jsRuntime.getChapters<List<dynamic>>(
+          url: bookUrl, source: _extension!.getChaptersScript);
+      List<Chapter> chapters = [];
+      for (var i = 0; i < result.length; i++) {
+        final map = result[i];
+        if (map is Map<String, dynamic>) {
+          // if (book.id != null) {
+          //   chapters
+          //       .add(Chapter.fromMap({...map, "index": i, "bookId": book.id}));
+          // } else {
+          //   chapters.add(Chapter.fromMap({...map, "index": i}));
+          // }
+          chapters.add(Chapter.fromMap({...map, "index": i}));
+        }
+      }
+      emit(state.copyWith(
+          chaptersState: chaptersState.copyWith(
+              status: StatusType.loaded, data: chapters)));
+    } on JsRuntimeException catch (error) {
+      _logger.log(error.message);
+    } catch (error) {
+      if (isClosed) return;
+      emit(state.copyWith(
+          chaptersState: chaptersState.copyWith(
+              status: StatusType.error, message: "Error get data book")));
     }
   }
 
@@ -96,12 +135,19 @@ class DetailCubit extends Cubit<DetailState> {
   }
 
   Future<void> addBookmark() async {
-    final state = this.state;
-    if (state is! DetailLoaded) return;
     final book = await _appCubitCubit.addBookmark(
-        book: state.book, extension: _extension!, currentIndex: 0);
+        book: bookState.data!,
+        extension: _extension!,
+        currentIndex: 0,
+        chapters: chaptersState.data);
     if (book != null) {
-      emit(DetailLoaded(book: book));
+      emit(state.copyWith(bookState: bookState.copyWith(data: book)));
     }
+  }
+
+  void reverseChapters() {
+    emit(state.copyWith(
+        chaptersState: chaptersState.copyWith(
+            data: chaptersState.data!.reversed.toList())));
   }
 }

@@ -21,16 +21,14 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<DetailCubit, DetailState, DetailState>(
-      selector: (state) => state,
-      builder: (context, state) {
-        return switch (state) {
-          DetailLoaded() => DetailLoadedView(
-              book: state.book,
-            ),
-          DetailError() => DetailErrorView(
+    return BlocSelector<DetailCubit, DetailState, StateRes<Book>>(
+      selector: (state) => state.bookState,
+      builder: (context, bookRes) {
+        return switch (bookRes.status) {
+          StatusType.loaded => const BookDetail(),
+          StatusType.error => DetailErrorView(
               bookUrl: _detailCubit.bookUrl,
-              message: state.message,
+              message: bookRes.message ?? "",
               onTapRetry: () {
                 _detailCubit.onInit();
               },

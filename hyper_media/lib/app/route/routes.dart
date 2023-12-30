@@ -10,6 +10,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:hyper_media/pages/extensions/extensions.dart';
 import 'package:hyper_media/pages/reader/reader/reader.dart';
 import 'package:hyper_media/pages/search/search.dart';
+import 'package:hyper_media/pages/downloads/downloads.dart';
 
 import 'routes_name.dart';
 
@@ -21,29 +22,36 @@ class Routes {
       case initialRoute:
         return PageTransition(
             child: const BottomNavView(), type: PageTransitionType.rightToLeft);
+
       case ExploreView.routeName:
         return PageTransition(
             child: const ExploreView(), type: PageTransitionType.fade);
+
       case RoutesName.detail:
         assert(args != null && args is String, "args must be String");
         return PageTransition(
-            // settings: settings,
             child: DetailView(
               bookUrl: args as String,
             ),
             type: PageTransitionType.rightToLeft);
+
       case RoutesName.chaptersBook:
         assert(args != null && args is ChaptersBookArgs, "args must be Book");
         return PageTransition(
-            // settings: settings,
             child: ChaptersView(
               args: args as ChaptersBookArgs,
             ),
             type: PageTransitionType.rightToLeft);
+
       case RoutesName.extensions:
         return PageTransition(
             child: const ExtensionsView(),
             type: PageTransitionType.rightToLeft);
+
+      case RoutesName.downloads:
+        return PageTransition(
+            child: const DownloadsView(), type: PageTransitionType.rightToLeft);
+
       case RoutesName.genre:
         assert(args != null && args is GenreBookArg, "args must be Book");
         return PageTransition(

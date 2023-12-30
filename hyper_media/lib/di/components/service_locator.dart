@@ -29,5 +29,6 @@ Future<void> setupLocator() async {
   getIt.registerSingleton(databaseService);
   getIt.registerSingleton(dioClient);
   getIt.registerSingleton(jsRuntime);
-  getIt.registerLazySingleton(() => DownloadService(dioClient: dioClient));
+  getIt.registerLazySingleton(() => DownloadService(
+      dioClient: dioClient, database: databaseService, jsRuntime: jsRuntime));
 }

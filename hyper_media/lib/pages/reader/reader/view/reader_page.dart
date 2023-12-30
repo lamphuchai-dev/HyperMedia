@@ -31,7 +31,9 @@ class _ReaderPageState extends State<ReaderPage> {
                 book: _readerCubit.book,
               ),
             ExtensionStatus.ready => ReaderBook(readerCubit: _readerCubit),
-            _ => const SizedBox(),
+            ExtensionStatus.error => const Center(
+                child: Text("error extension"),
+              ),
           };
         },
       ),

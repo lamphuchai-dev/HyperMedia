@@ -5,19 +5,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/utils/database_service.dart';
+import 'package:hyper_media/utils/download_service.dart';
 import 'package:hyper_media/utils/logger.dart';
-
 
 part 'library_state.dart';
 
 class LibraryCubit extends Cubit<LibraryState> {
-  LibraryCubit({required DatabaseUtils database})
+  LibraryCubit(
+      {required DatabaseUtils database,
+      required DownloadService downloadService})
       : _database = database,
+        _downloadService = downloadService,
         super(const LibraryState(books: [], status: StatusType.init)) {
     _bookmarkStreamSubscription = database.books.listen((_) {
       onInit();
     });
   }
+
+  final DownloadService _downloadService;
 
   final _logger = Logger("LibraryCubit");
 
@@ -44,6 +49,11 @@ class LibraryCubit extends Cubit<LibraryState> {
     //     bookId: bookmark.book.value?.id,
     //     readerId: bookmark.reader.value?.id,
     //     chapterIds: bookmark.chapters.map((e) => e.id!).toList());
+  }
+
+  void onDownload(Book book) async {
+    final chapters = await _database.getChaptersByBookId(book.id!);
+    _downloadService.addDownload(book: book, chapters: chapters);
   }
 
   @override

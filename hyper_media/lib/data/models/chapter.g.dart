@@ -47,13 +47,18 @@ const ChapterSchema = CollectionSchema(
       name: r'index',
       type: IsarType.long,
     ),
-    r'name': PropertySchema(
+    r'isDownload': PropertySchema(
       id: 6,
+      name: r'isDownload',
+      type: IsarType.bool,
+    ),
+    r'name': PropertySchema(
+      id: 7,
       name: r'name',
       type: IsarType.string,
     ),
     r'url': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'url',
       type: IsarType.string,
     )
@@ -114,8 +119,9 @@ void _chapterSerialize(
   writer.writeLong(offsets[3], object.hashCode);
   writer.writeString(offsets[4], object.host);
   writer.writeLong(offsets[5], object.index);
-  writer.writeString(offsets[6], object.name);
-  writer.writeString(offsets[7], object.url);
+  writer.writeBool(offsets[6], object.isDownload);
+  writer.writeString(offsets[7], object.name);
+  writer.writeString(offsets[8], object.url);
 }
 
 Chapter _chapterDeserialize(
@@ -131,8 +137,9 @@ Chapter _chapterDeserialize(
     host: reader.readString(offsets[4]),
     id: id,
     index: reader.readLong(offsets[5]),
-    name: reader.readString(offsets[6]),
-    url: reader.readString(offsets[7]),
+    isDownload: reader.readBool(offsets[6]),
+    name: reader.readString(offsets[7]),
+    url: reader.readString(offsets[8]),
   );
   return object;
 }
@@ -157,8 +164,10 @@ P _chapterDeserializeProp<P>(
     case 5:
       return (reader.readLong(offset)) as P;
     case 6:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 7:
+      return (reader.readString(offset)) as P;
+    case 8:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1014,6 +1023,16 @@ extension ChapterQueryFilter
     });
   }
 
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> isDownloadEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isDownload',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Chapter, Chapter, QAfterFilterCondition> nameEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -1342,6 +1361,18 @@ extension ChapterQuerySortBy on QueryBuilder<Chapter, Chapter, QSortBy> {
     });
   }
 
+  QueryBuilder<Chapter, Chapter, QAfterSortBy> sortByIsDownload() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDownload', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterSortBy> sortByIsDownloadDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDownload', Sort.desc);
+    });
+  }
+
   QueryBuilder<Chapter, Chapter, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -1441,6 +1472,18 @@ extension ChapterQuerySortThenBy
     });
   }
 
+  QueryBuilder<Chapter, Chapter, QAfterSortBy> thenByIsDownload() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDownload', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterSortBy> thenByIsDownloadDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDownload', Sort.desc);
+    });
+  }
+
   QueryBuilder<Chapter, Chapter, QAfterSortBy> thenByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -1506,6 +1549,12 @@ extension ChapterQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Chapter, Chapter, QDistinct> distinctByIsDownload() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isDownload');
+    });
+  }
+
   QueryBuilder<Chapter, Chapter, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1563,6 +1612,12 @@ extension ChapterQueryProperty
   QueryBuilder<Chapter, int, QQueryOperations> indexProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'index');
+    });
+  }
+
+  QueryBuilder<Chapter, bool, QQueryOperations> isDownloadProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isDownload');
     });
   }
 

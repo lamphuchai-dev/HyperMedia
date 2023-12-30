@@ -17,7 +17,6 @@ import '../../watch_movie/watch_movie.dart';
 import '../../watch_novel/watch_novel.dart';
 import '../cubit/reader_cubit.dart';
 
-
 part 'reader_page.dart';
 
 class ReaderView extends StatelessWidget {

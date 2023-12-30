@@ -54,7 +54,6 @@ class BookBottomSheet extends StatelessWidget {
                     IconButton(
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: book.bookUrl));
-                      
                         },
                         icon: const Icon(Icons.content_copy_rounded))
                   ],
@@ -195,7 +194,7 @@ class BookBottomSheet extends StatelessWidget {
                       flex: 3,
                       child: ElevatedButton(
                           onPressed: () {
-                            // libraryCubit.downloadBook(book);
+                            libraryCubit.onDownload(book);
                             Navigator.pop(context);
                           },
                           child: Row(

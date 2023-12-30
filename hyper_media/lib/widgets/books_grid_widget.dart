@@ -7,7 +7,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hyper_media/app/constants/index.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/data/models/models.dart';
-import 'package:hyper_media/data/models/reader.dart';
 import 'package:hyper_media/widgets/item_book.dart';
 import 'package:js_runtime/js_runtime.dart';
 

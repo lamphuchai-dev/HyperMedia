@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/pages/explore/explore.dart';
 import 'package:hyper_media/pages/library/library.dart';
+import 'package:hyper_media/pages/settings/settings.dart';
 import 'package:hyper_media/widgets/platform_widget.dart';
 import 'package:macos_ui/macos_ui.dart';
 import '../../../app/bloc/app_cubit/app_cubit_cubit.dart';
@@ -26,7 +27,11 @@ class _BottomNavPageState extends State<BottomNavPage> {
 
   @override
   Widget build(BuildContext context) {
-    final tabs = [const LibraryView(), const ExploreView()];
+    final tabs = [
+      const LibraryView(),
+      const ExploreView(),
+      const SettingsView()
+    ];
     return BlocBuilder<BottomNavCubit, BottomNavState>(
       buildWhen: (previous, current) =>
           previous.indexSelected != current.indexSelected,
@@ -53,6 +58,11 @@ class _BottomNavPageState extends State<BottomNavPage> {
                       selectedIcon: const Icon(Icons.widgets_rounded),
                       icon: const Icon(Icons.widgets_outlined),
                       label: "explore.title".tr(),
+                    ),
+                    NavigationDestination(
+                      selectedIcon: const Icon(Icons.settings_rounded),
+                      icon: const Icon(Icons.settings_outlined),
+                      label: "settings.title".tr(),
                     ),
                   ],
                 ),

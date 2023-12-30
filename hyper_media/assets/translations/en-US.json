@@ -58,5 +58,8 @@
     "last_chapter": "Last Chapter",
     "copy_image": "Copy image",
     "save_image_to_library": "Save image to library"
+  },
+  "settings": {
+    "title": "Settings"
   }
 }

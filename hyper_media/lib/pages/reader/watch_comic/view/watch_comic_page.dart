@@ -77,18 +77,82 @@ class _WatchComicPageState extends State<WatchComicPage> {
                               _watchComicCubit.onChangeAutoScrollStatus(value);
                             },
                             builderList: (scrollController, physics) {
+                              final listImage = _watchComicCubit
+                                  .state.watchChapter.contentComic!
+                                  .asMap()
+                                  .entries
+                                  .map((e) => _buildImage(
+                                      e.value, e.key, settings.longPressImage))
+                                  .toList();
+
+                              final footer = _watchComicCubit.isLastChapter
+                                  ? ThemeBuildWidget(
+                                      builder: (context, themeData, textTheme,
+                                              colorScheme) =>
+                                          Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 4),
+                                        child: Column(
+                                          children: [
+                                            Gaps.hGap16,
+                                            Text(
+                                              "Bạn đã đọc chương mới nhất",
+                                              style: textTheme.bodyMedium,
+                                            ),
+                                            Gaps.hGap16,
+                                            TextButton(
+                                                onPressed: () {
+                                                  _watchComicCubit
+                                                      .onRefreshChapters();
+                                                },
+                                                child: const Text(
+                                                    "Kiểm tra chương")),
+                                            Gaps.hGap16,
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  : Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 4),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          IconButton(
+                                              onPressed: () {
+                                                _watchComicCubit.onPrevious();
+                                              },
+                                              icon: const Icon(
+                                                  Icons.arrow_back_rounded)),
+                                          Expanded(
+                                              child: Text(
+                                            state.watchChapter.name,
+                                            textAlign: TextAlign.center,
+                                            overflow: TextOverflow.visible,
+                                          )),
+                                          IconButton(
+                                              onPressed: () {
+                                                _watchComicCubit.onNext();
+                                              },
+                                              icon: const Icon(
+                                                  Icons.arrow_forward_rounded))
+                                        ],
+                                      ),
+                                    );
                               return InitStateWidgetBinding(
                                   child: SingleChildScrollView(
                                     controller: scrollController,
                                     physics: physics,
                                     child: Column(
-                                        children: _watchComicCubit
-                                            .state.watchChapter.contentComic!
-                                            .asMap()
-                                            .entries
-                                            .map((e) => _buildImage(e.value,
-                                                e.key, settings.longPressImage))
-                                            .toList()),
+                                      children: [
+                                        ...listImage,
+                                        SafeArea(
+                                          top: false,
+                                          child: footer,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                   onCallback: () {
                                     _watchComicCubit.autoScrollController

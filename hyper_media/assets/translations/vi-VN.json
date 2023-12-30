@@ -68,5 +68,8 @@
     "last_chapter": "Chương củ",
     "copy_image": "Sao chép hình ảnh",
     "save_image_to_library": "Lưu ảnh vào thư viện"
+  },
+  "settings": {
+    "title": "Cài đặt"
   }
 }

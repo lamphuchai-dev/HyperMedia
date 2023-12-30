@@ -1,6 +1,7 @@
 import 'package:hyper_media/pages/bottom_nav/bottom_nav.dart';
 import 'package:hyper_media/pages/chapters/chapters.dart';
 import 'package:hyper_media/pages/detail/detail.dart';
+import 'package:hyper_media/pages/downloads/downloads.dart';
 import 'package:hyper_media/pages/extensions/extensions.dart';
 import 'package:hyper_media/pages/genre/genre.dart';
 import 'package:hyper_media/pages/reader/reader/reader.dart';
@@ -17,6 +18,5 @@ class RoutesName {
   static const webView = WebViewView.routeName;
   static const reader = ReaderView.routeName;
   static const search = SearchView.routeName;
-
-
+  static const downloads = DownloadsView.routeName;
 }
