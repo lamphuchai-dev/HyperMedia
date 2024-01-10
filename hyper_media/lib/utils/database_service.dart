@@ -296,6 +296,14 @@ class DatabaseUtils {
       DownloadStatus.downloadErr
     ], (q, element) => q.statusEqualTo(element)).findAll();
   }
+
+  Future<List<Download>> getDownloadByStatus(DownloadStatus status) {
+    return database.downloads
+        .filter()
+        .statusEqualTo(status)
+        .sortByDateTimeDesc()
+        .findAll();
+  }
 }
 
 class SettingKey {

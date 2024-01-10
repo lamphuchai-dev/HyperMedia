@@ -5,7 +5,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:macos_ui/macos_ui.dart';
 import 'package:media_kit/media_kit.dart';
 import 'app.dart';
 import 'app/bloc/debug/bloc_observer.dart';
@@ -13,8 +12,6 @@ import 'app/constants/constants.dart';
 import 'di/components/service_locator.dart';
 
 Future<void> _configureMacosWindowUtils() async {
-  const config = MacosWindowUtilsConfig();
-  await config.apply();
   await DesktopWindow.setMinWindowSize(const Size(600, 500));
 }
 

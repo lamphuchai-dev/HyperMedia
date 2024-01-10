@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/di/components/service_locator.dart';
+import 'package:hyper_media/services/download_manager.dart';
 import 'package:hyper_media/utils/download_service.dart';
 
 import '../../../data/models/models.dart';
@@ -18,7 +19,7 @@ class DownloadsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          DownloadsCubit(downloadService: getIt<DownloadService>())..onInit(),
+          DownloadsCubit(downloadService: getIt<DownloadManager>())..onInit(),
       child: const DownloadsPage(),
     );
   }

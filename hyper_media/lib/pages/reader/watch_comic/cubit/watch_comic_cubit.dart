@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
+import 'package:hyper_media/services/download_manager.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:hyper_media/utils/download_service.dart';
 import 'package:hyper_media/utils/logger.dart';
@@ -21,7 +22,7 @@ part 'watch_comic_state.dart';
 class WatchComicCubit extends Cubit<WatchComicState> with MixinWatchChapter {
   WatchComicCubit(
       {required DatabaseUtils database,
-      required DownloadService downloadService,
+      required DownloadManager downloadService,
       required ReaderCubit readerCubit})
       : _database = database,
         _downloadService = downloadService,
@@ -35,7 +36,7 @@ class WatchComicCubit extends Cubit<WatchComicState> with MixinWatchChapter {
   final _logger = Logger("WatchComicCubit");
 
   final DatabaseUtils _database;
-  final DownloadService _downloadService;
+  final DownloadManager _downloadService;
 
   final ReaderCubit _readerCubit;
   ProgressWatchNotifier progressWatchValue = ProgressWatchNotifier();
@@ -137,14 +138,14 @@ class WatchComicCubit extends Cubit<WatchComicState> with MixinWatchChapter {
       emit(state.copyWith(settings: settings));
 
   void onSaveImage(String url) async {
-    final tmp = await _downloadService.saveImage(url, headers: headersChapter);
-    print(tmp);
+    // final tmp = await _downloadService.saveImage(url, headers: headersChapter);
+    // print(tmp);
   }
 
   void onCopyImage(String url) async {
-    final tmp =
-        await _downloadService.clipboardImage(url, headers: headersChapter);
-    print(tmp);
+    // final tmp =
+    //     await _downloadService.clipboardImage(url, headers: headersChapter);
+    // print(tmp);
   }
 
   void getDetailChapter(Chapter chapter) async {

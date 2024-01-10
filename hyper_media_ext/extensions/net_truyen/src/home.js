@@ -18,12 +18,12 @@ async function home(url, page) {
     const link = await Extension.getAttributeText(html, "h3 a", "href");
     result.push({
       name: await Extension.querySelector(html, "h3 a").text,
-      link: link.replace("https://www.nettruyenbing.com", ""),
+      link: link.replace("https://www.nettruyenclub.com", ""),
       description: await Extension.querySelector(html, ".comic-item li a").text,
       cover,
-      host: "https://www.nettruyenbing.com",
+      host: "https://www.nettruyenclub.com",
     });
   }
   return Response.success(result);
 }
-// runFn(() => home("https://www.nettruyenbing.com/tim-truyen"));
+// runFn(() => home("https://www.nettruyenclub.com/tim-truyen"));

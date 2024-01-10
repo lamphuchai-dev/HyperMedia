@@ -71,13 +71,13 @@ async function detail(url) {
     description,
     totalChapters,
     genres,
-    link: url.replace("https://www.nettruyenbing.com", ""),
-    host: "https://www.nettruyenbing.com",
+    link: url.replace("https://www.nettruyenclub.com", ""),
+    host: "https://www.nettruyenclub.com",
   });
 }
 
 // runFn(() =>
 //   detail(
-//     "https://www.nettruyenbing.com/truyen-tranh/xuyen-nhanh-phan-dien-qua-sung-qua-me-nguoi-88810"
+//     "https://www.nettruyenclub.com/truyen-tranh/xuyen-nhanh-phan-dien-qua-sung-qua-me-nguoi-88810"
 //   )
 // );

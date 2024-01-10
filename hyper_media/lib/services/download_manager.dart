@@ -1,154 +1,69 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:async';
-import 'dart:convert';
+// ignore_for_file: unused_element
 
+import 'dart:async';
+import 'dart:collection';
+import 'dart:io';
 import 'package:async/async.dart';
 import 'package:collection/collection.dart';
 import 'package:dio_client/index.dart';
 import 'package:flutter/services.dart';
+import 'package:hyper_media/app/types/app_type.dart';
+import 'package:hyper_media/data/models/models.dart';
+import 'package:hyper_media/services/local_notification.service.dart';
 import 'package:js_runtime/js_runtime.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:super_clipboard/super_clipboard.dart';
 
-import 'package:hyper_media/app/types/app_type.dart';
-import 'package:hyper_media/utils/database_service.dart';
-import 'package:hyper_media/utils/file_service.dart';
-import 'package:hyper_media/utils/logger.dart';
+import '../utils/database_service.dart';
+import '../utils/file_service.dart';
+import '../utils/logger.dart';
 
-import '../data/models/models.dart';
-
-class DownloadServiceT {
-  DownloadServiceT(
+class DownloadManager {
+  DownloadManager(
       {required DioClient dioClient,
       required DatabaseUtils database,
-      required JsRuntime jsRuntime})
+      required JsRuntime jsRuntime,
+      required LocalNotificationService localNotificationService})
       : _dioClient = dioClient,
         _jsRuntime = jsRuntime,
-        _database = database;
+        _database = database,
+        _localNotificationService = localNotificationService;
 
-  final _logger = Logger("DownloadService");
+  final _logger = Logger("DownloadManager");
   final DioClient _dioClient;
   final DatabaseUtils _database;
   final JsRuntime _jsRuntime;
   Download? _currentDownload;
-  ComicTaskConcurrent? _comicTaskConcurrent;
+  final Queue<Download> _queueDownload = Queue<Download>();
+  final LocalNotificationService _localNotificationService;
+
+  CancelableOperation? _cancelableOperation;
+
+  _ComicTaskConcurrent? _comicTaskConcurrent;
 
   final StreamController<Download?> _controllerDownload =
       StreamController.broadcast();
 
   Stream<Download?> get downloadStream => _controllerDownload.stream;
 
-  Download? get currentDownload => _currentDownload;
-
-  CancelableOperation? _cancelableOperation;
-
-  Future<List<Download>> downloads() async {
-    return await _database.getDownloads();
+  void onInit() async {
+    await Future.wait([_getDownloading(), _getWaitingDownload()]);
+    _nextDownload(init: true);
   }
 
-  Future<Uint8List?> downloadImageByUrl(String url,
-      {Map<String, String>? headers}) async {
-    try {
-      final res = await _dioClient.get(url,
-          options: Options(headers: headers, responseType: ResponseType.bytes));
-      if (res is! Uint8List) return null;
-      return Uint8List.fromList(res);
-    } catch (err) {
-      return null;
-    }
-  }
-
-  Future<bool> saveImage(String url, {Map<String, String>? headers}) async {
-    try {
-      final bytes = await downloadImageByUrl(url, headers: headers);
-      if (bytes == null) return false;
-      final isSave = await FileService.saveImage(bytes);
-      return isSave;
-    } catch (err) {
-      return false;
-    }
-  }
-
-  Future<bool> clipboardImage(String url,
-      {Map<String, String>? headers}) async {
-    try {
-      final bytes = await downloadImageByUrl(url, headers: headers);
-      if (bytes == null) return false;
-      final item = DataWriterItem();
-      item.add(Formats.png(bytes));
-      await ClipboardWriter.instance.write([item]);
-      return true;
-    } catch (err) {
-      return false;
-    }
-  }
-
-  void addDownload(
-      {required Book book, required List<Chapter> chapters}) async {
-    try {
-      Download? downloadToBook = await _database.getDownloadByBookId(book.id!);
-      if (downloadToBook == null) {
-        String image = book.cover;
-        if (image.startsWith("http")) {
-          final bytes = await downloadImageByUrl(image);
-          if (bytes != null) {
-            image = base64Encode(bytes);
-            book = book.copyWith(cover: image);
-          }
-        }
-
-        if (book.id == null) {
-          final bookId = await _database.onInsertBook(book);
-          book = book.copyWith(id: bookId);
-          chapters = chapters.map((e) => e.copyWith(bookId: bookId)).toList();
-        }
-
-        final download = Download(
-            status: DownloadStatus.waiting,
-            bookId: book.id!,
-            totalChaptersDownloaded: 0,
-            totalChaptersToDownload: book.totalChapters,
-            bookName: book.name,
-            bookImage: book.cover,
-            dateTime: DateTime.now());
-
-        await _database.addDownload(download);
-      } else {
-        switch (downloadToBook.status) {
-          case DownloadStatus.downloadErr:
-            break;
-          case DownloadStatus.downloaded:
-            return;
-          case DownloadStatus.downloading:
-            return;
-          case DownloadStatus.waiting:
-            return;
-          default:
-            break;
-        }
-        if (downloadToBook.status == DownloadStatus.downloaded) return;
-        final chapters = await _database.getChaptersDownloadBookId(book.id!);
-        if (chapters.isEmpty) return;
-      }
-
-      checkCurrentDownload();
-    } catch (err) {
-      _logger.error(err, name: "addDownload");
-    }
-  }
-
-  void checkCurrentDownload() async {
-    final task = await _database.getTaskDownloadFirst();
-    if (task == null) {
-      _currentDownload = null;
-      // Hiện tại không có sự kiện tải xuống
+  void _nextDownload({bool init = false}) async {
+    if (!init && _currentDownload != null) {
       return;
     }
-    if (_currentDownload != null && task.id == _currentDownload!.id) {
-      // Đang trong quá trình tải xuống
+
+    if (_currentDownload == null && _queueDownload.isNotEmpty) {
+      _currentDownload = _queueDownload.first;
+      _queueDownload.removeFirst();
+    }
+
+    if (_currentDownload == null) {
       return;
     }
-    _currentDownload = task;
+    // start download
     final book = await _database.onGetBookById(_currentDownload!.bookId);
     if (book == null) {
       _currentDownload = null;
@@ -164,9 +79,44 @@ class DownloadServiceT {
     }
     final chapters = await _database.getChaptersDownloadBookId(book.id!);
 
-    _logger.log("Start download : ${book.name}");
     startDownload(
-        chapters: chapters, book: book, extension: ext, download: task);
+        chapters: chapters,
+        book: book,
+        extension: ext,
+        download: _currentDownload!);
+  }
+
+  void addDownload(Book book) async {
+    if (_currentDownload != null && _currentDownload!.bookId == book.id!) {
+      // Đang tải xuống
+      return;
+    }
+    final downloadWithBook =
+        _queueDownload.firstWhereOrNull((item) => item.bookId == book.id!);
+    if (downloadWithBook != null) {
+      // Đã thêm vào hàng chờ
+      return;
+    }
+
+    // Tạo download
+    final download = Download(
+        status: DownloadStatus.waiting,
+        bookId: book.id!,
+        totalChaptersDownloaded: 0,
+        totalChaptersToDownload: book.totalChapters,
+        bookName: book.name,
+        bookImage: book.cover,
+        dateTime: DateTime.now());
+
+    // Thêm vào database
+    await _database.addDownload(download);
+
+    // Thêm vào queue
+    _queueDownload.add(download);
+
+    // Kiểm tra và tải xuống
+    if (_currentDownload != null) return;
+    _nextDownload();
   }
 
   void startDownload(
@@ -189,14 +139,15 @@ class DownloadServiceT {
           await _database.updateDownload(download);
           _controllerDownload.add(download);
           _currentDownload = download;
+          pushNotification(true);
         },
         onDownloaded: () async {
           _logger.log("downloaded");
-          _currentDownload = null;
           download = download.copyWith(status: DownloadStatus.downloaded);
           await _database.updateDownload(download);
+          _currentDownload = null;
           _controllerDownload.add(null);
-          checkCurrentDownload();
+          _nextDownload();
         },
       ),
       onCancel: () async {
@@ -208,7 +159,7 @@ class DownloadServiceT {
     );
     download = download.copyWith(status: DownloadStatus.downloading);
     _controllerDownload.add(download);
-
+    pushNotification(false);
     await _database.updateDownload(download);
   }
 
@@ -244,14 +195,14 @@ class DownloadServiceT {
   Future<Chapter> downloadComic(Chapter chapter, int bookId) async {
     if (chapter.contentComic != null && chapter.contentComic!.isNotEmpty) {
       final complete = Completer<Chapter>.sync();
-      _comicTaskConcurrent ??= ComicTaskConcurrent(
+      _comicTaskConcurrent ??= _ComicTaskConcurrent(
           dioClient: _jsRuntime.getDioClient, maxConcurrent: 5);
-      List<ComicResult> result = [];
+      List<_ComicResult> result = [];
       final headers = {"Referer": chapter.host};
       for (var i = 0; i < chapter.contentComic!.length; i++) {
         final url = chapter.contentComic![i];
         _comicTaskConcurrent!
-            .add(ComicEntry(
+            .add(_ComicEntry(
                 url: url,
                 index: i,
                 dirPath: "$bookId/${chapter.id}",
@@ -297,20 +248,58 @@ class DownloadServiceT {
       await _database.updateDownload(
           _currentDownload!.copyWith(status: DownloadStatus.downloadedCancel));
       _controllerDownload.add(null);
-      checkCurrentDownload();
+      _nextDownload();
       _logger.log("closeCurrentDownload");
+    }
+  }
+
+  Future<void> _getDownloading() async {
+    final down =
+        await _database.getDownloadByStatus(DownloadStatus.downloading);
+    if (down.isNotEmpty) {
+      _currentDownload = down.first;
+    }
+  }
+
+  Future<void> _getWaitingDownload() async {
+    final down = await _database.getDownloadByStatus(DownloadStatus.waiting);
+    if (down.isNotEmpty) {
+      _queueDownload.addAll(down);
+    }
+  }
+
+  void pushNotification(bool downloaded) {
+    if (_currentDownload == null) return;
+    if (Platform.isMacOS) {
+      if (downloaded) {
+        _localNotificationService.showOrUpdateDownloadStatus(
+            "Tải xuống thành công",
+            "${_currentDownload!.bookName} ${_currentDownload!.totalChaptersDownloaded}/${_currentDownload!.totalChaptersToDownload}",
+            maxProgress: _currentDownload!.totalChaptersToDownload,
+            progress: _currentDownload!.totalChaptersDownloaded);
+      } else {
+        _localNotificationService.showOrUpdateDownloadStatus("Đang tải",
+            "${_currentDownload!.bookName} ${_currentDownload!.totalChaptersDownloaded}/${_currentDownload!.totalChaptersToDownload}",
+            maxProgress: _currentDownload!.totalChaptersToDownload,
+            progress: _currentDownload!.totalChaptersDownloaded);
+      }
+    } else {
+      _localNotificationService.showOrUpdateDownloadStatus("Đang tải",
+          "${_currentDownload!.bookName} ${_currentDownload!.totalChaptersDownloaded}/${_currentDownload!.totalChaptersToDownload}",
+          maxProgress: _currentDownload!.totalChaptersToDownload,
+          progress: _currentDownload!.totalChaptersDownloaded);
     }
   }
 }
 
-class ComicEntry {
-  final Completer<ComicResult> completer;
+class _ComicEntry {
+  final Completer<_ComicResult> completer;
   final String url;
   final int index;
   final Map<String, String>? headers;
   final String dirPath;
 
-  ComicEntry(
+  _ComicEntry(
       {required this.url,
       required this.index,
       this.headers,
@@ -318,23 +307,23 @@ class ComicEntry {
       : completer = Completer.sync();
 }
 
-class ComicResult {
+class _ComicResult {
   final int index;
   final String? pathImage;
 
-  ComicResult({
+  _ComicResult({
     required this.index,
     this.pathImage,
   });
 }
 
-class ComicTaskConcurrent {
-  final requestController = StreamController<ComicEntry>();
+class _ComicTaskConcurrent {
+  final requestController = StreamController<_ComicEntry>();
   late final StreamSubscription<void> _subscription;
   final DioClient dioClient;
 
-  ComicTaskConcurrent({int? maxConcurrent, required this.dioClient}) {
-    Stream<void> sendRequest(ComicEntry entry) {
+  _ComicTaskConcurrent({int? maxConcurrent, required this.dioClient}) {
+    Stream<void> sendRequest(_ComicEntry entry) {
       return request
           .call(entry)
           .asStream()
@@ -348,7 +337,7 @@ class ComicTaskConcurrent {
         .listen(null);
   }
 
-  Future<ComicResult> request(ComicEntry entry) async {
+  Future<_ComicResult> request(_ComicEntry entry) async {
     try {
       final bytes = await dioClient.get(
         entry.url,
@@ -357,13 +346,13 @@ class ComicTaskConcurrent {
       );
       final pathFile =
           await FileService.saveImageToTemp(bytes, entry.dirPath.toString());
-      return ComicResult(index: entry.index, pathImage: pathFile);
+      return _ComicResult(index: entry.index, pathImage: pathFile);
     } catch (e) {
-      return ComicResult(index: entry.index);
+      return _ComicResult(index: entry.index);
     }
   }
 
-  Future<ComicResult> add(ComicEntry entry) async {
+  Future<_ComicResult> add(_ComicEntry entry) async {
     requestController.add(entry);
     return entry.completer.future;
   }
@@ -371,11 +360,3 @@ class ComicTaskConcurrent {
   Future<void> close() =>
       _subscription.cancel().then((_) => requestController.close());
 }
-
-
-/*
-Luồng xử lý tải xuống
-
- - Kiểm
-
-*/

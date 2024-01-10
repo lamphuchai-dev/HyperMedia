@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hyper_media/di/components/service_locator.dart';
+import 'package:hyper_media/services/download_manager.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:hyper_media/utils/download_service.dart';
 import '../cubit/library_cubit.dart';
@@ -15,7 +16,7 @@ class LibraryView extends StatelessWidget {
     return BlocProvider(
       create: (context) => LibraryCubit(
           database: getIt<DatabaseUtils>(),
-          downloadService: getIt<DownloadService>())
+          downloadService: getIt<DownloadManager>())
         ..onInit(),
       child: const LibraryPage(),
     );

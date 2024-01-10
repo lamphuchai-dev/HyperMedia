@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
+import 'package:hyper_media/services/download_manager.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:hyper_media/utils/download_service.dart';
 import 'package:hyper_media/utils/logger.dart';
@@ -13,7 +14,7 @@ part 'library_state.dart';
 class LibraryCubit extends Cubit<LibraryState> {
   LibraryCubit(
       {required DatabaseUtils database,
-      required DownloadService downloadService})
+      required DownloadManager downloadService})
       : _database = database,
         _downloadService = downloadService,
         super(const LibraryState(books: [], status: StatusType.init)) {
@@ -22,7 +23,7 @@ class LibraryCubit extends Cubit<LibraryState> {
     });
   }
 
-  final DownloadService _downloadService;
+  final DownloadManager _downloadService;
 
   final _logger = Logger("LibraryCubit");
 
@@ -52,8 +53,7 @@ class LibraryCubit extends Cubit<LibraryState> {
   }
 
   void onDownload(Book book) async {
-    final chapters = await _database.getChaptersByBookId(book.id!);
-    _downloadService.addDownload(book: book, chapters: chapters);
+    _downloadService.addDownload(book);
   }
 
   @override

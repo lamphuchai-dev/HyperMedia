@@ -137,7 +137,7 @@ class _BooksGridWidgetState extends State<BooksGridWidget> {
     if (Platform.isAndroid || Platform.isIOS) {
       return width ~/ 120;
     }
-    return width ~/ 200;
+    return width ~/ 150;
   }
 
   @override
@@ -165,7 +165,7 @@ class _BooksGridWidgetState extends State<BooksGridWidget> {
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: getCrossAxisCount(),
                         crossAxisSpacing: 8,
-                        childAspectRatio: 2 / 3.8,
+                        childAspectRatio: 2 / 3.6,
                         mainAxisSpacing: 8),
                     delegate: SliverChildBuilderDelegate(
                       (BuildContext context, int index) {

@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DirectoryUtils {
   static Future<String> get getDirectory async {
-    final directory = await getApplicationDocumentsDirectory();
+    final directory = await getApplicationSupportDirectory();
     return _appDir(directory);
   }
 
@@ -24,11 +24,12 @@ class DirectoryUtils {
 
   static Future<String> getDirectoryDownloadBook(int bookId) async {
     final directory = await createDirectory("download");
+
     return _appDir(directory, filename: bookId.toString());
   }
 
   static Future<Directory> createDirectory(String name) async {
-    final directory = await getApplicationDocumentsDirectory();
+    final directory = await getApplicationSupportDirectory();
 
     Directory dir = Directory(path.join(directory.path, name));
     dir.createSync(recursive: true);

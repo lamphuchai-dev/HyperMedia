@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -12,6 +11,7 @@ import 'package:hyper_media/app/constants/index.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/di/components/service_locator.dart';
+import 'package:hyper_media/services/download_manager.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:hyper_media/utils/download_service.dart';
 import 'package:hyper_media/widgets/widget.dart';
@@ -42,7 +42,7 @@ class WatchComicView extends StatelessWidget {
     return BlocProvider(
       create: (context) => WatchComicCubit(
           database: getIt<DatabaseUtils>(),
-          downloadService: getIt<DownloadService>(),
+          downloadService: getIt<DownloadManager>(),
           readerCubit: context.read<ReaderCubit>())
         ..onInit(),
       child: const WatchComicPage(),

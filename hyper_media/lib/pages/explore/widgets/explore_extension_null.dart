@@ -6,7 +6,6 @@ class ExploreExtensionNull extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("object");
     return Center(
       child: ElevatedButton(
           onPressed: () {

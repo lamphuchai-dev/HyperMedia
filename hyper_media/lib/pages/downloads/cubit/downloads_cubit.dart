@@ -4,12 +4,13 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/download.dart';
+import 'package:hyper_media/services/download_manager.dart';
 import 'package:hyper_media/utils/download_service.dart';
 
 part 'downloads_state.dart';
 
 class DownloadsCubit extends Cubit<DownloadsState> {
-  DownloadsCubit({required DownloadService downloadService})
+  DownloadsCubit({required DownloadManager downloadService})
       : _downloadService = downloadService,
         super(const DownloadsState(
             status: StatusType.init, downloaded: [], waitingDownload: [])) {
@@ -24,28 +25,28 @@ class DownloadsCubit extends Cubit<DownloadsState> {
       }
     });
   }
-  final DownloadService _downloadService;
+  final DownloadManager _downloadService;
 
   late StreamSubscription _streamSubscription;
 
   void onInit() async {
-    final currentDownload = _downloadService.currentDownload;
+    // final currentDownload = _downloadService.currentDownload;
 
-    DownloadsState downloadsState = state.setCurrentDownloadNull();
-    if (currentDownload != null) {
-      downloadsState =
-          downloadsState.copyWith(currentDownload: currentDownload);
-    }
+    // DownloadsState downloadsState = state.setCurrentDownloadNull();
+    // if (currentDownload != null) {
+    //   downloadsState =
+    //       downloadsState.copyWith(currentDownload: currentDownload);
+    // }
 
-    final downloads = await _downloadService.downloads();
+    // final downloads = await _downloadService.downloads();
 
-    final waitingDownload = downloads
-        .where((element) => element.status == DownloadStatus.waiting)
-        .toList();
+    // final waitingDownload = downloads
+    //     .where((element) => element.status == DownloadStatus.waiting)
+    //     .toList();
 
-    downloadsState = downloadsState.copyWith(
-        downloaded: downloads, waitingDownload: waitingDownload);
-    emit(downloadsState);
+    // downloadsState = downloadsState.copyWith(
+    //     downloaded: downloads, waitingDownload: waitingDownload);
+    // emit(downloadsState);
   }
 
   void closeDownload() async {

@@ -340,33 +340,37 @@ class _BookDetailState extends State<BookDetail> {
                     book: book,
                     chapters: _detailCubit.chaptersState.data ?? []));
           },
-          child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: BorderRadius.circular(8)),
-              child: ValueListenableBuilder(
-                valueListenable: isCollapsed,
-                builder: (context, value, child) => Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.play_arrow_rounded),
-                    if (!value) ...[
-                      Gaps.wGap8,
-                      if (_book.id != null)
-                        Text(
-                          "Đọc tiếp",
-                          style: textTheme.labelMedium,
-                        ),
-                      if (_book.id == null)
-                        Text(
-                          "Đọc từ đầu",
-                          style: textTheme.labelMedium,
-                        )
+          child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                decoration: BoxDecoration(
+                    color: colorScheme.primary,
+                    borderRadius: BorderRadius.circular(8)),
+                child: ValueListenableBuilder(
+                  valueListenable: isCollapsed,
+                  builder: (context, value, child) => Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.play_arrow_rounded),
+                      if (!value) ...[
+                        Gaps.wGap8,
+                        if (_book.id != null)
+                          Text(
+                            "Đọc tiếp",
+                            style: textTheme.labelMedium,
+                          ),
+                        if (_book.id == null)
+                          Text(
+                            "Đọc từ đầu",
+                            style: textTheme.labelMedium,
+                          )
+                      ],
                     ],
-                  ],
-                ),
-              )),
+                  ),
+                )),
+          ),
         ),
       ),
     );

@@ -29,52 +29,55 @@ class ItemBook extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       onLongPress: onLongTap,
-      child: Builder(
-          builder: (context) => switch (layout) {
-                BookLayoutType.column => Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Expanded(
-                          child: ClipRRect(
-                              borderRadius: Dimens.cardBookBorderRadius,
-                              clipBehavior: Clip.hardEdge,
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  Positioned.fill(child: _coverBook()),
-                                  // Positioned(
-                                  //     left: 0, top: 0, child: _cardPercent()),
-                                ],
-                              ))),
-                      Gaps.hGap4,
-                      _info()
-                    ],
-                  ),
-                BookLayoutType.stack => Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Expanded(
-                          child: ClipRRect(
-                              borderRadius: Dimens.cardBookBorderRadius,
-                              clipBehavior: Clip.hardEdge,
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  Positioned.fill(child: _coverBook()),
-                                  Positioned(
-                                      left: 0, top: 0, child: _cardPercent()),
-                                  Positioned(
-                                      left: 0,
-                                      right: 0,
-                                      bottom: 0,
-                                      child: _readChapter()),
-                                ],
-                              ))),
-                      Gaps.hGap4,
-                      _info(des: false)
-                    ],
-                  ),
-              }),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Builder(
+            builder: (context) => switch (layout) {
+                  BookLayoutType.column => Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(
+                            child: ClipRRect(
+                                borderRadius: Dimens.cardBookBorderRadius,
+                                clipBehavior: Clip.hardEdge,
+                                child: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    Positioned.fill(child: _coverBook()),
+                                    // Positioned(
+                                    //     left: 0, top: 0, child: _cardPercent()),
+                                  ],
+                                ))),
+                        Gaps.hGap4,
+                        _info()
+                      ],
+                    ),
+                  BookLayoutType.stack => Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(
+                            child: ClipRRect(
+                                borderRadius: Dimens.cardBookBorderRadius,
+                                clipBehavior: Clip.hardEdge,
+                                child: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    Positioned.fill(child: _coverBook()),
+                                    Positioned(
+                                        left: 0, top: 0, child: _cardPercent()),
+                                    Positioned(
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        child: _readChapter()),
+                                  ],
+                                ))),
+                        Gaps.hGap4,
+                        _info(des: false)
+                      ],
+                    ),
+                }),
+      ),
     );
   }
 

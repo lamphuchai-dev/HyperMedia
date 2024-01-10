@@ -8,6 +8,74 @@ class ExtensionReady extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          title: GestureDetector(
+            onTap: () async {
+              exploreCubit.getExtensions
+                  .then((extensions) => showModalBottomSheet(
+                        elevation: 0,
+                        context: context,
+                        backgroundColor: Colors.transparent,
+                        clipBehavior: Clip.hardEdge,
+                        isScrollControlled: true,
+                        builder: (context) => SelectExtensionBottomSheet(
+                          extensions: extensions,
+                          exceptionPrimary:
+                              (exploreCubit.state as ExploreLoaded).extension,
+                          onSelected: exploreCubit.onChangeExtension,
+                        ),
+                      ));
+            },
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                    width: 40,
+                    alignment: Alignment.center,
+                    child: IconExtension(
+                      icon: extension.metadata.icon,
+                    )),
+                Gaps.wGap8,
+                Flexible(child: Text(extension.metadata.name ?? "")),
+                Gaps.wGap8,
+                const Icon(
+                  Icons.expand_more_rounded,
+                  size: 26,
+                )
+              ],
+            ),
+          ),
+          actions: [
+            if (extension.script.search != null)
+              IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, RoutesName.search,
+                        arguments: extension);
+                  },
+                  icon: const Icon(Icons.search_rounded))
+          ]),
+      body: BlocBuilder<ExploreCubit, ExploreState>(
+        buildWhen: (previous, current) {
+          if (previous is ExploreLoaded && current is ExploreLoaded) {
+            return previous.status != current.status;
+          }
+          return false;
+        },
+        builder: (context, state) {
+          if (state is ExploreLoaded) {
+            return switch (state.status) {
+              StatusType.loading => const LoadingWidget(),
+              StatusType.loaded =>
+                _extReady(context, state.extension, state.tabs),
+              StatusType.error => const Text("error"),
+              _ => const SizedBox()
+            };
+          }
+          return const SizedBox();
+        },
+      ),
+    );
     return PlatformWidget(
       mobileWidget: Scaffold(
         appBar: AppBar(
