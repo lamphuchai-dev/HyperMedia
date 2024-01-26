@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "name": "Manga18Club",
+    "author": "HyperMedia",
+    "version": 1,
+    "source": "https://manga18.club",
+    "regexp": "(manga18).(club)",
+    "description": "Đọc truyện trên trang Manga18.Club",
+    "locale": "vi_VN",
+    "language": "javascript",
+    "type": "comic",
+    "search": "true",
+    "genre": "true"
+  },
+  "script": {
+    "tabs": "./src/tabs.js",
+    "home": "src/home.js",
+    "detail": "src/detail.js",
+    "chapters": "src/chapters.js",
+    "chapter": "src/chapter.js",
+    "search": "src/search.js",
+    "genre": "src/genre.js"
+  }
+}

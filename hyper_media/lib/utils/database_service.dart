@@ -18,7 +18,7 @@ class DatabaseUtils {
 
   final _logger = Logger("DatabaseUtils");
   Future<void> ensureInitialized() async {
-    _path = await DirectoryUtils.getDirectory;
+    _path = await DirectoryUtils.getDirDatabase;
     settings = await Hive.openBox(
       "settings",
       path: _path,
@@ -248,31 +248,8 @@ class DatabaseUtils {
     });
   }
 
-  // Stream<void> get downloadChange => database.downloads.watchLazy();
-
   Future<int> addDownload(Download download) =>
       database.writeTxn(() => database.downloads.put(download));
-  Future<Download?> getDownload() async {
-    return database.downloads
-        .filter()
-        .statusEqualTo(DownloadStatus.waiting)
-        .sortByDateTime()
-        .findFirst();
-  }
-
-  Future<Download?> getTaskDownloadFirst() async {
-    final taskDownloading = await database.downloads
-        .filter()
-        .statusEqualTo(DownloadStatus.downloading)
-        .sortByDateTime()
-        .findFirst();
-    if (taskDownloading != null) return taskDownloading;
-    return await database.downloads
-        .filter()
-        .statusEqualTo(DownloadStatus.waiting)
-        .sortByDateTime()
-        .findFirst();
-  }
 
   Future<int> updateDownload(Download download) async {
     return await database.writeTxn(() => database.downloads.put(download));
@@ -290,11 +267,15 @@ class DatabaseUtils {
       database.downloads.filter().bookIdEqualTo(bookId).findFirst();
 
   Future<List<Download>> getDownloads() {
-    return database.downloads.filter().anyOf([
-      DownloadStatus.waiting,
-      DownloadStatus.downloaded,
-      DownloadStatus.downloadErr
-    ], (q, element) => q.statusEqualTo(element)).findAll();
+    return database.downloads
+        .filter()
+        .anyOf([
+          DownloadStatus.downloaded,
+          DownloadStatus.downloadErr,
+          DownloadStatus.downloadedCancel
+        ], (q, element) => q.statusEqualTo(element))
+        .sortByDateTimeDesc()
+        .findAll();
   }
 
   Future<List<Download>> getDownloadByStatus(DownloadStatus status) {
@@ -304,6 +285,9 @@ class DatabaseUtils {
         .sortByDateTimeDesc()
         .findAll();
   }
+
+  Future<bool> deleteDownloadById(int id) =>
+      database.writeTxn(() => database.downloads.delete(id));
 }
 
 class SettingKey {

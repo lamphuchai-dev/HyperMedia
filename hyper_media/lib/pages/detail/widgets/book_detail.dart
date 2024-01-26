@@ -83,6 +83,11 @@ class _BookDetailState extends State<BookDetail> {
                     color: Colors.white,
                   ),
                   actions: [
+                    IconButton(
+                        onPressed: () {
+                          _detailCubit.download();
+                        },
+                        icon: const Icon(Icons.download_rounded)),
                     BlocSelector<DetailCubit, DetailState, Book>(
                       selector: (state) {
                         return state.bookState.data!;

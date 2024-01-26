@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hyper_media/di/components/service_locator.dart';
 import 'package:hyper_media/services/download_manager.dart';
 import 'package:hyper_media/utils/database_service.dart';
-import 'package:hyper_media/utils/download_service.dart';
 import '../cubit/library_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'library_page.dart';

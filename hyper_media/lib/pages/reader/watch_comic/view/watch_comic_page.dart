@@ -35,15 +35,6 @@ class _WatchComicPageState extends State<WatchComicPage> {
                   onTap: _watchComicCubit.menuController.onTapScreen,
                   onPanDown: (_) =>
                       _watchComicCubit.menuController.onTouchScreen(),
-                  // onTapDown: (details) {
-                  //   print(details.globalPosition);
-                  //   final dy = details.globalPosition.dx;
-                  //   if (dy < width / 4) {
-                  //     print("object");
-                  //   } else if (dy > width * 3 / 4) {
-                  //     print("object");
-                  //   }
-                  // },
                   child: BlocConsumer<WatchComicCubit, WatchComicState>(
                     listenWhen: (previous, current) {
                       // Kiểm tra điều kiện để tự động chạy autoScroll khi qua chương mới

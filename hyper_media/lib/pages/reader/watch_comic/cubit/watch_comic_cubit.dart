@@ -7,7 +7,6 @@ import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/services/download_manager.dart';
 import 'package:hyper_media/utils/database_service.dart';
-import 'package:hyper_media/utils/download_service.dart';
 import 'package:hyper_media/utils/logger.dart';
 import 'package:hyper_media/utils/mixin_watch_chapter.dart';
 import 'package:hyper_media/utils/progress_watch_notifier.dart';

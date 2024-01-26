@@ -107,8 +107,11 @@ class _MenuWatchComicState extends State<MenuWatchComic>
     return switch (_menuType) {
       MenuType.base => Stack(
           children: [
-            Align(
-              alignment: Alignment.topCenter,
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              // alignment: Alignment.topCenter,
               child: AnimatedBuilder(
                 animation: _animationFade,
                 builder: (context, child) => FadeTransition(

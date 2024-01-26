@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/services/local_notification.service.dart';
+import 'package:hyper_media/utils/directory_utils.dart';
 import 'package:js_runtime/js_runtime.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -40,10 +41,30 @@ class DownloadManager {
 
   _ComicTaskConcurrent? _comicTaskConcurrent;
 
-  final StreamController<Download?> _controllerDownload =
-      StreamController.broadcast();
+  final _controllerDownload = BehaviorSubject<Download?>();
 
   Stream<Download?> get downloadStream => _controllerDownload.stream;
+
+  // Dùng Stream BehaviorSubject để lấy giá trị cuối cùng khi thêm một StreamSubscription
+  final _waitingDownloadStreamController = BehaviorSubject<List<Download>>();
+  Stream<List<Download>> get waitingDownload =>
+      _waitingDownloadStreamController.stream;
+
+  Future<void> _getDownloading() async {
+    final down =
+        await _database.getDownloadByStatus(DownloadStatus.downloading);
+    if (down.isNotEmpty) {
+      _currentDownload = down.first;
+    }
+  }
+
+  Future<void> _getWaitingDownload() async {
+    final down = await _database.getDownloadByStatus(DownloadStatus.waiting);
+    if (down.isNotEmpty) {
+      _queueDownload.addAll(down);
+      _waitingDownloadStreamController.add(down);
+    }
+  }
 
   void onInit() async {
     await Future.wait([_getDownloading(), _getWaitingDownload()]);
@@ -58,6 +79,7 @@ class DownloadManager {
     if (_currentDownload == null && _queueDownload.isNotEmpty) {
       _currentDownload = _queueDownload.first;
       _queueDownload.removeFirst();
+      _waitingDownloadStreamController.add(_queueDownload.toList());
     }
 
     if (_currentDownload == null) {
@@ -109,10 +131,11 @@ class DownloadManager {
         dateTime: DateTime.now());
 
     // Thêm vào database
-    await _database.addDownload(download);
+    final downloadId = await _database.addDownload(download);
 
     // Thêm vào queue
-    _queueDownload.add(download);
+    _queueDownload.add(download.copyWith(id: downloadId));
+    _waitingDownloadStreamController.add(_queueDownload.toList());
 
     // Kiểm tra và tải xuống
     if (_currentDownload != null) return;
@@ -139,16 +162,20 @@ class DownloadManager {
           await _database.updateDownload(download);
           _controllerDownload.add(download);
           _currentDownload = download;
-          pushNotification(true);
+          pushNotification(false);
         },
-        onDownloaded: () async {
+        onDone: () async {
           _logger.log("downloaded");
           download = download.copyWith(status: DownloadStatus.downloaded);
           await _database.updateDownload(download);
           _currentDownload = null;
           _controllerDownload.add(null);
+          await _localNotificationService.closeDownloadNotification();
+          _localNotificationService.showDownloadDone(
+              download.bookId, "Tải xong", download.bookName);
           _nextDownload();
         },
+        onError: (value) {},
       ),
       onCancel: () async {
         _currentDownload = null;
@@ -159,7 +186,7 @@ class DownloadManager {
     );
     download = download.copyWith(status: DownloadStatus.downloading);
     _controllerDownload.add(download);
-    pushNotification(false);
+    pushNotification(true);
     await _database.updateDownload(download);
   }
 
@@ -167,28 +194,35 @@ class DownloadManager {
       {required List<Chapter> chapters,
       required int index,
       required ValueChanged<Chapter> onCompleteChapter,
-      required VoidCallback onDownloaded,
+      required ValueChanged<Chapter> onError,
+      required VoidCallback onDone,
       required Extension extension,
       required Book book}) async {
     if (chapters.isEmpty) {
-      onDownloaded.call();
+      onDone();
+      await Future.delayed(const Duration(milliseconds: 500));
       return;
     }
     if (index >= chapters.length) {
-      onDownloaded.call();
+      onDone.call();
     } else {
-      Chapter chapter = await getContentChapter(chapters[index], extension);
-      if (extension.metadata.type == ExtensionType.comic) {
-        chapter = await downloadComic(chapter, book.id!);
+      try {
+        Chapter chapter = await getContentChapter(chapters[index], extension);
+        if (extension.metadata.type == ExtensionType.comic) {
+          chapter = await downloadComic(chapter, book.id!);
+        }
+        onCompleteChapter.call(chapter);
+      } catch (err) {
+        onError.call(chapters[index]);
       }
-      onCompleteChapter.call(chapter);
       onDownload(
           chapters: chapters,
           index: index + 1,
           onCompleteChapter: onCompleteChapter,
-          onDownloaded: onDownloaded,
+          onDone: onDone,
           extension: extension,
-          book: book);
+          book: book,
+          onError: onError);
     }
   }
 
@@ -199,13 +233,14 @@ class DownloadManager {
           dioClient: _jsRuntime.getDioClient, maxConcurrent: 5);
       List<_ComicResult> result = [];
       final headers = {"Referer": chapter.host};
+      final dirDownloads = await DirectoryUtils.getDirDownloads;
       for (var i = 0; i < chapter.contentComic!.length; i++) {
         final url = chapter.contentComic![i];
         _comicTaskConcurrent!
             .add(_ComicEntry(
                 url: url,
                 index: i,
-                dirPath: "$bookId/${chapter.id}",
+                dirPath: "$dirDownloads/$bookId/${chapter.index}/$i.jpg",
                 headers: headers))
             .then((value) {
           result.add(value);
@@ -235,7 +270,7 @@ class DownloadManager {
           type: extension.metadata.type!, value: result);
       return chapter;
     } catch (err) {
-      return chapter;
+      rethrow;
     }
   }
 
@@ -253,42 +288,30 @@ class DownloadManager {
     }
   }
 
-  Future<void> _getDownloading() async {
-    final down =
-        await _database.getDownloadByStatus(DownloadStatus.downloading);
-    if (down.isNotEmpty) {
-      _currentDownload = down.first;
-    }
-  }
-
-  Future<void> _getWaitingDownload() async {
-    final down = await _database.getDownloadByStatus(DownloadStatus.waiting);
-    if (down.isNotEmpty) {
-      _queueDownload.addAll(down);
-    }
-  }
-
-  void pushNotification(bool downloaded) {
+  void pushNotification(bool initStart) {
     if (_currentDownload == null) return;
-    if (Platform.isMacOS) {
-      if (downloaded) {
-        _localNotificationService.showOrUpdateDownloadStatus(
-            "Tải xuống thành công",
-            "${_currentDownload!.bookName} ${_currentDownload!.totalChaptersDownloaded}/${_currentDownload!.totalChaptersToDownload}",
-            maxProgress: _currentDownload!.totalChaptersToDownload,
-            progress: _currentDownload!.totalChaptersDownloaded);
-      } else {
-        _localNotificationService.showOrUpdateDownloadStatus("Đang tải",
-            "${_currentDownload!.bookName} ${_currentDownload!.totalChaptersDownloaded}/${_currentDownload!.totalChaptersToDownload}",
-            maxProgress: _currentDownload!.totalChaptersToDownload,
-            progress: _currentDownload!.totalChaptersDownloaded);
-      }
-    } else {
+    if (initStart) {
+      _localNotificationService.showOrUpdateDownloadStatus(
+          "Đang tải", _currentDownload!.bookName);
+    } else if (Platform.isAndroid || Platform.isIOS) {
       _localNotificationService.showOrUpdateDownloadStatus("Đang tải",
           "${_currentDownload!.bookName} ${_currentDownload!.totalChaptersDownloaded}/${_currentDownload!.totalChaptersToDownload}",
           maxProgress: _currentDownload!.totalChaptersToDownload,
           progress: _currentDownload!.totalChaptersDownloaded);
     }
+  }
+
+  Future<List<Download>> get getListDownloadComplete =>
+      _database.getDownloads();
+
+  Future<bool> deleteDownloadById(int id) => _database.deleteDownloadById(id);
+
+  Future<int> cancelDownload(Download download) async {
+    final result = await _database.updateDownload(
+        download.copyWith(status: DownloadStatus.downloadedCancel));
+    _queueDownload.removeWhere((element) => element.id == download.id);
+    _waitingDownloadStreamController.add(_queueDownload.toList());
+    return result;
   }
 }
 
@@ -344,8 +367,7 @@ class _ComicTaskConcurrent {
         options:
             Options(headers: entry.headers, responseType: ResponseType.bytes),
       );
-      final pathFile =
-          await FileService.saveImageToTemp(bytes, entry.dirPath.toString());
+      final pathFile = await FileService.saveImageToTemp(bytes, entry.dirPath);
       return _ComicResult(index: entry.index, pathImage: pathFile);
     } catch (e) {
       return _ComicResult(index: entry.index);

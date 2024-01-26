@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/types/app_type.dart';
+import 'package:hyper_media/services/download_manager.dart';
 import 'package:js_runtime/js_runtime.dart';
 import 'package:readmore/readmore.dart';
 
@@ -26,8 +27,6 @@ part '../widgets/detail_error_view.dart';
 part '../widgets/book_detail.dart';
 part '../widgets/chapter_search_delegate.dart';
 
-
-
 class DetailView extends StatelessWidget {
   const DetailView({super.key, required this.bookUrl});
   static const String routeName = '/detail_view';
@@ -40,7 +39,8 @@ class DetailView extends StatelessWidget {
           bookUrl: bookUrl,
           databaseService: getIt<DatabaseUtils>(),
           appCubitCubit: context.read<AppCubitCubit>(),
-          jsRuntime: getIt<JsRuntime>()),
+          jsRuntime: getIt<JsRuntime>(),
+          downloadService: getIt<DownloadManager>()),
       child: const DetailPage(),
     );
   }

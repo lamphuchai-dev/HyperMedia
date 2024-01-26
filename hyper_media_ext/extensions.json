@@ -97,6 +97,21 @@
         "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/manga18fx/icon.png"
     },
     {
+        "name": "Manga18Club",
+        "author": "HyperMedia",
+        "version": 1,
+        "source": "https://manga18.club",
+        "regexp": "(manga18).(club)",
+        "description": "Đọc truyện trên trang Manga18.Club",
+        "locale": "vi_VN",
+        "language": "javascript",
+        "type": "comic",
+        "search": "true",
+        "genre": "true",
+        "path": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/manga18_club/extension.zip",
+        "icon": "https://raw.githubusercontent.com/lamphuchai-dev/HyperMedia/main/hyper_media_ext/extensions/manga18_club/icon.png"
+    },
+    {
         "name": "Anime Hay",
         "author": "HyperMedia",
         "version": 2,

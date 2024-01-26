@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/download.dart';
 import 'package:hyper_media/services/download_manager.dart';
-import 'package:hyper_media/utils/download_service.dart';
+import 'package:rxdart/utils.dart';
 
 part 'downloads_state.dart';
 
@@ -14,49 +15,62 @@ class DownloadsCubit extends Cubit<DownloadsState> {
       : _downloadService = downloadService,
         super(const DownloadsState(
             status: StatusType.init, downloaded: [], waitingDownload: [])) {
-    _streamSubscription = downloadService.downloadStream.listen((download) {
-      if (download != null) {
-        if (isClosed) return;
-        emit(state.copyWith(currentDownload: download));
-      } else {
-        if (isClosed) return;
-        emit(state.setCurrentDownloadNull());
-        // onInit();
-      }
+    final streamSubscription =
+        downloadService.waitingDownload.listen((downloads) {
+      emit(state.copyWith(waitingDownload: downloads));
+      // print("waiting : ${state.waitingDownload.length}");
     });
+    final currentStreamSubscription =
+        downloadService.downloadStream.listen((download) {
+      emit(state.setCurrentDownload(download));
+      // print("waiting : ${state.waitingDownload.length}");
+    });
+    _compositeSubscription.add(currentStreamSubscription);
+    _compositeSubscription.add(streamSubscription);
   }
   final DownloadManager _downloadService;
 
-  late StreamSubscription _streamSubscription;
+  final _compositeSubscription = CompositeSubscription();
 
   void onInit() async {
-    // final currentDownload = _downloadService.currentDownload;
-
-    // DownloadsState downloadsState = state.setCurrentDownloadNull();
-    // if (currentDownload != null) {
-    //   downloadsState =
-    //       downloadsState.copyWith(currentDownload: currentDownload);
-    // }
-
-    // final downloads = await _downloadService.downloads();
-
-    // final waitingDownload = downloads
-    //     .where((element) => element.status == DownloadStatus.waiting)
-    //     .toList();
-
-    // downloadsState = downloadsState.copyWith(
-    //     downloaded: downloads, waitingDownload: waitingDownload);
-    // emit(downloadsState);
+    _loadDownloadComplete();
   }
 
-  void closeDownload() async {
+  void _loadDownloadComplete() async {
+    final downloads = await _downloadService.getListDownloadComplete;
+    emit(state.copyWith(downloaded: downloads));
+  }
+
+  @override
+  void onChange(Change<DownloadsState> change) {
+    super.onChange(change);
+    if (change.currentState.currentDownload != null &&
+        change.currentState.currentDownload!.status ==
+            DownloadStatus.downloaded) {
+      _loadDownloadComplete();
+    }
+  }
+
+  void closeCurrentDownload() async {
     await _downloadService.closeCurrentDownload();
-    emit(state.setCurrentDownloadNull());
+    _loadDownloadComplete();
+  }
+
+  void onTapDeleteById(int id) async {
+    final isDelete = await _downloadService.deleteDownloadById(id);
+    if (isDelete) {
+      _loadDownloadComplete();
+    }
+  }
+
+  void onCancelDownload(Download download) async {
+    await _downloadService.cancelDownload(download);
+    _loadDownloadComplete();
   }
 
   @override
   Future<void> close() {
-    _streamSubscription.cancel();
+    _compositeSubscription.cancel();
     return super.close();
   }
 }

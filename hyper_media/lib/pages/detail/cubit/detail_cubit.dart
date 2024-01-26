@@ -7,6 +7,7 @@ import 'package:hyper_media/app/bloc/app_cubit/app_cubit_cubit.dart';
 import 'package:hyper_media/app/extensions/index.dart';
 import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
+import 'package:hyper_media/services/download_manager.dart';
 import 'package:hyper_media/utils/app_browser.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:hyper_media/utils/logger.dart';
@@ -19,10 +20,12 @@ class DetailCubit extends Cubit<DetailState> {
       {required this.bookUrl,
       required DatabaseUtils databaseService,
       required JsRuntime jsRuntime,
-      required AppCubitCubit appCubitCubit})
+      required AppCubitCubit appCubitCubit,
+      required DownloadManager downloadService})
       : _databaseService = databaseService,
         _jsRuntime = jsRuntime,
         _appCubitCubit = appCubitCubit,
+        _downloadService = downloadService,
         super(const DetailState(
             bookState: StateRes(status: StatusType.init),
             chaptersState: StateRes(status: StatusType.init)));
@@ -34,6 +37,8 @@ class DetailCubit extends Cubit<DetailState> {
   final JsRuntime _jsRuntime;
   final String bookUrl;
   AppCubitCubit _appCubitCubit;
+
+  final DownloadManager _downloadService;
 
   final FToast fToast = FToast();
 
@@ -149,5 +154,9 @@ class DetailCubit extends Cubit<DetailState> {
     emit(state.copyWith(
         chaptersState: chaptersState.copyWith(
             data: chaptersState.data!.reversed.toList())));
+  }
+
+  void download() {
+    _downloadService.addDownload(state.bookState.data!);
   }
 }

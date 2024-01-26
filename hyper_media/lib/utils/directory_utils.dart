@@ -6,10 +6,10 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
 class DirectoryUtils {
-  static Future<String> get getDirectory async {
-    final directory = await getApplicationSupportDirectory();
-    return _appDir(directory);
-  }
+  // static Future<String> get getDirectory async {
+  //   final directory = await getApplicationSupportDirectory();
+  //   return _appDir(directory);
+  // }
 
   static Future<String> get getCacheDirectory async {
     final directory = await getTemporaryDirectory();
@@ -22,21 +22,40 @@ class DirectoryUtils {
     return dir;
   }
 
-  static Future<String> getDirectoryDownloadBook(int bookId) async {
-    final directory = await createDirectory("download");
+  // static Future<String> getDirectoryDownloadBook(int bookId) async {
+  //   final directory = await createDirectory("download");
 
-    return _appDir(directory, filename: bookId.toString());
-  }
+  //   return _appDir(directory, filename: bookId.toString());
+  // }
 
-  static Future<Directory> createDirectory(String name) async {
+  // static Future<Directory> createDirectory(String name) async {
+  //   final directory = await getApplicationSupportDirectory();
+
+  //   Directory dir = Directory(path.join(directory.path, name));
+  //   dir.createSync(recursive: true);
+  //   return dir;
+  // }
+
+  // static Directory getDirectoryByPath(String path) {
+  //   return Directory(path);
+  // }
+
+  static Future<String> get getDirDownloads async {
     final directory = await getApplicationSupportDirectory();
-
-    Directory dir = Directory(path.join(directory.path, name));
-    dir.createSync(recursive: true);
-    return dir;
+    return _appDir(directory, filename: "downloads");
   }
 
-  static Directory getDirectoryByPath(String path) {
-    return Directory(path);
+  static Future<String> get getDirDatabase async {
+    final directory = await getApplicationSupportDirectory();
+    return _appDir(directory, filename: "db");
+  }
+
+  static Future<bool> deleteFolderDownloadBook(int bookId) async {
+    final dir = await getDirDownloads;
+    final directory = Directory("$dir/$bookId");
+    if (directory.existsSync()) {
+      directory.deleteSync(recursive: true);
+    }
+    return true;
   }
 }

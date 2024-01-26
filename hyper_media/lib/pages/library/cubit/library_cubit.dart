@@ -6,7 +6,7 @@ import 'package:hyper_media/app/types/app_type.dart';
 import 'package:hyper_media/data/models/models.dart';
 import 'package:hyper_media/services/download_manager.dart';
 import 'package:hyper_media/utils/database_service.dart';
-import 'package:hyper_media/utils/download_service.dart';
+import 'package:hyper_media/utils/directory_utils.dart';
 import 'package:hyper_media/utils/logger.dart';
 
 part 'library_state.dart';
@@ -43,6 +43,7 @@ class LibraryCubit extends Cubit<LibraryState> {
 
   void delete(Book book) async {
     _database.onDeleteBook(book.id!);
+    DirectoryUtils.deleteFolderDownloadBook(book.id!);
 
     // final bookmark = getBookmarkByBook(book);
     // _database.deleteBookmarkById(

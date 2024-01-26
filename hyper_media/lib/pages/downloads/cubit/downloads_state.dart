@@ -31,12 +31,12 @@ class DownloadsState extends Equatable {
     );
   }
 
-  DownloadsState setCurrentDownloadNull() {
+  DownloadsState setCurrentDownload(Download? currentDownload) {
     return DownloadsState(
       status: status,
       downloaded: downloaded,
       waitingDownload: waitingDownload,
-      currentDownload: null,
+      currentDownload: currentDownload,
     );
   }
 }

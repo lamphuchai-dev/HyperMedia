@@ -24,13 +24,11 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             ElevatedButton(
                 onPressed: () async {
-                  // local.showOrUpdateDownloadStatus("title", "body",
-                  //     maxProgress: 100,
-                  //     progress: 50,
-                  //     showActions: true,
-                  //     isDetailed: true);
-                  final tmp = await getApplicationSupportDirectory();
-                  print(tmp);
+                  local.showOrUpdateDownloadStatus("title", "body",
+                      maxProgress: 100,
+                      progress: 50,
+                      showActions: true,
+                      isDetailed: true);
                 },
                 child: Text("Show"))
           ],

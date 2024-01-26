@@ -6,7 +6,6 @@ import 'package:hyper_media/services/local_notification.service.dart';
 import 'package:hyper_media/data/sharedpref/shared_preference_helper.dart';
 import 'package:hyper_media/utils/database_service.dart';
 import 'package:hyper_media/utils/directory_utils.dart';
-import 'package:hyper_media/utils/download_service.dart';
 import 'package:js_runtime/js_runtime.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,10 +26,10 @@ Future<void> setupLocator() async {
   final jsRuntime = JsRuntime(dioClient: dioClient);
   await jsRuntime.initRuntime(
       pathSource: AppAssets.jsScriptExtension,
-      dirCookie: await DirectoryUtils.getDirectory);
+      dirCookie: "${await DirectoryUtils.getDirDatabase}/cookies");
 
   final localNotificationService = LocalNotificationService();
-  localNotificationService.setup();
+  localNotificationService.setup(databaseService);
   getIt.registerFactory(() => localNotificationService);
 
   getIt.registerSingleton(databaseService);
