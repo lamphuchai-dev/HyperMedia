@@ -1,29 +1,22 @@
 async function chapter(url) {
   const res = await Extension.request(url);
   if (!res) return Response.error("Có lỗi khi tải nội dung");
-  var title = await Extension.querySelector(res, "h1.header-page").text;
 
-  if (title != null) {
-    title = title.trim();
-    title = title.replace(": ", "");
-  }
-
-  var contentEl = await Extension.querySelector(
-    res,
-    "div.story-content article"
-  ).outerHTML;
-
-  var html = contentEl.replace(/&nbsp;/g, " ");
-
-  html = html.replace(/<br>/g, "\n");
-
-  html = html.replace(title + "\n", "");
-  var text = await Extension.querySelector(html, "article").text;
-  return Response.success(text);
+  var contentEl = await Extension.querySelector(res, "div.chapter-c");
+  await contentEl.removeSelector("script");
+  await contentEl.removeSelector("#ADS_TOP_MIDDLE");
+  await contentEl.removeSelector("#ads_top_center_chapter");
+  await contentEl.removeSelector(".text-center");
+  await contentEl.removeSelector(".split");
+  await contentEl.removeSelector("#ADS_BOTTOM_MIDDLE");
+  await contentEl.removeSelector("#chapter-append");
+  await contentEl.removeSelector(".msg");
+  await contentEl.removeSelector("a");
+  return Response.success(await contentEl.text);
 }
 
 // runFn(() =>
 //   chapter(
-//     "https://truyencv.info/bat-dau-tu-con-so-0-them-chut-tien-hoa/chuong-1/99600000"
+//     "https://truyenchu.vn/chong-truoc-tai-tuyen-xem-ta-bi-thu-nhan/chuong-1-ly-hon-xin-0"
 //   )
 // );

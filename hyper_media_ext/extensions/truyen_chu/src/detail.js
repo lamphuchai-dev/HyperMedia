@@ -1,44 +1,42 @@
 async function detail(url) {
   const res = await Extension.request(url);
   if (!res) return Response.error("Có lỗi khi tải nội dung");
-  const host = "https://truyencv.info";
+  const host = "https://truyenchu.vn";
 
-  const detailEl = await Extension.querySelector(res, "div.story-detail")
-    .outerHTML;
-  const name = await Extension.querySelector(detailEl, "h1").text;
-  var cover = await Extension.getAttributeText(detailEl, "img", "src");
+  const name = await Extension.querySelector(res, "h1.story-title").text;
+  var cover = await Extension.getAttributeText(res, "div.book img", "src");
+  var author = await Extension.querySelector(res, "div.info div a").text;
 
-  var author = await Extension.querySelector(detailEl, "div.media-body p a")
-    .text;
+  var bookStatus = await Extension.querySelector(
+    res,
+    'div.info span[class="text-primary"]'
+  ).text;
 
-  var bookStatus = await Extension.querySelector(detailEl, "div.story-stage p")
-    .text;
+  const description = await Extension.querySelector(res, "div.desc-text").text;
 
-  const description = await Extension.querySelector(detailEl, "div.para p")
-    .text;
-
-  const totalChapters = (
-    await Extension.querySelectorAll(detailEl, "div.chapters ul li")
-  ).length;
+  const totalChapters = await Extension.querySelector(
+    res,
+    'div.info span [id="totalChapter"]'
+  ).text;
 
   let genres = [];
   const genresElm = await Extension.querySelectorAll(
-    detailEl,
-    "div.story-tags a"
+    res,
+    'div.info a[itemprop="genre"]'
   );
   for (var el of genresElm) {
     genres.push({
-      url: await Extension.getAttributeText(el.content, "a", "href"),
+      url: host + (await Extension.getAttributeText(el.content, "a", "href")),
       title: await Extension.querySelector(el.content, "a").text,
     });
   }
 
   return Response.success({
     name: name != null ? name.trim() : "",
-    cover,
+    cover: host + cover,
     bookStatus,
     author,
-    description,
+    description: description != null ? description.trim() : "",
     totalChapters,
     genres,
     link: url.replace(host, ""),
@@ -47,7 +45,5 @@ async function detail(url) {
 }
 
 // runFn(() =>
-//   detail(
-//     "https://truyencv.info/bat-dau-tu-con-so-0-them-chut-tien-hoa--61393936"
-//   )
+//   detail("https://truyenchu.vn/chong-truoc-tai-tuyen-xem-ta-bi-thu-nhan")
 // );

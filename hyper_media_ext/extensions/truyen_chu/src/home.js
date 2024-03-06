@@ -2,40 +2,42 @@ async function home(url, page) {
   if (!page) page = 1;
 
   const res = await Extension.request(url, {
-    headers: {
-      "user-agent":
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1",
-    },
     queryParameters: { page: page },
   });
   if (!res) return Response.error("Có lỗi khi tải nội dung");
 
-  const host = "https://truyencv.info";
-  const list = await Extension.querySelectorAll(res, "div.media");
+  const host = "https://truyenchu.vn";
+  const list = await Extension.querySelectorAll(
+    res,
+    ".list-truyen div[itemscope]"
+  );
   const result = [];
-
   for (const item of list) {
     const html = item.content;
     var cover = await Extension.getAttributeText(
       html,
-      "div.story-thumb img",
-      "src"
+      "div[data-image]",
+      "data-image"
     );
-
     const link = await Extension.getAttributeText(
       html,
-      "div.story-thumb a",
+      "h3.truyen-title a",
       "href"
     );
+
     result.push({
-      name: await Extension.querySelector(html, "h4.media-heading a").text,
+      name: await Extension.querySelector(html, "h3.truyen-title a").text,
       link: link.replace(host, ""),
-      description: await Extension.querySelector(html, "p.text-summary").text,
-      cover,
+      description: await Extension.getAttributeText(
+        html,
+        "div.latest-chapter a",
+        "title"
+      ),
+      cover: host + cover,
       host: host,
     });
   }
   return Response.success(result);
 }
 
-//  runFn(() => home("https://truyencv.info/popular"));
+// runFn(() => home("https://truyenchu.vn/danh-sach/truyen-convert", 1));
