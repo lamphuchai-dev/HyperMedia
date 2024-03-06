@@ -2,9 +2,9 @@
   "metadata": {
     "name": "Net Truyện",
     "author": "HyperMedia",
-    "version": 2,
-    "source": "https://www.nettruyenclub.com",
-    "regexp": "(www.)?(nettruyenus|nettruyenbing|nettruyenclub).(com)",
+    "version": 3,
+    "source": "https://www.nettruyenee.com",
+    "regexp": "(www.)?(nettruyenus|nettruyenbing|nettruyenclub|nettruyenclub).(com)",
     "description": "Đọc truyện trên trang Net Truyện",
     "locale": "vi_VN",
     "language": "javascript",

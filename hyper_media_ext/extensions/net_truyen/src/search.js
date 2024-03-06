@@ -16,10 +16,10 @@ async function search(url, kw, page) {
     var link = await Extension.getAttributeText(html, "h3 a", "href");
     result.push({
       name: await Extension.querySelector(html, "h3 a").text,
-      link: link.replace("https://www.nettruyenclub.com", ""),
+      link: link.replace("https://www.nettruyenee.com", ""),
       description: await Extension.querySelector(html, ".comic-item li a").text,
       cover,
-      host: "https://www.nettruyenclub.com",
+      host: "https://www.nettruyenee.com",
     });
   }
   return Response.success(result);
