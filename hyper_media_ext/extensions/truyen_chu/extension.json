@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "name": "Truyện Chữ",
+    "author": "HyperMedia",
+    "version": 1,
+    "source": "https://truyenchu.vn",
+    "regexp": "(truyenchu).(vn)",
+    "description": "Đọc truyện trên trang Truyện Chữ",
+    "locale": "vi_VN",
+    "language": "javascript",
+    "type": "novel"
+  },
+  "script": {
+    "tabs": "src/tabs.js",
+    "home": "src/home.js",
+    "detail": "src/detail.js",
+    "chapters": "src/chapters.js",
+    "chapter": "src/chapter.js",
+    "search": "src/search.js",
+    "genre": "src/genre.js"
+  }
+}

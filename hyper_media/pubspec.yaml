@@ -77,6 +77,7 @@ dependencies:
   url_launcher: ^6.2.1
   uuid: ^4.2.1
   wakelock: ^0.6.2
+  receive_sharing_intent: ^1.6.7
 
 dev_dependencies:
   build_runner: ^2.4.6
@@ -127,3 +128,18 @@ flutter:
           style: italic
         - asset: assets/fonts/CircularStd/CircularStd-Bold.ttf
           weight: 700
+    - family: TimesNewRoman
+      fonts:
+        - asset: assets/fonts/TimesNewRoman/times new roman bold italic.ttf
+          style: italic
+          weight: 700
+        - asset: assets/fonts/TimesNewRoman/times new roman bold.ttf
+          weight: 700
+        - asset: assets/fonts/TimesNewRoman/times new roman italic.ttf
+          style: italic
+        - asset: assets/fonts/TimesNewRoman/times new roman.ttf
+    - family: Lora
+      fonts:
+        - asset: assets/fonts/Lora/Lora-Bold.ttf
+        - asset: assets/fonts/Lora/Lora-Medium.ttf
+        - asset: assets/fonts/Lora/Lora-Regular.ttf

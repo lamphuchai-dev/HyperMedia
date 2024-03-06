@@ -130,7 +130,7 @@ class WatchNovelCubit extends Cubit<WatchNovelState> with MixinWatchChapter {
       return false;
     }
     final chapter = _readerCubit.chapters[state.watchChapter.index + 1];
-    scrollController.jumpTo(0.0);
+    if (scrollController.hasClients) scrollController.jumpTo(0.0);
     getDetailChapter(chapter);
     return true;
   }
@@ -138,7 +138,7 @@ class WatchNovelCubit extends Cubit<WatchNovelState> with MixinWatchChapter {
   @override
   void onPrevious() {
     final chapter = _readerCubit.chapters[state.watchChapter.index - 1];
-    scrollController.jumpTo(0.0);
+    if (scrollController.hasClients) scrollController.jumpTo(0.0);
     getDetailChapter(chapter);
   }
 

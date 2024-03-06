@@ -49,10 +49,10 @@ class _WatchNovelPageState extends State<WatchNovelPage> {
                               horizontal: Dimens.horizontalPadding),
                           child: DefaultTextStyle(
                             style: TextStyle(
-                              color: settings.themeWatchNovel.text,
-                              fontSize: settings.fontSize,
-                              wordSpacing: settings.textScaleFactor,
-                            ),
+                                color: settings.themeWatchNovel.text,
+                                fontSize: settings.fontSize,
+                                wordSpacing: settings.textScaleFactor,
+                                fontFamily: "Lora"),
                             child: SafeArea(
                               bottom: false,
                               child: Column(
@@ -245,6 +245,14 @@ class __WatchNovelVerticalState extends State<_WatchNovelVertical> {
       _paginate(widget.content);
     });
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant _WatchNovelVertical oldWidget) {
+    if (widget.content != oldWidget.content) {
+      _paginate(widget.content);
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
