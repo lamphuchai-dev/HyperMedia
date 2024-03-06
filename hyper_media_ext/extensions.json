@@ -58,7 +58,7 @@
         "author": "HyperMedia",
         "version": 3,
         "source": "https://www.nettruyenee.com",
-        "regexp": "(www.)?(nettruyenus|nettruyenbing|nettruyenclub|nettruyenclub).(com)",
+        "regexp": "(www.)?(nettruyenclub|nettruyenee).(com)",
         "description": "Đọc truyện trên trang Net Truyện",
         "locale": "vi_VN",
         "language": "javascript",
