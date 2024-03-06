@@ -37,7 +37,7 @@ async function detail(url) {
     bookStatus,
     author,
     description: description != null ? description.trim() : "",
-    totalChapters,
+    totalChapters: Number(totalChapters),
     genres,
     link: url.replace(host, ""),
     host: host,
