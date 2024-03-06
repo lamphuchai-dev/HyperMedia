@@ -17,11 +17,13 @@ async function chapters(bookUrl) {
 
   for (var index = 0; index < listEl.length; index++) {
     const el = listEl[index].content;
-    const url = await Extension.getAttributeText(el, "option", "value");
+    var url = await Extension.getAttributeText(el, "option", "value");
+    url = bookUrl + "/" + url;
+    url = url.replace(host, "");
     const name = await Extension.querySelector(el, "option").text;
     chapters.push({
       name: name != null ? name.trim() : "",
-      url: bookUrl + "/" + url,
+      url,
       host,
     });
   }
