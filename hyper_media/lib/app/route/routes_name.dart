@@ -1,3 +1,4 @@
+import 'package:hyper_media/pages/backup_restore/backup_restore.dart';
 import 'package:hyper_media/pages/bottom_nav/bottom_nav.dart';
 import 'package:hyper_media/pages/chapters/chapters.dart';
 import 'package:hyper_media/pages/detail/detail.dart';
@@ -19,4 +20,5 @@ class RoutesName {
   static const reader = ReaderView.routeName;
   static const search = SearchView.routeName;
   static const downloads = DownloadsView.routeName;
+  static const backupAndRestore = BackupRestoreView.routeName;
 }

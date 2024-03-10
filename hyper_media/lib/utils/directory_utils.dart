@@ -2,14 +2,15 @@
 
 import 'dart:io';
 
+import 'package:external_path/external_path.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
 class DirectoryUtils {
-  // static Future<String> get getDirectory async {
-  //   final directory = await getApplicationSupportDirectory();
-  //   return _appDir(directory);
-  // }
+  static Future<String> get getDirectory async {
+    final directory = await getApplicationSupportDirectory();
+    return _appDir(directory);
+  }
 
   static Future<String> get getCacheDirectory async {
     final directory = await getTemporaryDirectory();
@@ -57,5 +58,14 @@ class DirectoryUtils {
       directory.deleteSync(recursive: true);
     }
     return true;
+  }
+
+  static Future<String?> get getDownloadDirectory async {
+    // if (Platform.isAndroid) {
+    return await ExternalPath.getExternalStoragePublicDirectory(
+        ExternalPath.DIRECTORY_DOWNLOADS);
+    // }
+    // final downloadsDir = await getDownloadsDirectory();
+    // return downloadsDir?.path;
   }
 }

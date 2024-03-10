@@ -1,6 +1,6 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/Users/lamphuchai/flutter-sdk/flutter_3.10.3
-FLUTTER_APPLICATION_PATH=/Users/lamphuchai/Desktop/Projects/book_project/u_book/packages/dio_client
+FLUTTER_ROOT=/Users/lamphuchai/Flutter/flutter_3.19.3
+FLUTTER_APPLICATION_PATH=/Users/lamphuchai/Desktop/HyperMedia/hyper_media/packages/dio_client
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_BUILD_DIR=build
 FLUTTER_BUILD_NAME=0.0.1

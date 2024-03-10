@@ -17,7 +17,7 @@ Future<void> _configureMacosWindowUtils() async {
 
 FutureOr<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  WebView.debugLoggingSettings.enabled = false;
+  await InAppWebViewController.setWebContentsDebuggingEnabled(false);
   await EasyLocalization.ensureInitialized();
 
   await setupLocator();

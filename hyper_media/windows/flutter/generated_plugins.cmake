@@ -5,6 +5,8 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   desktop_webview_window
   desktop_window
+  firebase_auth
+  firebase_core
   flutter_js
   irondash_engine_context
   isar_flutter_libs

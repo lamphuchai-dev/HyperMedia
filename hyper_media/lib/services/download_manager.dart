@@ -293,7 +293,7 @@ class DownloadManager {
     if (initStart) {
       _localNotificationService.showOrUpdateDownloadStatus(
           "Đang tải", _currentDownload!.bookName);
-    } else if (Platform.isAndroid || Platform.isIOS) {
+    } else if (Platform.isAndroid) {
       _localNotificationService.showOrUpdateDownloadStatus("Đang tải",
           "${_currentDownload!.bookName} ${_currentDownload!.totalChaptersDownloaded}/${_currentDownload!.totalChaptersToDownload}",
           maxProgress: _currentDownload!.totalChaptersToDownload,

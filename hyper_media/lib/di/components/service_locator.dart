@@ -17,29 +17,58 @@ Future<void> setupLocator() async {
   getIt.registerSingletonAsync<SharedPreferences>(
       () => LocalModule.provideSharedPreferences());
 
+  getIt.registerSingletonAsync<DatabaseUtils>(
+      () => LocalModule.provideDatabase());
+  await getIt.getAsync<DatabaseUtils>();
   getIt.registerSingleton(
       SharedPreferenceHelper(await getIt.getAsync<SharedPreferences>()));
+  // getIt.registerSingletonWithDependencies(() => null)
 
-  final databaseService = DatabaseUtils();
-  await databaseService.ensureInitialized();
   final dioClient = DioClient();
   final jsRuntime = JsRuntime(dioClient: dioClient);
   await jsRuntime.initRuntime(
       pathSource: AppAssets.jsScriptExtension,
       dirCookie: "${await DirectoryUtils.getDirDatabase}/cookies");
 
-  final localNotificationService = LocalNotificationService();
-  localNotificationService.setup(databaseService);
-  getIt.registerFactory(() => localNotificationService);
+  // final localNotificationService = LocalNotificationService();
+  // localNotificationService.setup(getIt<DatabaseUtils>());
+  // getIt.registerFactory(() => localNotificationService);
 
-  getIt.registerSingleton(databaseService);
+  // getIt.registerSingletonAsync<LocalNotificationService>(() {
+
+  //   return
+  // });
+
+  getIt.registerSingletonAsync<LocalNotificationService>(() async {
+    final localNotificationService = LocalNotificationService();
+    await localNotificationService.setup(getIt<DatabaseUtils>());
+    return localNotificationService;
+  });
+
+  // getIt.registerSingleton(databaseService);
   getIt.registerSingleton(dioClient);
   getIt.registerSingleton(jsRuntime);
-  final dow = DownloadManager(
-      dioClient: dioClient,
-      database: databaseService,
-      jsRuntime: jsRuntime,
-      localNotificationService: localNotificationService);
-  dow.onInit();
-  getIt.registerLazySingleton(() => dow);
+  // final dow = DownloadManager(
+  //     dioClient: dioClient,
+  //     database: getIt<DatabaseUtils>(),
+  //     jsRuntime: jsRuntime,
+  //     localNotificationService: localNotificationService);
+  getIt.registerSingletonWithDependencies(
+      () => DownloadManager(
+          dioClient: dioClient,
+          database: getIt<DatabaseUtils>(),
+          jsRuntime: jsRuntime,
+          localNotificationService: getIt<LocalNotificationService>()),
+      dependsOn: [LocalNotificationService]);
 }
+
+
+// locator.registerSingletonAsync<LocationService>(() async {
+//     final locationService = LocationService();
+//     await locationService.init();
+//     return locationService;
+//   });
+// locator.registerSingletonWithDependencies<HomeViewModel>(() {
+//     return HomeViewModel();
+//   }, dependsOn: [LocationService]);
+//  }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hyper_media/data/models/models.dart';
+import 'package:hyper_media/pages/backup_restore/backup_restore.dart';
 import 'package:hyper_media/pages/bottom_nav/bottom_nav.dart';
 import 'package:hyper_media/pages/chapters/chapters.dart';
 import 'package:hyper_media/pages/detail/detail.dart';
@@ -86,7 +87,10 @@ class Routes {
               extension: args as Extension,
             ),
             type: PageTransitionType.fade);
-
+      case RoutesName.backupAndRestore:
+        return PageTransition(
+            child: const BackupRestoreView(),
+            type: PageTransitionType.rightToLeft);
       default:
         return _errRoute();
     }

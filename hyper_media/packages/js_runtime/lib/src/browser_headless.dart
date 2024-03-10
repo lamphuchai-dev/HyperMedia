@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 import 'package:html/parser.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:uuid/uuid.dart';
@@ -172,7 +173,9 @@ class BrowserHeadless {
       final regexp = RegExp(url);
       List<String> urls = [];
       final completer = Completer<List<String>>.sync();
-      _browserHeadless?.onLoadResource = (controller, resource) {
+
+      _browserHeadless?.platform.params.onLoadResource =
+          (controller, resource) {
         String urlFetch = resource.url.toString();
         final match = regexp.firstMatch(urlFetch);
         if (match != null && !completer.isCompleted) {
@@ -238,7 +241,7 @@ class BrowserHeadless {
     if (_browserHeadless != null && _browserHeadless!.isRunning()) {
       final regexp = RegExp(url);
       final completer = Completer<Map<String, dynamic>?>.sync();
-      _browserHeadless?.onAjaxReadyStateChange =
+      _browserHeadless?.platform.params.onAjaxReadyStateChange =
           (controller, ajaxRequest) async {
         String urlFetch = ajaxRequest.url.toString();
         final match = regexp.firstMatch(urlFetch);
@@ -301,4 +304,3 @@ class Tmp {
     required this.timer,
   });
 }
-

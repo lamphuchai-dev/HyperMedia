@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.lph.hyper-media</string>
+		<string>group.com.lph.hyper-media-dev</string>
 	</array>
 </dict>
 </plist>

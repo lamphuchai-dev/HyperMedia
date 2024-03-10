@@ -10,7 +10,7 @@ class BottomNavView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => BottomNavCubit(),
+      create: (context) => BottomNavCubit()..onInit(),
       child: const BottomNavPage(),
     );
   }

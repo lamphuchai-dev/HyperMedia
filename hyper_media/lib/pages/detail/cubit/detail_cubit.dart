@@ -133,6 +133,15 @@ class DetailCubit extends Cubit<DetailState> {
 
   void openBrowser() {
     _appBrowser ??= AppBrowser();
+    _appBrowser?.addMenuItem(InAppBrowserMenuItem(
+      id: 0,
+      title: 'Menu Item 0',
+      iconColor: Colors.black,
+      order: 0,
+      onClick: () {
+        // browser.webViewController?.reload();
+      },
+    ));
     _appBrowser!.openUrlRequest(
         urlRequest: URLRequest(url: WebUri(bookUrl)),
         settings: _appBrowser!.setting);

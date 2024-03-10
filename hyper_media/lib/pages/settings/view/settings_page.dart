@@ -22,15 +22,13 @@ class _SettingsPageState extends State<SettingsPage> {
         appBar: AppBar(centerTitle: true, title: const Text("Settings")),
         body: Column(
           children: [
-            ElevatedButton(
-                onPressed: () async {
-                  local.showOrUpdateDownloadStatus("title", "body",
-                      maxProgress: 100,
-                      progress: 50,
-                      showActions: true,
-                      isDetailed: true);
-                },
-                child: Text("Show"))
+            ListTile(
+              title: const Text("Sao lưu và Khôi phục"),
+              onTap: () {
+                Navigator.pushNamed(context, RoutesName.backupAndRestore);
+              },
+            ),
+
           ],
         ));
   }

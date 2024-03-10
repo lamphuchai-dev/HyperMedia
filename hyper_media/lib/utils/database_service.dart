@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:dio_client/index.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -10,10 +11,11 @@ import 'package:hyper_media/utils/logger.dart';
 import 'package:isar/isar.dart';
 
 import 'directory_utils.dart';
+import 'permission_utils.dart';
 
 class DatabaseUtils {
-  late final Isar database;
-  static late final Box settings;
+  late Isar database;
+  late Box settings;
   late String _path;
 
   final _logger = Logger("DatabaseUtils");
@@ -23,6 +25,7 @@ class DatabaseUtils {
       "settings",
       path: _path,
     );
+
     database = await Isar.open([
       ExtensionSchema,
       BookSchema,
@@ -30,6 +33,12 @@ class DatabaseUtils {
       BookmarkSchema,
       DownloadSchema
     ], directory: _path, name: "db");
+  }
+
+  Future<void> back() async {
+    settings.close();
+    database.close();
+    await ensureInitialized();
   }
 
   WatchComicSettings get getSettingsComic {
@@ -288,6 +297,41 @@ class DatabaseUtils {
 
   Future<bool> deleteDownloadById(int id) =>
       database.writeTxn(() => database.downloads.delete(id));
+
+  Future<bool> backupDatabase() async {
+    final permission = await PermissionUtils.storagePermission;
+    if (!permission) return false;
+    final downPath = await DirectoryUtils.getDirDownloads;
+    final pathDb = await DirectoryUtils.getDirDatabase;
+
+    var encoder = ZipFileEncoder();
+    encoder.create('$downPath/backup/backup_database.zip');
+    await encoder.addFile(File("$pathDb/db.isar"));
+    await encoder.addFile(File("$pathDb/settings.hive"));
+    encoder.close();
+    print(downPath);
+    return true;
+  }
+
+  Future<bool> restoreDatabase() async {
+    final permission = await PermissionUtils.storagePermission;
+    if (!permission) return false;
+    final downPath = await DirectoryUtils.getDirDownloads;
+    final fileBackup = File('$downPath/backup/backup_database.zip');
+    if (!fileBackup.existsSync()) return false;
+    final archive = ZipDecoder().decodeBytes(fileBackup.readAsBytesSync());
+    final pathDatabase = await DirectoryUtils.getDirDatabase;
+    for (final file in archive) {
+      final filename = file.name;
+      if (file.isFile) {
+        final data = file.content as List<int>;
+        final fileT = File('$pathDatabase/$filename');
+        fileT.writeAsBytesSync(data);
+      }
+    }
+    await back();
+    return true;
+  }
 }
 
 class SettingKey {
